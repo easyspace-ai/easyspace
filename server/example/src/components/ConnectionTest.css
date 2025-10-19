@@ -1,0 +1,312 @@
+/* 连接测试样式 */
+.connection-test {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.test-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.test-header h2 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.test-header p {
+  margin: 0;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* 配置区域 */
+.config-section,
+.control-section,
+.test-section,
+.status-section,
+.log-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.config-section h3,
+.control-section h3,
+.test-section h3,
+.status-section h3,
+.log-section h3 {
+  margin: 0 0 1.5rem 0;
+  color: #333;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* 配置网格 */
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.config-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.config-item label {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.config-item input {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.config-item input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.config-item input:disabled {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* 控制按钮 */
+.control-buttons,
+.test-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* 按钮样式 */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #5a67d8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-info {
+  background: #06b6d4;
+  color: white;
+}
+
+.btn-info:hover:not(:disabled) {
+  background: #0891b2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+.btn-warning {
+  background: #f59e0b;
+  color: white;
+}
+
+.btn-warning:hover:not(:disabled) {
+  background: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  min-width: auto;
+}
+
+/* 状态网格 */
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.status-item {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-label {
+  color: #666;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.status-value {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.status-value.connected {
+  color: #16a34a;
+}
+
+.status-value.disconnected {
+  color: #dc2626;
+}
+
+/* 日志区域 */
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.log-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.log-container {
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.log-empty {
+  color: #666;
+  text-align: center;
+  padding: 2rem;
+  font-style: italic;
+}
+
+.log-entry {
+  margin-bottom: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  word-break: break-all;
+}
+
+.log-timestamp {
+  color: #888;
+  flex-shrink: 0;
+  min-width: 80px;
+}
+
+.log-message {
+  flex: 1;
+}
+
+.log-entry.info .log-message {
+  color: #e5e7eb;
+}
+
+.log-entry.success .log-message {
+  color: #10b981;
+}
+
+.log-entry.error .log-message {
+  color: #ef4444;
+}
+
+.log-entry.warning .log-message {
+  color: #f59e0b;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .config-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .control-buttons,
+  .test-buttons {
+    flex-direction: column;
+  }
+  
+  .btn {
+    min-width: auto;
+  }
+  
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .log-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .log-controls {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .config-section,
+  .control-section,
+  .test-section,
+  .status-section,
+  .log-section {
+    padding: 1rem;
+  }
+  
+  .log-container {
+    font-size: 0.8rem;
+  }
+}

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YJS Test Client</title>
+    <script src="https://unpkg.com/yjs@13.6.10/dist/yjs.js"></script>
+</head>
+<body>
+    <h1>YJS 同步测试</h1>
+    <div id="status">连接中...</div>
+    <div id="content">
+        <textarea id="text" placeholder="在这里输入文本，应该会在两个客户端之间同步"></textarea>
+    </div>
+    <div id="logs"></div>
+
+    <script>
+        const status = document.getElementById('status');
+        const text = document.getElementById('text');
+        const logs = document.getElementById('logs');
+        
+        function log(message) {
+            const div = document.createElement('div');
+            div.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            logs.appendChild(div);
+            console.log(message);
+        }
+        
+        // 创建 YJS 文档
+        const ydoc = new Y.Doc();
+        const ytext = ydoc.getText('content');
+        
+        // 绑定文本到 textarea
+        ytext.observe(event => {
+            text.value = ytext.toString();
+            log('文本已更新: ' + ytext.toString());
+        });
+        
+        // 监听 textarea 变化
+        text.addEventListener('input', () => {
+            ytext.delete(0, ytext.length);
+            ytext.insert(0, text.value);
+            log('本地文本已更改: ' + text.value);
+        });
+        
+        // 创建 WebSocket 连接
+        const ws = new WebSocket('ws://localhost:8888/yjs/ws?document=demo-doc&user=test-user-' + Math.random().toString(36).substr(2, 9));
+        
+        ws.onopen = () => {
+            status.textContent = '已连接';
+            status.style.color = 'green';
+            log('WebSocket 连接已建立');
+            
+            // 发送同步请求
+            ws.send(JSON.stringify({
+                type: 'sync',
+                document: 'demo-doc'
+            }));
+        };
+        
+        ws.onmessage = (event) => {
+            try {
+                const message = JSON.parse(event.data);
+                log('收到消息: ' + JSON.stringify(message));
+                
+                if (message.type === 'update' && message.update) {
+                    // 应用更新到 YJS 文档
+                    const update = new Uint8Array(message.update);
+                    Y.applyUpdate(ydoc, update, 'remote');
+                    log('已应用远程更新');
+                }
+            } catch (error) {
+                log('解析消息失败: ' + error.message);
+            }
+        };
+        
+        ws.onclose = () => {
+            status.textContent = '连接已断开';
+            status.style.color = 'red';
+            log('WebSocket 连接已断开');
+        };
+        
+        ws.onerror = (error) => {
+            log('WebSocket 错误: ' + error);
+        };
+        
+        // 监听 YJS 文档更新
+        ydoc.on('update', (update, origin) => {
+            if (origin !== 'remote') {
+                // 发送更新到服务器
+                const updateArray = Array.from(update);
+                ws.send(JSON.stringify({
+                    type: 'update',
+                    document: 'demo-doc',
+                    update: updateArray
+                }));
+                log('已发送更新到服务器');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+package http
+
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+
+	"teable-go-backend/internal/application"
+	"teable-go-backend/internal/infrastructure/database/models"
+)
+
+// WorkflowHandler 工作流处理器
+type WorkflowHandler struct {
+	service *application.WorkflowService
+}
+
+// NewWorkflowHandler 创建工作流处理器
+func NewWorkflowHandler(service *application.WorkflowService) *WorkflowHandler {
+	return &WorkflowHandler{
+		service: service,
+	}
+}
+
+// CreateWorkflow 创建工作流
+func (h *WorkflowHandler) CreateWorkflow(c *gin.Context) {
+	var workflow models.Workflow
+	if err := c.ShouldBindJSON(&workflow); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "INVALID_REQUEST",
+			"message": "Invalid workflow data",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	// 从上下文中获取用户ID
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error":   "UNAUTHORIZED",
+			"message": "User not authenticated",
+		})
+		return
+	}
+
+	workflow.CreatedBy = userID.(string)
+	
+	// 调用服务创建工作流
+	if err := h.service.Create(c.Request.Context(), &workflow); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "CREATE_FAILED",
+			"message": "Failed to create workflow",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, workflow)
+}
+
+// GetWorkflow 获取工作流
+func (h *WorkflowHandler) GetWorkflow(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "INVALID_REQUEST",
+			"message": "Workflow ID is required",
+		})
+		return
+	}
+
+	// 调用服务获取工作流
+	workflow, err := h.service.GetByID(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error":   "NOT_FOUND",
+			"message": "Workflow not found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, workflow)
+}
+
+// ListWorkflows 列出工作流
+func (h *WorkflowHandler) ListWorkflows(c *gin.Context) {
+	// 获取分页参数
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+
+	// 调用服务获取列表
+	workflows, total, err := h.service.List(c.Request.Context(), page, limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "LIST_FAILED",
+			"message": "Failed to list workflows",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":  workflows,
+		"total": total,
+		"page":  page,
+		"limit": limit,
+	})
+}
+
+// UpdateWorkflow 更新工作流
+func (h *WorkflowHandler) UpdateWorkflow(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "INVALID_REQUEST",
+			"message": "Workflow ID is required",
+		})
+		return
+	}
+
+	var workflow models.Workflow
+	if err := c.ShouldBindJSON(&workflow); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "INVALID_REQUEST",
+			"message": "Invalid workflow data",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	workflow.ID = id
+	
+	// 调用服务更新工作流
+	if err := h.service.Update(c.Request.Context(), id, &workflow); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "UPDATE_FAILED",
+			"message": "Failed to update workflow",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, workflow)
+}
+
+// DeleteWorkflow 删除工作流
+func (h *WorkflowHandler) DeleteWorkflow(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "INVALID_REQUEST",
+			"message": "Workflow ID is required",
+		})
+		return
+	}
+
+	// 调用服务删除工作流
+	if err := h.service.Delete(c.Request.Context(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "DELETE_FAILED",
+			"message": "Failed to delete workflow",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+// RunWorkflow 运行工作流
+func (h *WorkflowHandler) RunWorkflow(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "INVALID_REQUEST",
+			"message": "Workflow ID is required",
+		})
+		return
+	}
+
+	var input map[string]interface{}
+	if err := c.ShouldBindJSON(&input); err != nil && err.Error() != "EOF" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "INVALID_REQUEST",
+			"message": "Invalid workflow input",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	// 从上下文中获取用户ID
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error":   "UNAUTHORIZED",
+			"message": "User not authenticated",
+		})
+		return
+	}
+
+	// 调用服务运行工作流
+	run, err := h.service.Run(c.Request.Context(), id, userID.(string), input)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "RUN_FAILED",
+			"message": "Failed to run workflow",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, run)
+}
+
+// GetWorkflowRun 获取工作流运行
+func (h *WorkflowHandler) GetWorkflowRun(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "INVALID_REQUEST",
+			"message": "Workflow run ID is required",
+		})
+		return
+	}
+
+	// 调用服务获取运行记录
+	run, err := h.service.GetRun(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error":   "NOT_FOUND",
+			"message": "Workflow run not found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, run)
+}
+
+// ListWorkflowRuns 列出工作流运行
+func (h *WorkflowHandler) ListWorkflowRuns(c *gin.Context) {
+	workflowID := c.Query("workflow_id")
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+
+	// 调用服务获取运行列表
+	runs, total, err := h.service.ListRuns(c.Request.Context(), workflowID, page, limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "LIST_FAILED",
+			"message": "Failed to list workflow runs",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":  runs,
+		"total": total,
+		"page":  page,
+		"limit": limit,
+	})
+}
+
+// StopWorkflowRun 停止工作流运行
+func (h *WorkflowHandler) StopWorkflowRun(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "INVALID_REQUEST",
+			"message": "Workflow run ID is required",
+		})
+		return
+	}
+
+	// 调用服务停止运行
+	if err := h.service.StopRun(c.Request.Context(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "STOP_FAILED",
+			"message": "Failed to stop workflow run",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"id":     id,
+		"status": "stopped",
+	})
+}
+
+// GetWorkflowStats 获取工作流统计信息
+func (h *WorkflowHandler) GetWorkflowStats(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "INVALID_REQUEST",
+			"message": "Workflow ID is required",
+		})
+		return
+	}
+
+	// 调用服务获取统计信息
+	stats, err := h.service.GetStats(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "STATS_FAILED",
+			"message": "Failed to get workflow stats",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, stats)
+}
