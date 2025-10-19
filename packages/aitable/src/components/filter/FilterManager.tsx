@@ -13,6 +13,9 @@ import { FilterDialog } from './FilterDialog';
 import { FilterButton } from './FilterButton';
 import type { FilterField, FilterCondition, FilterOperator } from './FilterDialog';
 
+// 导出类型供外部使用
+export type { FilterField, FilterCondition, FilterOperator };
+
 export interface FilterManagerComponentProps {
   // 数据
   data: any[];
@@ -82,6 +85,9 @@ function filterData(data: any[], conditions: FilterCondition[], fields: FilterFi
     });
   });
 }
+
+// 导出 FilterManager 作为默认导出
+export const FilterManager = FilterManagerComponent;
 
 export function FilterManagerComponent({
   data,

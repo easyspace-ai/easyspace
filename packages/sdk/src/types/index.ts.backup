@@ -1,0 +1,797 @@
+/**
+ * Teable SDK 核心类型定义
+ * 基于 Go 后端的数据模型设计
+ */
+
+// ==================== 基础类型 ====================
+
+/**
+ * 基础实体（响应类型使用camelCase）
+ */
+export interface BaseEntity {
+  id: string;
+  createdAt: string;       // ISO 8601 格式 - camelCase
+  updatedAt: string;       // ISO 8601 格式 - camelCase
+  createdBy?: string;      // 用户ID - camelCase
+  updatedBy?: string;      // 用户ID - camelCase
+  deletedAt?: string | null;  // 软删除时间 - camelCase
+}
+
+export interface PaginationParams {
+  limit?: number;
+  offset?: number;
+  sort?: string;
+  order?: 'asc' | 'desc';
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+/**
+ * EasyDB 统一API响应格式（响应使用camelCase）
+ * 完全符合 server/pkg/response/response.go 定义
+ */
+export interface APIResponse<T = any> {
+  code: number;           // 业务状态码
+  message: string;        // 响应消息
+  data: T;                // 响应数据
+  error?: ErrorPayload;   // 错误详情（仅错误时）
+  requestId?: string;     // 请求ID（追踪）- camelCase
+  timestamp?: string;     // 响应时间戳
+  durationMs?: number;    // 处理耗时（毫秒）- camelCase
+  version?: string;       // API版本
+}
+
+export interface ErrorPayload {
+  details?: any;          // 错误详细信息
+}
+
+/**
+ * 分页元数据（响应使用camelCase）
+ */
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;      // camelCase
+}
+
+/**
+ * 分页响应格式
+ */
+export interface PaginatedAPIResponse<T = any> extends APIResponse<T[]> {
+  pagination?: PaginationMeta;
+}
+
+/**
+ * @deprecated 使用 APIResponse 代替
+ */
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+/**
+ * @deprecated 使用 ErrorPayload 代替
+ */
+export interface ApiError {
+  error: string;
+  code: string;
+  details?: string;
+  trace_id?: string;
+}
+
+// ==================== 用户相关类型 ====================
+
+/**
+ * 用户实体（响应类型使用camelCase）
+ */
+export interface User extends BaseEntity {
+  name: string;
+  email: string;
+  password?: never;        // 永不返回密码
+  avatar?: string;
+  isActive: boolean;       // 账户激活状态 - camelCase
+  lastLoginAt?: string | null;  // camelCase
+  lastLoginIp?: string;    // camelCase
+  emailVerifiedAt?: string | null;  // camelCase
+}
+
+export interface UserPreferences {
+  theme?: 'light' | 'dark' | 'auto';
+  language?: string;
+  timezone?: string;
+  notifications?: NotificationSettings;
+}
+
+export interface NotificationSettings {
+  emailNotifications: boolean;        // camelCase
+  pushNotifications: boolean;         // camelCase
+  collaborationNotifications: boolean;  // camelCase
+  systemNotifications: boolean;       // camelCase
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
+/**
+ * 认证响应（响应类型使用camelCase）
+ */
+export interface AuthResponse {
+  user: User;
+  accessToken: string;     // camelCase
+  refreshToken: string;    // camelCase
+  expiresIn?: number;      // camelCase
+  tokenType?: string;      // camelCase
+}
+
+// ==================== 空间相关类型 ====================
+
+/**
+ * 空间实体（完全匹配 server/internal/domain/space/entity）
+ */
+export interface Space extends BaseEntity {
+  name: string;
+  description?: string;
+  icon?: string;
+}
+
+export type CollaboratorRole = 'owner' | 'admin' | 'editor' | 'viewer';
+
+export type CollaboratorStatus = 'pending' | 'accepted' | 'rejected' | 'revoked';
+
+export interface SpaceCollaborator extends BaseEntity {
+  space_id: string;
+  user_id: string;
+  role: CollaboratorRole;
+  invited_by: string;
+  accepted_at?: string;
+  revoked_at?: string;
+  status: CollaboratorStatus;
+}
+
+/**
+ * 创建空间请求（完全匹配 server/internal/application/dto/space_dto.go）
+ */
+export interface CreateSpaceRequest {
+  name: string;
+  description?: string;
+  icon?: string;
+}
+
+/**
+ * 更新空间请求
+ */
+export interface UpdateSpaceRequest {
+  name?: string;
+  description?: string;
+  icon?: string;
+}
+
+export interface AddCollaboratorRequest {
+  userId: string;          // 请求使用snake_case但这是camelCase需要修正
+  role: CollaboratorRole;
+}
+
+// ==================== 基础表相关类型 ====================
+
+/**
+ * Base实体（响应类型使用camelCase）
+ */
+export interface Base extends BaseEntity {
+  spaceId: string;         // camelCase
+  name: string;
+  description?: string;
+  icon?: string;
+}
+
+/**
+ * 创建Base请求（请求使用snake_case）
+ */
+export interface CreateBaseRequest {
+  space_id: string;    // 请求使用snake_case
+  name: string;
+  description?: string;
+  icon?: string;
+}
+
+export interface UpdateBaseRequest {
+  name?: string;
+  description?: string;
+  icon?: string;
+}
+
+// ==================== 数据表相关类型 ====================
+
+/**
+ * Table实体（响应类型使用camelCase）
+ */
+export interface Table extends BaseEntity {
+  baseId: string;          // camelCase
+  name: string;
+  description?: string;
+  icon?: string;
+  dbTableName?: string;    // camelCase
+  version: number;
+  lastModifiedTime?: string | null;  // camelCase
+}
+
+/**
+ * 创建Table请求（完全匹配 server/internal/application/dto/table_dto.go）
+ */
+export interface CreateTableRequest {
+  base_id: string;     // 使用snake_case匹配后端
+  name: string;
+  description?: string;
+  icon?: string;
+}
+
+export interface UpdateTableRequest {
+  name?: string;
+  description?: string;
+  icon?: string;
+}
+
+// ==================== 字段相关类型 ====================
+
+/**
+ * 字段类型（完全匹配 server/internal/domain/fields/valueobject/field_type.go）
+ */
+export type FieldType = 
+  // 基础类型
+  | 'singleLineText'      // 单行文本
+  | 'longText'            // 长文本
+  | 'number'              // 数字
+  | 'singleSelect'        // 单选
+  | 'multipleSelects'     // 多选
+  | 'date'                // 日期
+  | 'checkbox'            // 复选框
+  | 'url'                 // 链接
+  | 'email'               // 邮箱
+  | 'phoneNumber'         // 电话
+  | 'attachment'          // 附件
+  | 'rating'              // 评分
+  // 关联类型
+  | 'link'                // 关联记录
+  | 'formula'             // 公式
+  | 'rollup'              // 汇总
+  | 'count'               // 计数
+  | 'lookup'              // 查找
+  // 系统类型
+  | 'createdTime'         // 创建时间
+  | 'lastModifiedTime'    // 最后修改时间
+  | 'createdBy'           // 创建者
+  | 'lastModifiedBy'      // 最后修改者
+  | 'autoNumber';         // 自动编号
+
+export interface FieldOptions {
+  placeholder?: string;
+  help_text?: string;
+  choices?: SelectOption[];
+  min_value?: number;
+  max_value?: number;
+  decimal?: number;
+  min_length?: number;
+  max_length?: number;
+  pattern?: string;
+  date_format?: string;
+  time_format?: string;
+  max_file_size?: number;
+  allowed_types?: string[];
+  link_table_id?: string;
+  link_field_id?: string;
+  formula?: string;
+  validation_rules?: ValidationRule[];
+}
+
+export interface SelectOption {
+  id: string;
+  name: string;
+  color?: string;
+}
+
+export interface ValidationRule {
+  type: string;
+  value: any;
+  message?: string;
+}
+
+/**
+ * Field实体（完全匹配 server/internal/domain/fields/entity）
+ */
+export interface Field extends BaseEntity {
+  table_id: string;
+  name: string;
+  type: FieldType;
+  description?: string;
+  required: boolean;
+  unique: boolean;
+  primary: boolean;
+  db_field_name?: string;
+  options?: FieldOptions | null;
+  order: number;
+  version: number;
+  last_modified_time?: string | null;
+}
+
+/**
+ * 创建Field请求（完全匹配 server/internal/application/dto/field_dto.go）
+ */
+export interface CreateFieldRequest {
+  table_id: string;    // 使用snake_case匹配后端
+  name: string;
+  type: FieldType;
+  description?: string;
+  required?: boolean;
+  unique?: boolean;
+  primary?: boolean;
+  options?: FieldOptions | null;
+}
+
+export interface UpdateFieldRequest {
+  name?: string;
+  type?: FieldType;
+  description?: string;
+  required?: boolean;
+  is_unique?: boolean;
+  is_primary?: boolean;
+  default_value?: string;
+  options?: FieldOptions;
+  field_order?: number;
+}
+
+// ==================== 记录相关类型 ====================
+
+/**
+ * Record实体（完全匹配 server/internal/domain/record/entity）
+ */
+export interface Record extends BaseEntity {
+  table_id: string;
+  data: JsonObject;              // 字段名->值映射
+  version: number;
+  auto_number?: number | null;
+  last_modified_time?: string | null;
+}
+
+/**
+ * 创建Record请求（完全匹配 server/internal/application/dto/record_dto.go）
+ */
+export interface CreateRecordRequest {
+  table_id: string;    // 使用snake_case匹配后端
+  data: JsonObject;
+}
+
+export interface UpdateRecordRequest {
+  data: JsonObject;
+}
+
+/**
+ * 批量创建记录请求
+ */
+export interface BulkCreateRecordRequest {
+  tableId: string;     // 这个字段在批量创建时不需要,由路径参数传递
+  records: JsonObject[];
+}
+
+/**
+ * 批量更新记录请求
+ */
+export interface BulkUpdateRecordRequest {
+  records: Array<{
+    id: string;
+    data: JsonObject;
+  }>;
+}
+
+/**
+ * 批量删除记录请求
+ */
+export interface BulkDeleteRecordRequest {
+  recordIds: string[];  // JSON使用camelCase
+}
+
+export interface RecordQuery {
+  table_id: string;
+  filter?: FilterExpression | undefined;
+  sort?: SortExpression[] | undefined;
+  limit?: number | undefined;
+  offset?: number | undefined;
+}
+
+export interface FilterExpression {
+  field: string;
+  operator: FilterOperator;
+  value: any;
+  logic?: 'and' | 'or';
+  conditions?: FilterExpression[];
+}
+
+export type FilterOperator = 
+  | 'equals'
+  | 'not_equals'
+  | 'contains'
+  | 'not_contains'
+  | 'starts_with'
+  | 'ends_with'
+  | 'greater_than'
+  | 'greater_than_or_equal'
+  | 'less_than'
+  | 'less_than_or_equal'
+  | 'is_empty'
+  | 'is_not_empty'
+  | 'in'
+  | 'not_in'
+  | 'has_any_of'
+  | 'has_all_of';
+
+export interface SortExpression {
+  field: string;
+  direction: 'asc' | 'desc';
+}
+
+// ==================== 视图相关类型 ====================
+
+/**
+ * 视图类型（完全匹配 server/internal/domain/view/valueobject/view_type.go）
+ */
+export type ViewType = 'grid' | 'kanban' | 'form' | 'calendar' | 'gallery';
+
+/**
+ * View实体（完全匹配 server/internal/domain/view/entity）
+ */
+export interface View extends BaseEntity {
+  table_id: string;
+  name: string;
+  type: ViewType;
+  description?: string;
+  filter?: any | null;              // JSON filter
+  sort?: any | null;                // JSON sort
+  group?: any | null;               // JSON group
+  column_meta?: any | null;         // JSON column metadata
+  options?: any | null;             // JSON view options
+  order: number;
+  share_id?: string | null;
+  share_enabled: boolean;
+  share_password?: string | null;
+  lock_type?: string | null;
+  frozen_column_count?: number | null;
+  last_modified_time?: string | null;
+}
+
+export interface ViewConfig {
+  // 通用配置
+  filter?: FilterExpression;
+  sort?: SortExpression[];
+  
+  // 网格视图配置
+  grid?: GridViewConfig;
+  
+  // 表单视图配置
+  form?: FormViewConfig;
+  
+  // 看板视图配置
+  kanban?: KanbanViewConfig;
+  
+  // 日历视图配置
+  calendar?: CalendarViewConfig;
+  
+  // 画廊视图配置
+  gallery?: GalleryViewConfig;
+}
+
+export interface GridViewConfig {
+  columns: GridColumn[];
+  row_height?: 'short' | 'medium' | 'tall' | undefined;
+  show_row_numbers?: boolean | undefined;
+  show_column_headers?: boolean | undefined;
+}
+
+export interface GridColumn {
+  field_id: string;
+  width?: number;
+  visible?: boolean;
+  frozen?: boolean;
+}
+
+export interface FormViewConfig {
+  fields: FormField[];
+  submit_button_text?: string;
+  success_message?: string;
+  redirect_url?: string;
+}
+
+export interface FormField {
+  field_id: string;
+  required?: boolean | undefined;
+  visible?: boolean | undefined;
+  order?: number | undefined;
+}
+
+export interface KanbanViewConfig {
+  group_field_id: string;
+  card_fields: string[];
+  card_height?: 'short' | 'medium' | 'tall' | undefined;
+  show_empty_groups?: boolean | undefined;
+}
+
+export interface CalendarViewConfig {
+  date_field_id: string;
+  title_field_id: string;
+  color_field_id?: string | undefined;
+  show_weekends?: boolean | undefined;
+  start_day_of_week?: number | undefined; // 0-6, 0=Sunday
+}
+
+export interface GalleryViewConfig {
+  card_fields: string[];
+  card_size?: 'small' | 'medium' | 'large' | undefined;
+  show_field_names?: boolean | undefined;
+  cover_field_id?: string | undefined;
+}
+
+/**
+ * 创建View请求（完全匹配 server/internal/application/dto/view_dto.go）
+ */
+export interface CreateViewRequest {
+  table_id: string;      // SDK内部使用table_id,发送时转换为tableId (后端使用camelCase)
+  name: string;
+  type: ViewType;
+  description?: string;
+  filter?: any | null;
+  sort?: any | null;
+  group?: any | null;
+  columnMeta?: any | null;
+  options?: any | null;
+}
+
+/**
+ * 更新View请求
+ */
+export interface UpdateViewRequest {
+  name?: string;
+  description?: string;
+  filter?: any | null;
+  sort?: any | null;
+  group?: any | null;
+  columnMeta?: any | null;
+  options?: any | null;
+}
+
+// ==================== 协作相关类型 ====================
+
+export interface CollaborationSession extends BaseEntity {
+  name: string;
+  description?: string;
+  participants: CollaborationParticipant[];
+  is_active: boolean;
+}
+
+export interface CollaborationParticipant {
+  user_id: string;
+  role: 'owner' | 'admin' | 'editor' | 'viewer';
+  joined_at: string;
+  last_activity_at?: string;
+}
+
+export interface Presence {
+  user_id: string;
+  resource_type: 'table' | 'view' | 'record';
+  resource_id: string;
+  cursor_position?: CursorPosition;
+  last_seen: string;
+}
+
+export interface CursorPosition {
+  x: number;
+  y: number;
+  field_id?: string;
+  record_id?: string;
+}
+
+// ==================== 搜索相关类型 ====================
+
+export interface SearchRequest {
+  query: string;
+  scope?: 'all' | 'spaces' | 'bases' | 'tables' | 'records';
+  filters?: SearchFilter[];
+  limit?: number;
+  offset?: number;
+}
+
+export interface SearchFilter {
+  field: string;
+  operator: FilterOperator;
+  value: any;
+}
+
+export interface SearchResult<T = any> {
+  item: T;
+  score: number;
+  highlights: string[];
+}
+
+export interface SearchResponse<T = any> {
+  results: SearchResult<T>[];
+  total: number;
+  query: string;
+  took: number;
+}
+
+// ==================== 通知相关类型 ====================
+
+export interface Notification extends BaseEntity {
+  user_id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  data?: JsonObject;
+  is_read: boolean;
+  read_at?: string;
+  expires_at?: string;
+}
+
+export type NotificationType = 
+  | 'collaboration_invite'
+  | 'collaboration_join'
+  | 'collaboration_leave'
+  | 'record_created'
+  | 'record_updated'
+  | 'record_deleted'
+  | 'comment_added'
+  | 'mention'
+  | 'system_announcement';
+
+export interface NotificationSubscription extends BaseEntity {
+  user_id: string;
+  type: NotificationType;
+  resource_type: string;
+  resource_id: string;
+  is_enabled: boolean;
+  channels: NotificationChannel[];
+}
+
+export type NotificationChannel = 'email' | 'push' | 'in_app';
+
+// ==================== 附件相关类型 ====================
+
+export interface Attachment extends BaseEntity {
+  filename: string;
+  original_name: string;
+  mime_type: string;
+  size: number;
+  url: string;
+  thumbnail_url?: string;
+  metadata?: JsonObject;
+}
+
+export interface UploadAttachmentRequest {
+  file: File | any;
+  filename?: string;
+  metadata?: JsonObject;
+}
+
+// ==================== WebSocket 相关类型 ====================
+
+export interface WebSocketMessage {
+  type: string;
+  data: any;
+  timestamp: string;
+  user_id?: string;
+}
+
+export interface CollaborationMessage extends WebSocketMessage {
+  type: 'collaboration';
+  data: {
+    action: 'cursor_move' | 'selection_change' | 'presence_update';
+    resource_type: string;
+    resource_id: string;
+    payload: any;
+  };
+}
+
+export interface RecordChangeMessage extends WebSocketMessage {
+  type: 'record_change';
+  data: {
+    action: 'create' | 'update' | 'delete';
+    table_id: string;
+    record_id: string;
+    changes?: JsonObject;
+  };
+}
+
+// ==================== 配置相关类型 ====================
+
+export interface TeableConfig {
+  baseUrl: string;
+  apiKey?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  timeout?: number;
+  retries?: number;
+  retryDelay?: number;
+  userAgent?: string;
+  debug?: boolean;
+  disableProxy?: boolean;
+}
+
+export type JsonObject = { [key: string]: any };
+
+export interface RequestOptions {
+  timeout?: number;
+  retries?: number;
+  retryDelay?: number;
+  headers?: globalThis.Record<string, string>;
+}
+
+// ==================== 错误相关类型 ====================
+
+export class TeableError extends Error {
+  public readonly code: string;
+  public readonly status: number | undefined;
+  public readonly details: any | undefined;
+
+  constructor(message: string, code: string, status?: number, details?: any) {
+    super(message);
+    this.name = 'TeableError';
+    this.code = code;
+    this.status = status;
+    this.details = details;
+  }
+}
+
+export class AuthenticationError extends TeableError {
+  constructor(message: string = 'Authentication failed') {
+    super(message, 'AUTH_ERROR', 401);
+  }
+}
+
+export class AuthorizationError extends TeableError {
+  constructor(message: string = 'Insufficient permissions') {
+    super(message, 'AUTHZ_ERROR', 403);
+  }
+}
+
+export class NotFoundError extends TeableError {
+  constructor(message: string = 'Resource not found') {
+    super(message, 'NOT_FOUND', 404);
+  }
+}
+
+export class ValidationError extends TeableError {
+  constructor(message: string, details?: any) {
+    super(message, 'VALIDATION_ERROR', 422, details);
+  }
+}
+
+export class RateLimitError extends TeableError {
+  constructor(message: string = 'Rate limit exceeded') {
+    super(message, 'RATE_LIMIT', 429);
+  }
+}
+
+export class ServerError extends TeableError {
+  constructor(message: string = 'Internal server error') {
+    super(message, 'SERVER_ERROR', 500);
+  }
+}
+
+export interface TableStats {
+  table_id: string;
+  total_fields: number;
+  total_records: number;
+  total_views: number;
+  last_activity_at?: string | undefined;
+}

@@ -113,6 +113,7 @@ export interface IUpdateFieldRo {
   type?: FieldType;
   options?: any;
   description?: string;
+  validation?: any;
 }
 
 // Record
@@ -149,6 +150,8 @@ export interface IGetRecordsRo {
   cellFormat?: 'text' | 'json';
   skip?: number;
   take?: number;
+  page?: number;
+  pageSize?: number;
 }
 
 // View

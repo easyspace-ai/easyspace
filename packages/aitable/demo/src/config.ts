@@ -6,10 +6,10 @@
 
 export const config = {
   // LuckDB API 地址
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8888',
 
   // WebSocket 地址（可选）
-  wsURL: import.meta.env.VITE_WS_URL || 'ws://localhost:8080',
+  wsURL: import.meta.env.VITE_WS_URL || 'ws://localhost:8888',
 
   // 测试账号（仅用于演示）
   demo: {

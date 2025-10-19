@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { LuckDB } from '@luckdb/sdk';
+import { LuckDB } from '@easyspace/sdk';
 import { StandardDataView, AppProviders } from '@luckdb/aitable';
 import type { IGridProps } from '@luckdb/aitable';
 

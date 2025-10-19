@@ -2,6 +2,9 @@
  * AddRecordDialog 调试工具
  */
 
+import React from 'react';
+import ReactDOM from 'react-dom';
+
 export function debugAddRecordDialog() {
   console.log('🔍 AddRecordDialog Debug Info:');
   

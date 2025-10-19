@@ -11,7 +11,7 @@ import { ViewProvider } from './view/ViewContext';
 import { PermissionProvider } from './permission/PermissionContext';
 import { ApiClient } from '../api/client';
 import { type ISDKAdapter, createAdapter } from '../api/sdk-adapter';
-import type { LuckDB } from '@luckdb/sdk';
+import type { LuckDB } from '@easyspace/sdk';
 
 const queryClient = new QueryClient({
   defaultOptions: {

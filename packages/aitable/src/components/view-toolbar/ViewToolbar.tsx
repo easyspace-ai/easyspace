@@ -24,7 +24,8 @@ import {
 } from 'lucide-react';
 import { FieldConfigCombobox, type FieldConfig } from '../field-config';
 import { RowHeightCombobox, type RowHeight } from '../row-height';
-import { FilterManager, type FilterField, type FilterCondition } from '../filter';
+import { FilterManager } from '../filter/FilterManager';
+import type { FilterField, FilterCondition as FilterConditionType } from '../filter/FilterDialog';
 
 export interface ToolbarConfig {
   showUndoRedo?: boolean;
@@ -61,8 +62,8 @@ export interface ViewToolbarProps {
   
   // 过滤配置
   filterFields?: FilterField[];
-  filterConditions?: FilterCondition[];
-  onFilterConditionsChange?: (conditions: FilterCondition[]) => void;
+  filterConditions?: FilterConditionType[];
+  onFilterConditionsChange?: (conditions: FilterConditionType[]) => void;
   onFilteredDataChange?: (filteredData: any[]) => void;
   
   // 操作回调

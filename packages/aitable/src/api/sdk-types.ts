@@ -1,6 +1,6 @@
 /**
  * SDK Types Re-export
- * 从 @luckdb/sdk 重新导出类型，供 grid 包使用
+ * 从 @easyspace/sdk 重新导出类型，供 grid 包使用
  * 注意：避免与 grid 自己的类型冲突，使用命名空间或别名
  */
 
@@ -48,8 +48,8 @@ export type {
   
   // 工具类型
   JsonObject,
-} from '@luckdb/sdk';
+} from '@easyspace/sdk';
 
 // 重新导出 SDK 主类
-export { LuckDB, LuckDBSDK } from '@luckdb/sdk';
+export { LuckDB, LuckDBSDK } from '@easyspace/sdk';
 

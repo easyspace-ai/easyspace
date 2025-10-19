@@ -272,7 +272,7 @@ export function FieldConfigCombobox({
   }, []);
 
   // 放置
-  const handleDrop = useCallback((e: React.DragEvent, dropIndex: number) => {
+  const handleDrop = useCallback((dropIndex: number, e: React.DragEvent) => {
     e.preventDefault();
     if (draggedIndex !== null && draggedIndex !== dropIndex) {
       onFieldReorder(draggedIndex, dropIndex);

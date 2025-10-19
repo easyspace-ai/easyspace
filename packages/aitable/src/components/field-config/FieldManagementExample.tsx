@@ -50,6 +50,17 @@ const mockFields: FieldConfig[] = [
 // 字段列表组件
 function FieldList() {
   const { fields } = useField();
+  
+  // 将 Field<FieldType> 转换为 FieldConfig
+  const fieldConfigs: FieldConfig[] = fields.map(field => ({
+    id: field.id,
+    name: field.name,
+    type: field.type,
+    visible: true, // 默认可见
+    required: false, // 默认非必填
+    description: field.description,
+    options: Array.isArray(field.options) ? field.options : [],
+  }));
   const { openEditDialog, openDeleteDialog } = useFieldManagement();
   const [selectedField, setSelectedField] = useState<FieldConfig | null>(null);
 
@@ -91,7 +102,7 @@ function FieldList() {
         <h2 style={{ marginBottom: '20px', fontSize: '24px', fontWeight: 600 }}>字段管理示例</h2>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {fields.map((field) => (
+          {fieldConfigs.map((field) => (
             <div
               key={field.id}
               style={{
@@ -238,7 +249,7 @@ function FieldList() {
 // 主示例组件
 export function FieldManagementExample() {
   // 模拟 API 客户端
-  const apiClient = new ApiClient('http://localhost:8080');
+  const apiClient = new ApiClient({ baseURL: 'http://localhost:8080' });
 
   return (
     <FieldProvider tableId="example-table" apiClient={apiClient}>

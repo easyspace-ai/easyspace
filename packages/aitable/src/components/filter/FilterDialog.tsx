@@ -98,7 +98,7 @@ function getFieldOperators(fieldType: FilterField['type']): FilterOperator[] {
  */
 function createNewCondition(fields: FilterField[]): FilterCondition {
   const firstField = fields[0];
-  const operators = firstField ? getFieldOperators(firstField.type) : ['equals'];
+  const operators = firstField ? getFieldOperators(firstField.type) : ['equals' as FilterOperator];
   
   return {
     id: `condition_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,

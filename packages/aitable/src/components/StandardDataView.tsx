@@ -29,7 +29,7 @@ import type { IGridProps, IGridRef } from '../grid/core/Grid';
 import type { EmptyStateProps, ErrorStateProps } from './states';
 import type { FieldConfig } from './field-config';
 import type { RowHeight } from './row-height';
-import type { FilterField, FilterCondition } from './filter';
+import type { FilterField, FilterCondition as FilterConditionType } from './filter/FilterDialog';
 import { AddFieldDialogV2, EditFieldDialog } from './field-config';
 import { AddRecordDialog } from './add-record';
 import { useToast } from '../ui/Toast';
@@ -107,8 +107,8 @@ export interface StandardDataViewProps {
 
   // 过滤配置
   filterFields?: FilterField[];
-  filterConditions?: FilterCondition[];
-  onFilterConditionsChange?: (conditions: FilterCondition[]) => void;
+  filterConditions?: FilterConditionType[];
+  onFilterConditionsChange?: (conditions: FilterConditionType[]) => void;
   onFilteredDataChange?: (filteredData: any[]) => void;
 
   // 工具栏配置

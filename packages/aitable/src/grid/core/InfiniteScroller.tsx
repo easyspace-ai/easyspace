@@ -1,9 +1,62 @@
 import { cn } from '../../utils/string';
 import type { ForwardRefRenderFunction, MutableRefObject, ReactNode, UIEvent } from 'react';
 import { useMemo, useRef, useCallback, forwardRef, useImperativeHandle, useEffect } from 'react';
+// 临时替代 scroller 的简单实现
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { Scroller } from 'scroller';
+const Scroller = class {
+  constructor(options: any) {
+    this.options = options;
+  }
+  
+  setDimensions(width: number, height: number) {
+    this.width = width;
+    this.height = height;
+  }
+  
+  setContentDimensions(width: number, height: number) {
+    this.contentWidth = width;
+    this.contentHeight = height;
+  }
+  
+  setSnapSize(width: number, height: number) {
+    this.snapWidth = width;
+    this.snapHeight = height;
+  }
+  
+  setScrollPosition(left: number, top: number) {
+    this.left = left;
+    this.top = top;
+  }
+  
+  getScrollPosition() {
+    return { left: this.left || 0, top: this.top || 0 };
+  }
+  
+  getDimensions() {
+    return { width: this.width || 0, height: this.height || 0 };
+  }
+  
+  getContentDimensions() {
+    return { width: this.contentWidth || 0, height: this.contentHeight || 0 };
+  }
+  
+  getSnapSize() {
+    return { width: this.snapWidth || 0, height: this.snapHeight || 0 };
+  }
+  
+  on(callback: () => void) {
+    // 简单的回调处理
+  }
+  
+  off(callback: () => void) {
+    // 简单的回调处理
+  }
+  
+  destroy() {
+    // 清理资源
+  }
+};
 import { useIsTouchDevice } from '../hooks/primitive';
 import type { IGridProps } from './Grid';
 import { getHorizontalRangeInfo, getVerticalRangeInfo, useEventListener } from '../hooks/primitive';

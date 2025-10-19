@@ -1,10 +1,15 @@
+import type { Config } from "tailwindcss";
+import baseConfig from "@easyspace/tailwind-config";
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+const config: Config = {
   content: [
     './src/**/*.{js,ts,jsx,tsx}',
     './examples/**/*.{js,ts,jsx,tsx}',
     './demo/**/*.{js,ts,jsx,tsx}',
+    '../../packages/ui/src/**/*.{ts,tsx}',
   ],
+  presets: [baseConfig],
   theme: {
     extend: {
       colors: {

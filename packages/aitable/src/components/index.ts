@@ -16,7 +16,9 @@ export type { StandardDataViewProps, Tab, View } from './StandardDataView';
 
 // View Header
 export { ViewHeader, CreateViewMenu } from './view-header';
-export type { ViewHeaderProps, ViewType } from './view-header';
+export type { ViewHeaderProps, CreateViewMenuProps } from './view-header';
+// ViewType 类型从 view-header 导出
+export type { ViewType } from './view-header';
 
 // View Toolbar
 export { ViewToolbar } from './view-toolbar';
@@ -71,5 +73,16 @@ export type { AddRecordDialogProps, FormValues, FormErrors, FieldEditorProps } f
 export { Combobox } from './ui/Combobox';
 export type { ComboboxProps, ComboboxOption } from './ui/Combobox';
 
-// Filter components
-export * from './filter';
+// Filter components - 使用明确的导出避免冲突
+export {
+  FilterDialog,
+  FilterExample,
+  FilterManager as ComponentFilterManager,
+} from './filter';
+
+// 导出类型
+export type {
+  FilterField as ComponentFilterField,
+  FilterCondition as ComponentFilterCondition,
+  FilterOperator as ComponentFilterOperator,
+} from './filter';

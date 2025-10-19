@@ -28,5 +28,26 @@ export * from './utils';
 // UI (shadcn components)
 export * from './ui';
 
-// Composite Components
-export * from './components';
+// Composite Components - 使用明确的导出避免冲突
+export {
+  // 从 components 导出，避免与 model 中的类型冲突
+  AddRecordDialog,
+  FilterDialog,
+  ViewHeader,
+  RowHeightCombobox,
+  FilterExample,
+  ComponentFilterManager,
+  FieldManagementProvider,
+  useFieldManagement,
+  StandardDataView,
+} from './components';
+
+// 导出类型
+export type {
+  ComponentFilterField,
+  ComponentFilterCondition,
+  ComponentFilterOperator,
+  ViewType as ComponentViewType,
+  View as ComponentView,
+  FieldConfig,
+} from './components';

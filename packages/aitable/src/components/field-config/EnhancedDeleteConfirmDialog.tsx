@@ -139,7 +139,7 @@ export function EnhancedDeleteConfirmDialog({
           style={{
             backgroundColor: 'white',
             borderRadius: '12px',
-            boxShadow: elevation.large,
+            boxShadow: (elevation as any).large,
             width: '480px',
             maxWidth: '90vw',
             display: 'flex',
@@ -336,7 +336,7 @@ export function EnhancedDeleteConfirmDialog({
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  border: `1px solid ${canDelete ? tokens.colors.border.subtle : tokens.colors.border.destructive}`,
+                  border: `1px solid ${canDelete ? tokens.colors.border.subtle : (tokens.colors.border as any).destructive}`,
                   borderRadius: '8px',
                   fontSize: '14px',
                   transition: transitions.presets.all,
@@ -350,7 +350,7 @@ export function EnhancedDeleteConfirmDialog({
                 onBlur={(e) => {
                   e.target.style.borderColor = canDelete
                     ? tokens.colors.border.subtle
-                    : tokens.colors.border.destructive;
+                    : (tokens.colors.border as any).destructive;
                 }}
               />
               {confirmText && !canDelete && (

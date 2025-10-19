@@ -195,7 +195,7 @@ export function EnhancedEditFieldDialog({
           style={{
             backgroundColor: 'white',
             borderRadius: '12px',
-            boxShadow: elevation.large,
+            boxShadow: (elevation as any).large,
             width: '600px',
             maxWidth: '90vw',
             maxHeight: '80vh',
@@ -333,7 +333,7 @@ export function EnhancedEditFieldDialog({
                     style={{
                       width: '100%',
                       padding: '10px 12px',
-                      border: `1px solid ${validationErrors.name ? tokens.colors.border.destructive : tokens.colors.border.subtle}`,
+                      border: `1px solid ${validationErrors.name ? (tokens.colors.border as any).destructive : tokens.colors.border.subtle}`,
                       borderRadius: '6px',
                       fontSize: '14px',
                       transition: transitions.presets.all,
@@ -343,7 +343,7 @@ export function EnhancedEditFieldDialog({
                     }}
                     onBlur={(e) => {
                       e.target.style.borderColor = validationErrors.name
-                        ? tokens.colors.border.destructive
+                        ? (tokens.colors.border as any).destructive
                         : tokens.colors.border.subtle;
                     }}
                   />
@@ -385,7 +385,7 @@ export function EnhancedEditFieldDialog({
                     style={{
                       width: '100%',
                       padding: '10px 12px',
-                      border: `1px solid ${validationErrors.description ? tokens.colors.border.destructive : tokens.colors.border.subtle}`,
+                      border: `1px solid ${validationErrors.description ? (tokens.colors.border as any).destructive : tokens.colors.border.subtle}`,
                       borderRadius: '6px',
                       fontSize: '14px',
                       resize: 'vertical',
@@ -396,7 +396,7 @@ export function EnhancedEditFieldDialog({
                     }}
                     onBlur={(e) => {
                       e.target.style.borderColor = validationErrors.description
-                        ? tokens.colors.border.destructive
+                        ? (tokens.colors.border as any).destructive
                         : tokens.colors.border.subtle;
                     }}
                   />

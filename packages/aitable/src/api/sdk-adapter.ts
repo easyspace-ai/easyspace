@@ -10,7 +10,7 @@
  * 3. Grid 组件通过适配器统一访问
  */
 
-import type { LuckDB } from '@luckdb/sdk';
+import type { LuckDB } from '@easyspace/sdk';
 import type { ApiClient } from './client';
 import type {
   IBase,
@@ -118,10 +118,22 @@ export class LuckDBAdapter implements ISDKAdapter {
     // 这里暂时返回默认权限
     console.warn('LuckDB SDK does not support getTablePermission yet');
     return {
-      canEdit: true,
-      canDelete: true,
-      canCreate: true,
-    } as ITablePermission;
+      'table|read': true,
+      'table|update': true,
+      'table|delete': true,
+      'record|create': true,
+      'record|read': true,
+      'record|update': true,
+      'record|delete': true,
+      'field|create': true,
+      'field|read': true,
+      'field|update': true,
+      'field|delete': true,
+      'view|create': true,
+      'view|read': true,
+      'view|update': true,
+      'view|delete': true,
+    };
   }
 
   // ==================== Field APIs ====================
@@ -190,13 +202,13 @@ export class LuckDBAdapter implements ISDKAdapter {
     fieldId: string,
     value: any
   ): Promise<IRecord> {
-    return this.sdk.updateRecord(tableId, recordId, {
+    return this.sdk.updateRecord(recordId, {
       data: { [fieldId]: value },
     }) as Promise<IRecord>;
   }
 
   async deleteRecord(tableId: string, recordId: string): Promise<void> {
-    await this.sdk.deleteRecord(tableId, recordId);
+    await this.sdk.deleteRecord(recordId);
   }
 
   // ==================== View APIs ====================

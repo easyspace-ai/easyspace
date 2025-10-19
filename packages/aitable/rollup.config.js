@@ -29,6 +29,7 @@ const external = [
   'react/jsx-runtime',
   'react/jsx-dev-runtime',
   'react-dom/client',
+  '@easyspace/sdk', // 外部依赖
 ];
 
 // 共享的插件配置

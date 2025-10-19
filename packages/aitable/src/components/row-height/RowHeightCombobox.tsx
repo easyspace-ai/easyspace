@@ -65,25 +65,21 @@ const rowHeightOptions: ComboboxOption<RowHeight>[] = [
   {
     value: 'short',
     label: '低',
-    icon: () => <RowHeightIcon height="short" />,
     description: '紧凑显示，适合大量数据',
   },
   {
     value: 'medium',
     label: '中等',
-    icon: () => <RowHeightIcon height="medium" />,
     description: '标准显示，平衡美观与效率',
   },
   {
     value: 'tall',
     label: '高',
-    icon: () => <RowHeightIcon height="tall" />,
     description: '宽松显示，提升可读性',
   },
   {
     value: 'extra-tall',
     label: '超高',
-    icon: () => <RowHeightIcon height="extra-tall" />,
     description: '最大显示，最佳可读性',
   },
 ];
@@ -96,8 +92,6 @@ export function RowHeightCombobox({
 }: RowHeightComboboxProps) {
   // 自定义渲染选项
   const renderOption = (option: ComboboxOption<RowHeight>, isSelected: boolean) => {
-    const IconComponent = option.icon;
-    
     return (
       <div className="flex items-center gap-3 px-3 py-2">
         {/* 选中状态指示器 */}
@@ -111,7 +105,7 @@ export function RowHeightCombobox({
 
         {/* 图标 */}
         <div className="flex-shrink-0">
-          <IconComponent />
+          <RowHeightIcon height={option.value} />
         </div>
 
         {/* 内容 */}

@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "@easyspace/typescript-config/base.json",
   "compilerOptions": {
     "noEmit": false,
     "declaration": true,
@@ -7,19 +7,19 @@
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    
-    /* 最宽松的配置 - 确保构建成功 */
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    // 构建时放宽类型检查
     "strict": false,
-    "skipLibCheck": true,
     "noImplicitAny": false,
-    "suppressImplicitAnyIndexErrors": true,
-    "noImplicitThis": false,
-    "noImplicitReturns": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "strictNullChecks": false,
+    "skipLibCheck": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/types/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",

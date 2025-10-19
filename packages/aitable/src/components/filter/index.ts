@@ -1,15 +1,21 @@
 /**
- * Filter components exports
+ * Filter Components Export
  */
 
-export * from './FilterDialog';
-export * from './FilterCondition';
-export * from './FilterButton';
-export { FilterManagerComponent as FilterManager } from './FilterManager';
+export { FilterDialog } from './FilterDialog';
+export { FilterExample } from './FilterExample';
+export { FilterManager, FilterManagerComponent } from './FilterManager';
+export { FilterButton } from './FilterButton';
+export { FilterCondition } from './FilterCondition';
 
-// 类型导出
+// 导出类型
 export type {
   FilterField,
-  FilterCondition,
+  FilterCondition as FilterConditionType,
   FilterOperator,
+  FilterDialogProps,
 } from './FilterDialog';
+
+export type {
+  FilterManagerComponentProps,
+} from './FilterManager';

@@ -23,7 +23,7 @@ export interface FieldConfig {
     max?: number;
     precision?: number;
     icon?: string;
-    max?: number; // rating max value
+    ratingMax?: number; // rating max value
     [key: string]: any;
   };
 }
