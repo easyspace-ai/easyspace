@@ -1,0 +1,36 @@
+{
+    "name":"@easyspace/{{name}}",
+    "private":true,
+    "version":"0.1.0",
+    "exports":{
+        ".":"./index.ts"
+    },
+    "typesVersions":{
+        "*":{
+            "*":[
+                "src/*"
+            ]
+        }
+    },
+    "scripts":{
+        "clean":"rm -rf .turbo node_modules",
+        "lint":"eslint .",
+        "format":"prettier --check \"**/*.{mjs,ts,md,json}\"",
+        "typecheck":"tsc --noEmit"
+    },
+    "dependencies":{
+    },
+    "devDependencies":{
+        "@easyspace/eslint-config":"workspace:*",
+        "@easyspace/prettier-config":"workspace:*",
+        "@easyspace/typescript-config":"workspace:*",
+        "eslint":"8.57.0",
+        "typescript":"5.4.5"
+    },
+    "eslintConfig":{
+        "extends":[
+            "@easyspace/eslint-config/base"
+        ]
+    },
+    "prettier":"@easyspace/prettier-config"
+}

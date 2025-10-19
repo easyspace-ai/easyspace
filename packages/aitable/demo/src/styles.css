@@ -1,0 +1,215 @@
+/* Demo 样式修复 - 确保工具栏正确显示 */
+
+/* 工具栏按钮基础样式 */
+.toolbar-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.toolbar-button:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+.toolbar-button:active {
+  background-color: #f3f4f6;
+}
+
+.toolbar-button:focus-visible {
+  outline: none;
+  ring: 2px;
+  ring-color: #3b82f6;
+}
+
+/* 主要按钮样式 */
+.toolbar-button-primary {
+  background-color: #3b82f6;
+  border-color: #2563eb;
+  color: white;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.toolbar-button-primary:hover {
+  background-color: #2563eb;
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.toolbar-button-primary:active {
+  background-color: #1d4ed8;
+}
+
+/* 下拉选择器样式 */
+.toolbar-dropdown {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+  text-decoration: none;
+  white-space: nowrap;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+.toolbar-dropdown:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.toolbar-dropdown:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: #3b82f6;
+}
+
+/* 工具栏容器样式 */
+.toolbar-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  min-height: 3rem;
+}
+
+/* 图标样式 */
+.toolbar-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .toolbar-container {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  
+  .toolbar-button,
+  .toolbar-dropdown {
+    font-size: 0.75rem;
+    height: 1.75rem;
+    padding: 0 0.5rem;
+  }
+}
+
+/* 确保按钮文本不换行 */
+.toolbar-button span,
+.toolbar-dropdown span {
+  white-space: nowrap;
+}
+
+/* 修复可能的样式冲突 */
+button.toolbar-button,
+select.toolbar-dropdown {
+  font-family: inherit;
+}
+
+/* 表格工具栏特定样式 */
+.grid-toolbar {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+}
+
+.grid-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.grid-toolbar button:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+.grid-toolbar button.primary {
+  background-color: #3b82f6;
+  border-color: #2563eb;
+  color: white;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.grid-toolbar button.primary:hover {
+  background-color: #2563eb;
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.grid-toolbar select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+  text-decoration: none;
+  white-space: nowrap;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
