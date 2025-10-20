@@ -8,7 +8,7 @@
 export type {
   // 配置
   LuckDBConfig,
-  
+
   // 实体（使用 SDK 前缀以区分）
   User as SDKUser,
   Space as SDKSpace,
@@ -17,7 +17,7 @@ export type {
   Field as SDKField,
   Record as SDKRecord,
   View as SDKView,
-  
+
   // 请求类型
   LoginRequest,
   RegisterRequest,
@@ -27,17 +27,17 @@ export type {
   CreateFieldRequest,
   CreateRecordRequest,
   CreateViewRequest,
-  
+
   // 响应类型
   AuthResponse,
-  
+
   // 查询类型
   FilterExpression,
   SortExpression,
-  
+
   // 视图相关（使用别名）
   ViewConfig,
-  
+
   // 协作相关
   CollaborationSession,
   Presence,
@@ -45,11 +45,10 @@ export type {
   WebSocketMessage,
   CollaborationMessage,
   RecordChangeMessage,
-  
+
   // 工具类型
   JsonObject,
-} from '@easyspace/sdk';
+} from "@easyspace/sdk";
 
 // 重新导出 SDK 主类
-export { LuckDB, LuckDBSDK } from '@easyspace/sdk';
-
+export { LuckDB, LuckDBSDK } from "@easyspace/sdk";

@@ -1,19 +1,22 @@
-import { isEqual } from 'lodash';
-import type { IRange } from '../../interface';
-import { SelectionRegionType } from '../../interface';
+import { isEqual } from "lodash";
+import type { IRange } from "../../interface";
+import { SelectionRegionType } from "../../interface";
 import {
   flatRanges,
   isPointInsideRectangle,
   isRangeWithinRanges,
   mixRanges,
   serializedRanges,
-} from '../../utils';
+} from "../../utils";
 
 export class CombinedSelection {
   public type: SelectionRegionType;
   public ranges: IRange[];
 
-  constructor(type: SelectionRegionType = SelectionRegionType.None, ranges: IRange[] = []) {
+  constructor(
+    type: SelectionRegionType = SelectionRegionType.None,
+    ranges: IRange[] = [],
+  ) {
     this.type = type;
     this.ranges = ranges;
   }
@@ -40,15 +43,20 @@ export class CombinedSelection {
 
   public set(type: SelectionRegionType, ranges: IRange[]) {
     if (!Array.isArray(ranges)) {
-      throw Error('Ranges of the selection should be an array type!');
+      throw Error("Ranges of the selection should be an array type!");
     }
 
     if (type === SelectionRegionType.Cells && ranges.length < 2) {
-      throw Error('Ranges of type cells should have a length greater than 2!');
+      throw Error("Ranges of type cells should have a length greater than 2!");
     }
 
-    if ([SelectionRegionType.Columns, SelectionRegionType.Rows].includes(type) && !ranges.length) {
-      throw Error('Ranges of type columns or rows should have a length greater than 1!');
+    if (
+      [SelectionRegionType.Columns, SelectionRegionType.Rows].includes(type) &&
+      !ranges.length
+    ) {
+      throw Error(
+        "Ranges of type columns or rows should have a length greater than 1!",
+      );
     }
 
     return new CombinedSelection(type, ranges);
@@ -95,7 +103,9 @@ export class CombinedSelection {
       case SelectionRegionType.Rows:
       case SelectionRegionType.Columns: {
         const newRanges = mixRanges(this.ranges, range);
-        return newRanges.length ? new CombinedSelection(this.type, newRanges) : emptySelection;
+        return newRanges.length
+          ? new CombinedSelection(this.type, newRanges)
+          : emptySelection;
       }
       case SelectionRegionType.Cells:
         return new CombinedSelection(this.type, [this.ranges[0], range]);
@@ -106,7 +116,9 @@ export class CombinedSelection {
 
   public flatten(): number[] {
     const [start, end] = this.ranges;
-    if (this.isCellSelection) {return [...start, ...end];}
+    if (this.isCellSelection) {
+      return [...start, ...end];
+    }
     return flatRanges(this.ranges);
   }
 
@@ -128,7 +140,9 @@ export class CombinedSelection {
   }
 
   public includes(range?: IRange): boolean {
-    if (range == null) {return false;}
+    if (range == null) {
+      return false;
+    }
     switch (this.type) {
       case SelectionRegionType.Rows:
       case SelectionRegionType.Columns:
@@ -141,9 +155,14 @@ export class CombinedSelection {
   }
 
   public equals(comparisonRanges: IRange[]): boolean {
-    if (this.ranges.length !== comparisonRanges.length) {return false;}
+    if (this.ranges.length !== comparisonRanges.length) {
+      return false;
+    }
     return isEqual(this.ranges, comparisonRanges);
   }
 }
 
-export const emptySelection = new CombinedSelection(SelectionRegionType.None, []);
+export const emptySelection = new CombinedSelection(
+  SelectionRegionType.None,
+  [],
+);

@@ -3,9 +3,9 @@
  * 关系链接字段过滤器
  */
 
-import { BaseFilter, type IFilterConfig } from './BaseFilter';
-import type { Field } from '../field/Field';
-import type { RecordModel } from '../record/Record';
+import { BaseFilter, type IFilterConfig } from "./BaseFilter";
+import type { Field } from "../field/Field";
+import type { RecordModel } from "../record/Record";
 
 export class LinkFilter extends BaseFilter {
   constructor(field: Field, config: IFilterConfig) {
@@ -16,11 +16,11 @@ export class LinkFilter extends BaseFilter {
     const { operator } = this.config;
 
     switch (operator) {
-      case 'isEmpty':
-      case 'hasNoRecord':
+      case "isEmpty":
+      case "hasNoRecord":
         return this.matchHasNoRecord(record);
-      case 'isNotEmpty':
-      case 'hasRecord':
+      case "isNotEmpty":
+      case "hasRecord":
         return this.matchHasRecord(record);
       default:
         return false;
@@ -32,26 +32,28 @@ export class LinkFilter extends BaseFilter {
     const fieldName = this.field.name;
 
     switch (operator) {
-      case 'isEmpty':
-      case 'hasNoRecord':
+      case "isEmpty":
+      case "hasNoRecord":
         return `${fieldName} 无关联记录`;
-      case 'isNotEmpty':
-      case 'hasRecord':
+      case "isNotEmpty":
+      case "hasRecord":
         return `${fieldName} 有关联记录`;
       default:
-        return '';
+        return "";
     }
   }
 
   private getLinkedRecordIds(record: RecordModel): string[] {
     const value = this.getValue(record);
-    
-    if (this.isEmpty(value)) {return [];}
-    
-    if (Array.isArray(value)) {
-      return value.filter(v => v != null).map(v => String(v));
+
+    if (this.isEmpty(value)) {
+      return [];
     }
-    
+
+    if (Array.isArray(value)) {
+      return value.filter((v) => v != null).map((v) => String(v));
+    }
+
     return [String(value)];
   }
 
@@ -64,5 +66,3 @@ export class LinkFilter extends BaseFilter {
     return !this.matchHasRecord(record);
   }
 }
-
-

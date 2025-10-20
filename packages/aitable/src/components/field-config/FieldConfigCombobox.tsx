@@ -1,6 +1,6 @@
 /**
  * FieldConfigCombobox - 字段配置下拉组件（重构版）
- * 
+ *
  * 设计原则：
  * 1. 基于统一的 Combobox 基类
  * 2. 真实图标替代 emoji
@@ -9,14 +9,14 @@
  * 5. 拖拽排序支持
  */
 
-import React, { useState, useCallback } from 'react';
-import { cn, tokens } from '../../grid/design-system';
-import { Combobox, type ComboboxOption } from '../ui/Combobox';
-import { 
-  Eye, 
-  EyeOff, 
-  GripVertical, 
-  MoreHorizontal, 
+import React, { useState, useCallback } from "react";
+import { cn, tokens } from "../../grid/design-system";
+import { Combobox, type ComboboxOption } from "../ui/Combobox";
+import {
+  Eye,
+  EyeOff,
+  GripVertical,
+  MoreHorizontal,
   Settings,
   Lock,
   Type,
@@ -37,9 +37,9 @@ import {
   UserPlus,
   UserCheck,
   FileText,
-  type LucideIcon
-} from 'lucide-react';
-import { FieldContextMenu } from './FieldContextMenu';
+  type LucideIcon,
+} from "lucide-react";
+import { FieldContextMenu } from "./FieldContextMenu";
 
 export interface FieldConfig {
   id: string;
@@ -126,7 +126,7 @@ function FieldOption({
   isDragging = false,
 }: FieldOptionProps) {
   const FieldIcon = getFieldIcon(field.type);
-  
+
   return (
     <div
       draggable={!field.locked}
@@ -136,12 +136,12 @@ function FieldOption({
       onDrop={(e) => onDrop(index, e)}
       onContextMenu={(e) => !field.locked && onContextMenu(field.id, e)}
       className={cn(
-        'flex items-center gap-3 px-3 py-2',
-        'border-b border-gray-100 last:border-b-0',
-        'transition-all duration-150',
-        'hover:bg-gray-50',
-        isDragging && 'opacity-50',
-        field.locked && 'bg-gray-50'
+        "flex items-center gap-3 px-3 py-2",
+        "border-b border-gray-100 last:border-b-0",
+        "transition-all duration-150",
+        "hover:bg-gray-50",
+        isDragging && "opacity-50",
+        field.locked && "bg-gray-50",
       )}
       style={{
         borderBottomColor: tokens.colors.border.subtle,
@@ -149,8 +149,8 @@ function FieldOption({
     >
       {/* 拖拽手柄 */}
       {!field.locked && (
-        <GripVertical 
-          size={14} 
+        <GripVertical
+          size={14}
           className="text-gray-400 cursor-grab hover:text-gray-600 flex-shrink-0"
           style={{ color: tokens.colors.text.tertiary }}
         />
@@ -158,8 +158,8 @@ function FieldOption({
 
       {/* 锁定图标 */}
       {field.locked && (
-        <Lock 
-          size={14} 
+        <Lock
+          size={14}
           className="text-gray-400 flex-shrink-0"
           style={{ color: tokens.colors.text.tertiary }}
         />
@@ -167,23 +167,23 @@ function FieldOption({
 
       {/* 字段图标和名称 */}
       <div className="flex items-center gap-2 flex-1 min-w-0">
-        <FieldIcon 
-          size={16} 
+        <FieldIcon
+          size={16}
           className="text-gray-500 flex-shrink-0"
           style={{ color: tokens.colors.text.secondary }}
         />
         <div className="flex-1 min-w-0">
-          <div 
+          <div
             className={cn(
-              'text-sm truncate',
-              field.locked ? 'font-semibold' : 'font-medium'
+              "text-sm truncate",
+              field.locked ? "font-semibold" : "font-medium",
             )}
             style={{ color: tokens.colors.text.primary }}
             title={field.name}
           >
             {field.name}
           </div>
-          <div 
+          <div
             className="text-xs truncate mt-0.5"
             style={{ color: tokens.colors.text.tertiary }}
           >
@@ -199,13 +199,15 @@ function FieldOption({
           onToggle(field.id, !field.visible);
         }}
         className={cn(
-          'p-1 rounded transition-colors duration-150',
-          'hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500'
+          "p-1 rounded transition-colors duration-150",
+          "hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500",
         )}
         style={{
-          color: field.visible ? tokens.colors.text.primary : tokens.colors.text.tertiary,
+          color: field.visible
+            ? tokens.colors.text.primary
+            : tokens.colors.text.tertiary,
         }}
-        aria-label={field.visible ? '隐藏字段' : '显示字段'}
+        aria-label={field.visible ? "隐藏字段" : "显示字段"}
       >
         {field.visible ? <Eye size={14} /> : <EyeOff size={14} />}
       </button>
@@ -218,8 +220,8 @@ function FieldOption({
             onContextMenu(field.id, e);
           }}
           className={cn(
-            'p-1 rounded transition-colors duration-150',
-            'hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500'
+            "p-1 rounded transition-colors duration-150",
+            "hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500",
           )}
           style={{ color: tokens.colors.text.secondary }}
           aria-label="更多操作"
@@ -249,52 +251,61 @@ export function FieldConfigCombobox({
 }: FieldConfigComboboxProps) {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [showContextMenu, setShowContextMenu] = useState<string | null>(null);
-  const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number } | null>(null);
+  const [contextMenuPosition, setContextMenuPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
 
   // 拖拽开始
   const handleDragStart = useCallback((index: number, e: React.DragEvent) => {
     setDraggedIndex(index);
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', e.currentTarget.outerHTML);
-    (e.currentTarget as HTMLElement).style.opacity = '0.5';
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/html", e.currentTarget.outerHTML);
+    (e.currentTarget as HTMLElement).style.opacity = "0.5";
   }, []);
 
   // 拖拽结束
   const handleDragEnd = useCallback((e: React.DragEvent) => {
-    (e.currentTarget as HTMLElement).style.opacity = '1';
+    (e.currentTarget as HTMLElement).style.opacity = "1";
     setDraggedIndex(null);
   }, []);
 
   // 拖拽悬停
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+    e.dataTransfer.dropEffect = "move";
   }, []);
 
   // 放置
-  const handleDrop = useCallback((dropIndex: number, e: React.DragEvent) => {
-    e.preventDefault();
-    if (draggedIndex !== null && draggedIndex !== dropIndex) {
-      onFieldReorder(draggedIndex, dropIndex);
-    }
-    setDraggedIndex(null);
-  }, [draggedIndex, onFieldReorder]);
+  const handleDrop = useCallback(
+    (dropIndex: number, e: React.DragEvent) => {
+      e.preventDefault();
+      if (draggedIndex !== null && draggedIndex !== dropIndex) {
+        onFieldReorder(draggedIndex, dropIndex);
+      }
+      setDraggedIndex(null);
+    },
+    [draggedIndex, onFieldReorder],
+  );
 
   // 上下文菜单处理
-  const handleContextMenu = useCallback((fieldId: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const rect = e.currentTarget.getBoundingClientRect();
-    setContextMenuPosition({
-      x: rect.right,
-      y: rect.top,
-    });
-    setShowContextMenu(fieldId);
-  }, []);
+  const handleContextMenu = useCallback(
+    (fieldId: string, e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const rect = e.currentTarget.getBoundingClientRect();
+      setContextMenuPosition({
+        x: rect.right,
+        y: rect.top,
+      });
+      setShowContextMenu(fieldId);
+    },
+    [],
+  );
 
   // 构建选项数据
-  const options: ComboboxOption<FieldConfig>[] = fields.map(field => ({
+  const options: ComboboxOption<FieldConfig>[] = fields.map((field) => ({
     value: field,
     label: field.name,
     icon: getFieldIcon(field.type),
@@ -303,30 +314,47 @@ export function FieldConfigCombobox({
   }));
 
   // 自定义渲染触发器
-  const renderTrigger = useCallback(() => (
-    <div className="flex items-center gap-2">
-      <Settings size={14} />
-      <span>字段配置</span>
-    </div>
-  ), []);
+  const renderTrigger = useCallback(
+    () => (
+      <div className="flex items-center gap-2">
+        <Settings size={14} />
+        <span>字段配置</span>
+      </div>
+    ),
+    [],
+  );
 
   // 自定义渲染选项
-  const renderOption = useCallback((option: ComboboxOption<FieldConfig>, isSelected: boolean) => (
-    <FieldOption
-      field={option.value}
-      index={fields.findIndex(f => f.id === option.value.id)}
-      onToggle={onFieldToggle}
-      onContextMenu={handleContextMenu}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-      isDragging={draggedIndex === fields.findIndex(f => f.id === option.value.id)}
-    />
-  ), [fields, onFieldToggle, handleContextMenu, handleDragStart, handleDragEnd, handleDragOver, handleDrop, draggedIndex]);
+  const renderOption = useCallback(
+    (option: ComboboxOption<FieldConfig>, isSelected: boolean) => (
+      <FieldOption
+        field={option.value}
+        index={fields.findIndex((f) => f.id === option.value.id)}
+        onToggle={onFieldToggle}
+        onContextMenu={handleContextMenu}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+        isDragging={
+          draggedIndex === fields.findIndex((f) => f.id === option.value.id)
+        }
+      />
+    ),
+    [
+      fields,
+      onFieldToggle,
+      handleContextMenu,
+      handleDragStart,
+      handleDragEnd,
+      handleDragOver,
+      handleDrop,
+      draggedIndex,
+    ],
+  );
 
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn("relative", className)}>
       <Combobox
         value={null}
         onChange={() => {}} // 不需要选择，只是展示
@@ -345,8 +373,8 @@ export function FieldConfigCombobox({
       <FieldContextMenu
         isOpen={!!showContextMenu}
         position={contextMenuPosition}
-        fieldId={showContextMenu || ''}
-        fieldName={fields.find(f => f.id === showContextMenu)?.name || ''}
+        fieldId={showContextMenu || ""}
+        fieldName={fields.find((f) => f.id === showContextMenu)?.name || ""}
         onClose={() => setShowContextMenu(null)}
         onEdit={onFieldEdit}
         onCopy={onFieldCopy || (() => {})}
@@ -357,14 +385,14 @@ export function FieldConfigCombobox({
         onGroup={onFieldGroup}
         onFreeze={onFieldFreeze || (() => {})}
         onToggleVisibility={(fieldId) => {
-          const field = fields.find(f => f.id === fieldId);
+          const field = fields.find((f) => f.id === fieldId);
           if (field) {
             onFieldToggle(fieldId, !field.visible);
           }
         }}
         onDelete={onFieldDelete}
-        fieldVisible={fields.find(f => f.id === showContextMenu)?.visible}
-        fieldLocked={fields.find(f => f.id === showContextMenu)?.locked}
+        fieldVisible={fields.find((f) => f.id === showContextMenu)?.visible}
+        fieldLocked={fields.find((f) => f.id === showContextMenu)?.locked}
       />
     </div>
   );

@@ -1,31 +1,33 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
-import type { ForwardRefRenderFunction } from 'react';
-import type { IImageCell } from '../../../renderers/cell-renderer/interface';
-import type { IEditorProps, IEditorRef } from '../EditorContainer';
-import { Input } from '../../../../ui';
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import type { ForwardRefRenderFunction } from "react";
+import type { IImageCell } from "../../../renderers/cell-renderer/interface";
+import type { IEditorProps, IEditorRef } from "../EditorContainer";
+import { Input } from "../../../../ui";
 
-const ImageEditorBase: ForwardRefRenderFunction<IEditorRef<IImageCell>, IEditorProps<IImageCell>> = (
-  props,
-  ref
-) => {
+const ImageEditorBase: ForwardRefRenderFunction<
+  IEditorRef<IImageCell>,
+  IEditorProps<IImageCell>
+> = (props, ref) => {
   const { cell, style, onChange, isEditing } = props;
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [value, setValue] = useState(cell.data);
 
   useImperativeHandle(ref, () => ({
     focus: () => inputRef.current?.focus(),
-    setValue: (data: IImageCell['data']) => setValue(data),
+    setValue: (data: IImageCell["data"]) => setValue(data),
     saveValue: () => {
-      if (!isEditing) {return;}
+      if (!isEditing) {
+        return;
+      }
       onChange?.(value?.length ? value : null);
     },
   }));
 
-  const display = (value || []).map((i: any) => i.url).join(', ');
+  const display = (value || []).map((i: any) => i.url).join(", ");
 
   const onBlur = () => {
-    const items = (inputRef.current?.value || '')
-      .split(',')
+    const items = (inputRef.current?.value || "")
+      .split(",")
       .map((s) => s.trim())
       .filter(Boolean)
       .map((url, idx) => ({ id: `${idx}`, url }));
@@ -35,11 +37,14 @@ const ImageEditorBase: ForwardRefRenderFunction<IEditorRef<IImageCell>, IEditorP
 
   return (
     <div className="rounded-sm border p-2 shadow-sm" style={style}>
-      <Input ref={inputRef} defaultValue={display} placeholder="输入图片URL，逗号分隔" onBlur={onBlur} />
+      <Input
+        ref={inputRef}
+        defaultValue={display}
+        placeholder="输入图片URL，逗号分隔"
+        onBlur={onBlur}
+      />
     </div>
   );
 };
 
 export const ImageEditor = forwardRef(ImageEditorBase);
-
-

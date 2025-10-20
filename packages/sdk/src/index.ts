@@ -4,10 +4,10 @@
  */
 
 import { HttpClient } from './core/http-client.js';
-import { WebSocketClient } from './core/websocket-client.js';
-import { ShareDBClient } from './core/sharedb-client.js';
 import { YjsClient } from './core/yjs-client.js';
 import { DocumentManager } from './core/document-manager.js';
+export { YjsConnection } from './clients/yjs-connection.js';
+export type { YjsConnectionState } from './clients/yjs-connection.js';
 import { AuthClient } from './clients/auth-client.js';
 import { SpaceClient } from './clients/space-client.js';
 import { BaseClient } from './clients/base-client.js';
@@ -74,8 +74,6 @@ import {
  */
 export class LuckDB {
   private httpClient: HttpClient;
-  private wsClient?: WebSocketClient;
-  private sharedbClient?: ShareDBClient;
   private yjsClient?: YjsClient;
   private documentManager?: DocumentManager;
   private authClient: AuthClient;
@@ -103,68 +101,26 @@ export class LuckDB {
     this.viewClient = new ViewClient(this.httpClient);
     this.collaborationClient = new CollaborationClient(this.httpClient);
 
-    // ✅ 总是初始化 WebSocket 客户端，即使没有 accessToken
-    this.initializeWebSocket(config);
-  }
-
-  private initializeWebSocket(config: LuckDBConfig): void {
-    const wsOptions = {
-      debug: config.debug || false,
-      reconnectInterval: 5000,
-      maxReconnectAttempts: 10,
-      heartbeatInterval: 30000,
-    } as any;
-
-    this.wsClient = new WebSocketClient(config, wsOptions);
-    this.collaborationClient.setWebSocketClient(this.wsClient);
-
-    // 初始化 ShareDB 客户端
-    this.initializeShareDB(config);
-
     // 初始化 YJS 客户端
-    this.initializeYJS(config);
-
-    // ✅ 添加调试日志
-    if (config.debug) {
-      console.log('[LuckDB SDK] WebSocket client initialized with options:', wsOptions);
-    }
+    this.initializeYjs(config);
   }
 
-  private initializeShareDB(config: LuckDBConfig): void {
-    if (this.wsClient) {
-      const sharedbConfig = {
-        debug: config.debug || false,
-        reconnectInterval: 5000,
-        maxReconnectAttempts: 10,
-        heartbeatInterval: 30000,
-      };
 
-      this.sharedbClient = new ShareDBClient(this.wsClient, sharedbConfig);
-      this.documentManager = new DocumentManager(this.sharedbClient);
-
-      // 设置记录客户端的 ShareDB 支持
-      this.recordClient.setShareDBClient(this.sharedbClient, this.documentManager);
-
-      if (config.debug) {
-        console.log('[LuckDB SDK] ShareDB client initialized');
-      }
-    }
-  }
-
-  private initializeYJS(config: LuckDBConfig): void {
-    const yjsConfig = {
+  private initializeYjs(config: LuckDBConfig): void {
+    this.yjsClient = new YjsClient(config, {
       debug: config.debug || false,
-      reconnectInterval: 5000,
-      maxReconnectAttempts: 10,
-      heartbeatInterval: 30000,
-    };
+    });
 
-    this.yjsClient = new YjsClient(config, yjsConfig);
+    this.documentManager = new DocumentManager(this.yjsClient);
+
+    // 设置记录客户端的 YJS 支持
+    this.recordClient.setYjsClient(this.yjsClient, this.documentManager);
 
     if (config.debug) {
       console.log('[LuckDB SDK] YJS client initialized');
     }
   }
+
 
   // ==================== 认证相关方法 ====================
 
@@ -175,13 +131,13 @@ export class LuckDB {
     const response = await this.authClient.login(credentials);
     console.log('登录成功:', response);
 
-    // ✅ 登录成功后更新 WebSocket 客户端配置
-    if (this.wsClient) {
-      // 更新配置中的 accessToken
-      this.wsClient.config.accessToken = response.accessToken;
-
-      // 尝试连接 WebSocket
-      await this.wsClient.connect();
+    // 登录成功后初始化 SSE 连接（仅在支持的环境中）
+    try {
+      this.collaborationClient.initializeSSE();
+    } catch (error) {
+      if (this.config.debug) {
+        console.log('[LuckDB SDK] SSE initialization skipped:', (error as any).message);
+      }
     }
 
     return response;
@@ -193,9 +149,13 @@ export class LuckDB {
   public async register(userData: RegisterRequest): Promise<AuthResponse> {
     const response = await this.authClient.register(userData);
 
-    // 注册成功后初始化 WebSocket 连接
-    if (this.wsClient) {
-      await this.wsClient.connect();
+    // 注册成功后初始化 SSE 连接（仅在支持的环境中）
+    try {
+      this.collaborationClient.initializeSSE();
+    } catch (error) {
+      if (this.config.debug) {
+        console.log('[LuckDB SDK] SSE initialization skipped:', (error as any).message);
+      }
     }
 
     return response;
@@ -207,10 +167,8 @@ export class LuckDB {
   public async logout(): Promise<void> {
     await this.authClient.logout();
 
-    // 登出后断开 WebSocket 连接
-    if (this.wsClient) {
-      this.wsClient.disconnect();
-    }
+    // 登出后关闭 SSE 连接
+    this.collaborationClient.closeSSE();
   }
 
   /**
@@ -668,28 +626,25 @@ export class LuckDB {
   }
 
   /**
-   * 获取 WebSocket 连接状态
+   * 获取 SSE 连接状态
    */
-  public getWebSocketState(): 'connecting' | 'connected' | 'disconnected' {
-    return this.wsClient?.getConnectionState() || 'disconnected';
+  public getSSEState(): 'connecting' | 'connected' | 'disconnected' {
+    // SSE 连接状态检查需要根据实际实现来调整
+    return 'connected'; // 简化实现
   }
 
   /**
-   * 手动连接 WebSocket
+   * 手动连接 SSE
    */
-  public async connectWebSocket(): Promise<void> {
-    if (this.wsClient) {
-      await this.wsClient.connect();
-    }
+  public connectSSE(): void {
+    this.collaborationClient.initializeSSE();
   }
 
   /**
-   * 断开 WebSocket 连接
+   * 断开 SSE 连接
    */
-  public disconnectWebSocket(): void {
-    if (this.wsClient) {
-      this.wsClient.disconnect();
-    }
+  public disconnectSSE(): void {
+    this.collaborationClient.closeSSE();
   }
 
   /**
@@ -770,20 +725,14 @@ export class LuckDB {
     return this.collaborationClient;
   }
 
-  /**
-   * 获取 WebSocket 客户端
-   */
-  public getWebSocketClient(): WebSocketClient | undefined {
-    return this.wsClient;
-  }
 
-  // ==================== ShareDB 实时协作方法 ====================
+  // ==================== YJS 实时协作方法 ====================
 
   /**
-   * 获取 ShareDB 客户端
+   * 获取 YJS 客户端
    */
-  public getShareDBClient(): ShareDBClient | undefined {
-    return this.sharedbClient;
+  public getYjsClient(): YjsClient | undefined {
+    return this.yjsClient;
   }
 
   /**
@@ -794,13 +743,6 @@ export class LuckDB {
   }
 
   // ==================== YJS 实时协作方法 ====================
-
-  /**
-   * 获取 YJS 客户端
-   */
-  public getYjsClient(): YjsClient | undefined {
-    return this.yjsClient;
-  }
 
   /**
    * 连接 YJS WebSocket
@@ -832,20 +774,20 @@ export class LuckDB {
   }
 
   /**
-   * 检查 ShareDB 是否可用
+   * 检查 YJS 是否可用
    */
-  public isShareDBAvailable(): boolean {
-    return !!(this.sharedbClient && this.documentManager);
+  public isYjsAvailable(): boolean {
+    return !!(this.yjsClient && this.documentManager);
   }
 
   /**
-   * 获取 ShareDB 连接状态
+   * 获取 YJS 连接状态
    */
-  public getShareDBConnectionState(): 'connecting' | 'connected' | 'disconnected' {
-    if (!this.sharedbClient) {
+  public getYjsConnectionState(): 'connecting' | 'connected' | 'disconnected' {
+    if (!this.yjsClient) {
       return 'disconnected';
     }
-    return this.sharedbClient.getConnectionState();
+    return this.yjsClient.getConnectionState();
   }
 
   /**
@@ -858,7 +800,7 @@ export class LuckDB {
     value: any
   ): Promise<void> {
     if (!this.documentManager) {
-      throw new Error('ShareDB client not initialized');
+      throw new Error('YJS client not initialized');
     }
     await this.documentManager.updateRecordField(tableId, recordId, fieldId, value);
   }
@@ -872,13 +814,13 @@ export class LuckDB {
     fields: globalThis.Record<string, any>
   ): Promise<void> {
     if (!this.documentManager) {
-      throw new Error('ShareDB client not initialized');
+      throw new Error('YJS client not initialized');
     }
     await this.documentManager.batchUpdateRecordFields(tableId, recordId, fields);
   }
 
   /**
-   * 订阅记录变更（ShareDB 实时）
+   * 订阅记录变更（YJS 实时）
    */
   public subscribeToRecordRealtime(
     tableId: string,
@@ -886,13 +828,13 @@ export class LuckDB {
     callback: (updates: JsonObject) => void
   ) {
     if (!this.documentManager) {
-      throw new Error('ShareDB client not initialized');
+      throw new Error('YJS client not initialized');
     }
     return this.documentManager.subscribeToRecord(tableId, recordId, callback);
   }
 
   /**
-   * 订阅字段变更（ShareDB 实时）
+   * 订阅字段变更（YJS 实时）
    */
   public subscribeToFieldRealtime(
     tableId: string,
@@ -900,13 +842,13 @@ export class LuckDB {
     callback: (updates: JsonObject) => void
   ) {
     if (!this.documentManager) {
-      throw new Error('ShareDB client not initialized');
+      throw new Error('YJS client not initialized');
     }
     return this.documentManager.subscribeToField(tableId, fieldId, callback);
   }
 
   /**
-   * 订阅视图变更（ShareDB 实时）
+   * 订阅视图变更（YJS 实时）
    */
   public subscribeToViewRealtime(
     tableId: string,
@@ -914,17 +856,17 @@ export class LuckDB {
     callback: (updates: JsonObject) => void
   ) {
     if (!this.documentManager) {
-      throw new Error('ShareDB client not initialized');
+      throw new Error('YJS client not initialized');
     }
     return this.documentManager.subscribeToView(tableId, viewId, callback);
   }
 
   /**
-   * 订阅表格变更（ShareDB 实时）
+   * 订阅表格变更（YJS 实时）
    */
   public subscribeToTableRealtime(tableId: string, callback: (updates: JsonObject) => void) {
     if (!this.documentManager) {
-      throw new Error('ShareDB client not initialized');
+      throw new Error('YJS client not initialized');
     }
     return this.documentManager.subscribeToTable(tableId, callback);
   }
@@ -938,8 +880,6 @@ export { LuckDB as LuckDBSDK };
 export {
   // 核心类
   HttpClient,
-  WebSocketClient,
-  ShareDBClient,
   DocumentManager,
 
   // 客户端类

@@ -3,7 +3,7 @@
  * User/collaborator selection fields
  */
 
-import { Field } from './Field';
+import { Field } from "./Field";
 
 export interface IUser {
   id: string;
@@ -18,27 +18,30 @@ export interface IUserFieldOptions {
 }
 
 export class UserField extends Field {
-
   validate(value: unknown): boolean {
     if (this.isEmpty(value)) {
       return true;
     }
 
     // Single user
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       return true;
     }
 
     // Single user object
-    if (value && typeof value === 'object' && 'id' in value) {
+    if (value && typeof value === "object" && "id" in value) {
       return true;
     }
 
     // Multiple users
     if (Array.isArray(value)) {
       return value.every((item) => {
-        if (typeof item === 'string') {return true;}
-        if (item && typeof item === 'object' && 'id' in item) {return true;}
+        if (typeof item === "string") {
+          return true;
+        }
+        if (item && typeof item === "object" && "id" in item) {
+          return true;
+        }
         return false;
       });
     }
@@ -48,16 +51,16 @@ export class UserField extends Field {
 
   format(value: unknown): string {
     if (this.isEmpty(value)) {
-      return '';
+      return "";
     }
 
     // Single user ID
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       return value;
     }
 
     // Single user object
-    if (value && typeof value === 'object' && 'id' in value) {
+    if (value && typeof value === "object" && "id" in value) {
       const user = value as IUser;
       return user.name ?? user.email ?? user.id;
     }
@@ -66,18 +69,20 @@ export class UserField extends Field {
     if (Array.isArray(value)) {
       return value
         .map((item) => {
-          if (typeof item === 'string') {return item;}
-          if (item && typeof item === 'object' && 'id' in item) {
+          if (typeof item === "string") {
+            return item;
+          }
+          if (item && typeof item === "object" && "id" in item) {
             const user = item as IUser;
             return user.name ?? user.email ?? user.id;
           }
-          return '';
+          return "";
         })
         .filter(Boolean)
-        .join(', ');
+        .join(", ");
     }
 
-    return '';
+    return "";
   }
 
   getEmptyValue(): null {
@@ -108,22 +113,24 @@ export class UserField extends Field {
       return [];
     }
 
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       return [value];
     }
 
-    if (value && typeof value === 'object' && 'id' in value) {
+    if (value && typeof value === "object" && "id" in value) {
       return [(value as IUser).id];
     }
 
     if (Array.isArray(value)) {
       return value
         .map((item) => {
-          if (typeof item === 'string') {return item;}
-          if (item && typeof item === 'object' && 'id' in item) {
+          if (typeof item === "string") {
+            return item;
+          }
+          if (item && typeof item === "object" && "id" in item) {
             return (item as IUser).id;
           }
-          return '';
+          return "";
         })
         .filter(Boolean);
     }
@@ -138,5 +145,3 @@ export class UserField extends Field {
     return (this.options as any).isMultiple ?? false;
   }
 }
-
-

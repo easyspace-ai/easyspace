@@ -2,10 +2,10 @@
  * 电话编辑器
  */
 
-import React, { useEffect, useRef } from 'react';
-import { cn, tokens } from '../../../grid/design-system';
-import type { FieldEditorProps } from '../types';
-import { Phone } from 'lucide-react';
+import React, { useEffect, useRef } from "react";
+import { cn, tokens } from "../../../grid/design-system";
+import type { FieldEditorProps } from "../types";
+import { Phone } from "lucide-react";
 
 export function PhoneEditor({
   field,
@@ -24,7 +24,7 @@ export function PhoneEditor({
   }, [autoFocus]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && onEnter) {
+    if (e.key === "Enter" && onEnter) {
       e.preventDefault();
       onEnter();
     }
@@ -40,27 +40,28 @@ export function PhoneEditor({
         <input
           ref={inputRef}
           type="tel"
-          value={value || ''}
+          value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="138****8888"
           disabled={field.locked}
           className={cn(
-            'w-full h-9 pl-9 pr-3 rounded-md text-sm',
-            'border transition-all',
-            'focus:outline-none focus:ring-2',
+            "w-full h-9 pl-9 pr-3 rounded-md text-sm",
+            "border transition-all",
+            "focus:outline-none focus:ring-2",
             error
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-              : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200',
-            field.locked && 'bg-gray-50 cursor-not-allowed'
+              ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+              : "border-gray-300 focus:border-blue-500 focus:ring-blue-200",
+            field.locked && "bg-gray-50 cursor-not-allowed",
           )}
           style={{
-            backgroundColor: field.locked ? tokens.colors.surface.disabled : tokens.colors.surface.base,
-            borderColor: error ? '#fca5a5' : tokens.colors.border.default,
+            backgroundColor: field.locked
+              ? tokens.colors.surface.disabled
+              : tokens.colors.surface.base,
+            borderColor: error ? "#fca5a5" : tokens.colors.border.default,
           }}
         />
       </div>
     </div>
   );
 }
-

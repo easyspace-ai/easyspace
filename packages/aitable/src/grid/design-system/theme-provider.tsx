@@ -1,15 +1,21 @@
 /**
  * ThemeProvider - 主题上下文
- * 
+ *
  * 提供主题切换功能
  */
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { IGridTheme } from '../configs/gridTheme';
-import { lightTheme } from '../configs/gridTheme.refactored';
-import { darkTheme } from './dark-theme';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import type { IGridTheme } from "../configs/gridTheme";
+import { lightTheme } from "../configs/gridTheme.refactored";
+import { darkTheme } from "./dark-theme";
 
-type ThemeMode = 'light' | 'dark' | 'system';
+type ThemeMode = "light" | "dark" | "system";
 
 interface ThemeContextType {
   theme: IGridTheme;
@@ -30,9 +36,13 @@ interface ThemeProviderProps {
 /**
  * 检测系统主题
  */
-function getSystemTheme(): 'light' | 'dark' {
-  if (typeof window === 'undefined') {return 'light';}
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+function getSystemTheme(): "light" | "dark" {
+  if (typeof window === "undefined") {
+    return "light";
+  }
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
 }
 
 /**
@@ -40,62 +50,67 @@ function getSystemTheme(): 'light' | 'dark' {
  */
 export function ThemeProvider({
   children,
-  defaultMode = 'system',
-  storageKey = 'grid-theme-mode',
+  defaultMode = "system",
+  storageKey = "grid-theme-mode",
 }: ThemeProviderProps) {
   const [mode, setModeState] = useState<ThemeMode>(() => {
     // 从 localStorage 读取
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const stored = localStorage.getItem(storageKey);
-      if (stored === 'light' || stored === 'dark' || stored === 'system') {
+      if (stored === "light" || stored === "dark" || stored === "system") {
         return stored;
       }
     }
     return defaultMode;
   });
 
-  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(getSystemTheme);
+  const [systemTheme, setSystemTheme] = useState<"light" | "dark">(
+    getSystemTheme,
+  );
 
   // 监听系统主题变化
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
     const handleChange = (e: MediaQueryListEvent) => {
-      setSystemTheme(e.matches ? 'dark' : 'light');
+      setSystemTheme(e.matches ? "dark" : "light");
     };
 
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
   // 计算当前实际主题
-  const actualTheme = mode === 'system' ? systemTheme : mode;
-  const isDark = actualTheme === 'dark';
-  const theme = isDark ? darkTheme as IGridTheme : lightTheme;
+  const actualTheme = mode === "system" ? systemTheme : mode;
+  const isDark = actualTheme === "dark";
+  const theme = isDark ? (darkTheme as IGridTheme) : lightTheme;
 
   // 设置主题模式
-  const setMode = useCallback((newMode: ThemeMode) => {
-    setModeState(newMode);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(storageKey, newMode);
-    }
-  }, [storageKey]);
+  const setMode = useCallback(
+    (newMode: ThemeMode) => {
+      setModeState(newMode);
+      if (typeof window !== "undefined") {
+        localStorage.setItem(storageKey, newMode);
+      }
+    },
+    [storageKey],
+  );
 
   // 切换主题
   const toggleTheme = useCallback(() => {
-    setMode(isDark ? 'light' : 'dark');
+    setMode(isDark ? "light" : "dark");
   }, [isDark, setMode]);
 
   // 应用 CSS 变量到 document
   useEffect(() => {
     const root = document.documentElement;
-    
+
     if (isDark) {
-      root.classList.add('dark');
-      root.style.colorScheme = 'dark';
+      root.classList.add("dark");
+      root.style.colorScheme = "dark";
     } else {
-      root.classList.remove('dark');
-      root.style.colorScheme = 'light';
+      root.classList.remove("dark");
+      root.style.colorScheme = "light";
     }
   }, [isDark]);
 
@@ -107,7 +122,9 @@ export function ThemeProvider({
     isDark,
   };
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }
 
 /**
@@ -116,7 +133,7 @@ export function ThemeProvider({
 export function useTheme(): ThemeContextType {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useTheme must be used within ThemeProvider');
+    throw new Error("useTheme must be used within ThemeProvider");
   }
   return context;
 }
@@ -135,8 +152,8 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
     <button
       onClick={toggleTheme}
       className={className}
-      aria-label={isDark ? '切换到亮色模式' : '切换到暗色模式'}
-      title={isDark ? '切换到亮色模式' : '切换到暗色模式'}
+      aria-label={isDark ? "切换到亮色模式" : "切换到暗色模式"}
+      title={isDark ? "切换到亮色模式" : "切换到暗色模式"}
     >
       {isDark ? (
         // Sun icon (light mode)
@@ -173,4 +190,3 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
     </button>
   );
 }
-

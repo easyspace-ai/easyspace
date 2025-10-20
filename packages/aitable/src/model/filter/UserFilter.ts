@@ -3,9 +3,9 @@
  * 用户字段过滤器
  */
 
-import { BaseFilter, type IFilterConfig } from './BaseFilter';
-import type { Field } from '../field/Field';
-import type { RecordModel } from '../record/Record';
+import { BaseFilter, type IFilterConfig } from "./BaseFilter";
+import type { Field } from "../field/Field";
+import type { RecordModel } from "../record/Record";
 
 export class UserFilter extends BaseFilter {
   constructor(field: Field, config: IFilterConfig) {
@@ -16,17 +16,17 @@ export class UserFilter extends BaseFilter {
     const { operator } = this.config;
 
     switch (operator) {
-      case 'isEmpty':
+      case "isEmpty":
         return this.matchIsEmpty(record);
-      case 'isNotEmpty':
+      case "isNotEmpty":
         return this.matchIsNotEmpty(record);
-      case 'is':
+      case "is":
         return this.matchIs(record);
-      case 'isNot':
+      case "isNot":
         return !this.matchIs(record);
-      case 'isAnyOf':
+      case "isAnyOf":
         return this.matchIsAnyOf(record);
-      case 'isNoneOf':
+      case "isNoneOf":
         return this.matchIsNoneOf(record);
       default:
         return false;
@@ -37,69 +37,73 @@ export class UserFilter extends BaseFilter {
     const { operator, value } = this.config;
     const fieldName = this.field.name;
     const valueArray = Array.isArray(value) ? value : [value];
-    const valueText = valueArray.join(', ');
+    const valueText = valueArray.join(", ");
 
     switch (operator) {
-      case 'isEmpty':
+      case "isEmpty":
         return `${fieldName} 为空`;
-      case 'isNotEmpty':
+      case "isNotEmpty":
         return `${fieldName} 不为空`;
-      case 'is':
+      case "is":
         return `${fieldName} 是 "${valueText}"`;
-      case 'isNot':
+      case "isNot":
         return `${fieldName} 不是 "${valueText}"`;
-      case 'isAnyOf':
+      case "isAnyOf":
         return `${fieldName} 是以下任一: ${valueText}`;
-      case 'isNoneOf':
+      case "isNoneOf":
         return `${fieldName} 不是以下任一: ${valueText}`;
       default:
-        return '';
+        return "";
     }
   }
 
   private getUserIds(record: RecordModel): string[] {
     const value = this.getValue(record);
-    
-    if (this.isEmpty(value)) {return [];}
-    
-    if (Array.isArray(value)) {
-      return value.map(v => String(v));
+
+    if (this.isEmpty(value)) {
+      return [];
     }
-    
+
+    if (Array.isArray(value)) {
+      return value.map((v) => String(v));
+    }
+
     return [String(value)];
   }
 
   private getFilterUserIds(): string[] {
     const { value } = this.config;
-    
+
     if (Array.isArray(value)) {
-      return value.map(v => String(v));
+      return value.map((v) => String(v));
     }
-    
+
     return [String(value)];
   }
 
   private matchIs(record: RecordModel): boolean {
     const userIds = this.getUserIds(record);
     const filterUserId = String(this.config.value);
-    
-    if (userIds.length === 0) {return false;}
-    
+
+    if (userIds.length === 0) {
+      return false;
+    }
+
     return userIds.length === 1 && userIds[0] === filterUserId;
   }
 
   private matchIsAnyOf(record: RecordModel): boolean {
     const userIds = this.getUserIds(record);
     const filterUserIds = this.getFilterUserIds();
-    
-    if (userIds.length === 0) {return false;}
-    
-    return userIds.some(id => filterUserIds.includes(id));
+
+    if (userIds.length === 0) {
+      return false;
+    }
+
+    return userIds.some((id) => filterUserIds.includes(id));
   }
 
   private matchIsNoneOf(record: RecordModel): boolean {
     return !this.matchIsAnyOf(record);
   }
 }
-
-

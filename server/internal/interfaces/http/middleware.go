@@ -16,23 +16,28 @@ import (
 // JWTAuthMiddleware JWT认证中间件
 func JWTAuthMiddleware(authService *application.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 从 Authorization header 获取 token
+		var token string
+
+		// 优先从 Authorization header 获取 token
 		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
+		if authHeader != "" {
+			// 提取 Bearer token
+			parts := strings.SplitN(authHeader, " ", 2)
+			if len(parts) == 2 && parts[0] == "Bearer" {
+				token = parts[1]
+			}
+		}
+
+		// 如果 header 中没有，尝试从查询参数获取（用于 WebSocket 连接）
+		if token == "" {
+			token = c.Query("token")
+		}
+
+		if token == "" {
 			response.Error(c, errors.ErrUnauthorized.WithDetails("缺少认证信息"))
 			c.Abort()
 			return
 		}
-
-		// 提取 Bearer token
-		parts := strings.SplitN(authHeader, " ", 2)
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			response.Error(c, errors.ErrUnauthorized.WithDetails("认证格式错误"))
-			c.Abort()
-			return
-		}
-
-		token := parts[1]
 
 		// 验证 token
 		claims, err := authService.ValidateToken(c.Request.Context(), token)

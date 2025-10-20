@@ -3,9 +3,9 @@
  * 强类型的状态管理类型系统
  */
 
-import type { FieldType } from '../types/core/field-types';
-import type { CellValue } from '../types/core/cell-values';
-import type { Field } from '../model/field/Field';
+import type { FieldType } from "../types/core/field-types";
+import type { CellValue } from "../types/core/cell-values";
+import type { Field } from "../model/field/Field";
 
 // ============= 基础数据模型 =============
 
@@ -84,13 +84,13 @@ export interface View {
 /**
  * View 类型
  */
-export type ViewType = 'grid' | 'kanban' | 'calendar' | 'gallery' | 'form';
+export type ViewType = "grid" | "kanban" | "calendar" | "gallery" | "form";
 
 /**
  * Filter 配置
  */
 export interface FilterConfig {
-  readonly conjunction: 'and' | 'or';
+  readonly conjunction: "and" | "or";
   readonly conditions: FilterCondition[];
 }
 
@@ -107,23 +107,23 @@ export interface FilterCondition {
  * Filter 操作符
  */
 export type FilterOperator =
-  | 'is'
-  | 'isNot'
-  | 'contains'
-  | 'doesNotContain'
-  | 'isEmpty'
-  | 'isNotEmpty'
-  | 'greaterThan'
-  | 'lessThan'
-  | 'greaterThanOrEqual'
-  | 'lessThanOrEqual';
+  | "is"
+  | "isNot"
+  | "contains"
+  | "doesNotContain"
+  | "isEmpty"
+  | "isNotEmpty"
+  | "greaterThan"
+  | "lessThan"
+  | "greaterThanOrEqual"
+  | "lessThanOrEqual";
 
 /**
  * Sort 配置
  */
 export interface SortConfig {
   readonly fieldId: string;
-  readonly order: 'asc' | 'desc';
+  readonly order: "asc" | "desc";
 }
 
 /**
@@ -221,8 +221,14 @@ export interface DataSlice {
   loadRecords: (tableId: string, viewId?: string) => Promise<void>;
 
   // Data Operations
-  createRecord: (tableId: string, fields: Record<string, CellValue>) => Promise<TypedRecord>;
-  updateRecord: (recordId: string, fields: Record<string, CellValue>) => Promise<TypedRecord>;
+  createRecord: (
+    tableId: string,
+    fields: Record<string, CellValue>,
+  ) => Promise<TypedRecord>;
+  updateRecord: (
+    recordId: string,
+    fields: Record<string, CellValue>,
+  ) => Promise<TypedRecord>;
   deleteRecord: (recordId: string) => Promise<void>;
   deleteRecords: (recordIds: string[]) => Promise<void>;
 }
@@ -266,8 +272,8 @@ export interface UISlice {
   showContextMenu: (menu: ContextMenuState) => void;
   hideContextMenu: () => void;
 
-  showDialog: (dialog: keyof UISlice['dialogs']) => void;
-  hideDialog: (dialog: keyof UISlice['dialogs']) => void;
+  showDialog: (dialog: keyof UISlice["dialogs"]) => void;
+  hideDialog: (dialog: keyof UISlice["dialogs"]) => void;
 }
 
 /**
@@ -277,7 +283,7 @@ export interface ContextMenuState {
   readonly visible: boolean;
   readonly x: number;
   readonly y: number;
-  readonly type: 'cell' | 'row' | 'column' | 'header';
+  readonly type: "cell" | "row" | "column" | "header";
   readonly target: {
     rowIndex?: number;
     colIndex?: number;
@@ -354,4 +360,3 @@ export type StoreSelector<T> = (state: GridStore) => T;
  * Store Subscriber
  */
 export type StoreSubscriber<T> = (state: T, prevState: T) => void;
-

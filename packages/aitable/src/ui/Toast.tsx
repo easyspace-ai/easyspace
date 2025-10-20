@@ -1,6 +1,6 @@
 /**
  * Toast 通知系统
- * 
+ *
  * 设计原则：
  * 1. 微妙但明确的反馈
  * 2. 自动消失（不打断用户）
@@ -8,12 +8,18 @@
  * 4. 优雅的动画进出
  */
 
-import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
-import { createPortal } from 'react-dom';
-import { cn, tokens, elevation } from '../grid/design-system';
-import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  createContext,
+  useContext,
+} from "react";
+import { createPortal } from "react-dom";
+import { cn, tokens, elevation } from "../grid/design-system";
+import { CheckCircle, XCircle, AlertCircle, Info, X } from "lucide-react";
 
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
+export type ToastType = "success" | "error" | "warning" | "info";
 
 export interface ToastItem {
   id: string;
@@ -25,7 +31,7 @@ export interface ToastItem {
 }
 
 interface ToastContextValue {
-  showToast: (toast: Omit<ToastItem, 'id'>) => void;
+  showToast: (toast: Omit<ToastItem, "id">) => void;
   hideToast: (id: string) => void;
 }
 
@@ -56,7 +62,7 @@ export function useToast() {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
-  const showToast = useCallback((toast: Omit<ToastItem, 'id'>) => {
+  const showToast = useCallback((toast: Omit<ToastItem, "id">) => {
     const id = `toast-${Date.now()}-${Math.random()}`;
     const newToast: ToastItem = {
       id,
@@ -95,7 +101,7 @@ interface ToastContainerProps {
 }
 
 function ToastContainer({ toasts, onClose }: ToastContainerProps) {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
 
   return createPortal(
     <div
@@ -107,7 +113,7 @@ function ToastContainer({ toasts, onClose }: ToastContainerProps) {
         <Toast key={toast.id} toast={toast} onClose={onClose} />
       ))}
     </div>,
-    document.body
+    document.body,
   );
 }
 
@@ -130,7 +136,10 @@ function Toast({ toast, onClose }: ToastProps) {
   }, [toast.id, onClose]);
 
   // 图标配置
-  const iconConfig: Record<ToastType, { icon: React.ReactNode; color: string; bgColor: string }> = {
+  const iconConfig: Record<
+    ToastType,
+    { icon: React.ReactNode; color: string; bgColor: string }
+  > = {
     success: {
       icon: toast.icon || <CheckCircle size={20} />,
       color: tokens.colors.text.success,
@@ -159,15 +168,15 @@ function Toast({ toast, onClose }: ToastProps) {
     <div
       role="alert"
       className={cn(
-        'pointer-events-auto',
-        'flex items-start gap-3 p-4 pr-3',
-        'min-w-[320px] max-w-[420px]',
-        'bg-white rounded-lg border shadow-lg',
-        'transition-all duration-200 ease-out',
+        "pointer-events-auto",
+        "flex items-start gap-3 p-4 pr-3",
+        "min-w-[320px] max-w-[420px]",
+        "bg-white rounded-lg border shadow-lg",
+        "transition-all duration-200 ease-out",
         // 进入动画
-        !isExiting && 'animate-in slide-in-from-right-8 fade-in-0',
+        !isExiting && "animate-in slide-in-from-right-8 fade-in-0",
         // 退出动画
-        isExiting && 'animate-out slide-out-to-right-8 fade-out-0',
+        isExiting && "animate-out slide-out-to-right-8 fade-out-0",
       )}
       style={{
         backgroundColor: tokens.colors.surface.base,
@@ -208,9 +217,9 @@ function Toast({ toast, onClose }: ToastProps) {
       <button
         onClick={handleClose}
         className={cn(
-          'flex-shrink-0 p-1 rounded-md',
-          'transition-colors duration-150',
-          'hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500'
+          "flex-shrink-0 p-1 rounded-md",
+          "transition-colors duration-150",
+          "hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500",
         )}
         style={{
           color: tokens.colors.text.tertiary,
@@ -234,23 +243,27 @@ export function setToastEmitter(emitter: ToastContextValue) {
 
 export const toast = {
   success: (message: string, title?: string) => {
-    toastEmitter?.showToast({ type: 'success', message, title });
+    toastEmitter?.showToast({ type: "success", message, title });
   },
   error: (message: string, title?: string) => {
-    toastEmitter?.showToast({ type: 'error', message, title });
+    toastEmitter?.showToast({ type: "error", message, title });
   },
   warning: (message: string, title?: string) => {
-    toastEmitter?.showToast({ type: 'warning', message, title });
+    toastEmitter?.showToast({ type: "warning", message, title });
   },
   info: (message: string, title?: string) => {
-    toastEmitter?.showToast({ type: 'info', message, title });
+    toastEmitter?.showToast({ type: "info", message, title });
   },
 };
 
 /**
  * 包装 ToastProvider 以支持全局 toast API
  */
-export function ToastProviderWithEmitter({ children }: { children: React.ReactNode }) {
+export function ToastProviderWithEmitter({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <ToastProvider>
       <ToastEmitterSetup />
@@ -261,14 +274,13 @@ export function ToastProviderWithEmitter({ children }: { children: React.ReactNo
 
 function ToastEmitterSetup() {
   const toastContext = useToast();
-  
+
   useEffect(() => {
     setToastEmitter(toastContext);
     return () => {
       setToastEmitter(null);
     };
   }, [toastContext]);
-  
+
   return null;
 }
-

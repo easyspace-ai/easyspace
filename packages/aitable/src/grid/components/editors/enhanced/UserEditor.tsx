@@ -1,16 +1,23 @@
-import React, { useState, useMemo, useCallback, useRef, useEffect, type FC } from 'react';
-import Fuse from 'fuse.js';
-import type { IUserEditorProps, IUserInfo } from '../../../types/editor';
-import { useGridPopupPosition } from '../../../hooks/business/useGridPopupPosition';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+  type FC,
+} from "react";
+import Fuse from "fuse.js";
+import type { IUserEditorProps, IUserInfo } from "../../../types/editor";
+import { useGridPopupPosition } from "../../../hooks/business/useGridPopupPosition";
 
 /**
  * Get user initials for avatar
  */
 const getUserInitials = (name: string): string => {
   return name
-    .split(' ')
+    .split(" ")
     .map((part) => part[0])
-    .join('')
+    .join("")
     .toUpperCase()
     .slice(0, 2);
 };
@@ -20,13 +27,28 @@ const getUserInitials = (name: string): string => {
  */
 const getAvatarColor = (name: string): string => {
   const colors = [
-    '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16',
-    '#22c55e', '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9',
-    '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef',
-    '#ec4899', '#f43f5e',
+    "#ef4444",
+    "#f97316",
+    "#f59e0b",
+    "#eab308",
+    "#84cc16",
+    "#22c55e",
+    "#10b981",
+    "#14b8a6",
+    "#06b6d4",
+    "#0ea5e9",
+    "#3b82f6",
+    "#6366f1",
+    "#8b5cf6",
+    "#a855f7",
+    "#d946ef",
+    "#ec4899",
+    "#f43f5e",
   ];
-  
-  const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+  const hash = name
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return colors[hash % colors.length];
 };
 
@@ -47,29 +69,34 @@ export const UserEditor: FC<IUserEditorProps> = ({
   style,
   rect,
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Initialize fuse.js for user search
   const fuse = useMemo(
     () =>
-      new Fuse(users || [], { // 添加防御性检查
-        keys: ['name', 'email'],
+      new Fuse(users || [], {
+        // 添加防御性检查
+        keys: ["name", "email"],
         threshold: 0.3,
         includeScore: true,
       }),
-    [users]
+    [users],
   );
 
   // Filter users based on search query
   const filteredUsers = useMemo(() => {
-    if (!searchQuery) {return users || [];} // 添加防御性检查
+    if (!searchQuery) {
+      return users || [];
+    } // 添加防御性检查
     return fuse.search(searchQuery).map((result) => result.item);
   }, [users, fuse, searchQuery]);
 
   // Get selected user IDs as array
   const selectedUserIds = useMemo(() => {
-    if (!value) {return [];}
+    if (!value) {
+      return [];
+    }
     return Array.isArray(value) ? value : [value];
   }, [value]);
 
@@ -81,13 +108,15 @@ export const UserEditor: FC<IUserEditorProps> = ({
   // Check if user is selected
   const isSelected = useCallback(
     (userId: string) => selectedUserIds.includes(userId),
-    [selectedUserIds]
+    [selectedUserIds],
   );
 
   // Handle user selection
   const handleSelect = useCallback(
     (userId: string) => {
-      if (readonly) {return;}
+      if (readonly) {
+        return;
+      }
 
       if (multiple) {
         const newValue = isSelected(userId)
@@ -99,25 +128,25 @@ export const UserEditor: FC<IUserEditorProps> = ({
         onSave?.();
       }
     },
-    [readonly, multiple, isSelected, selectedUserIds, onChange, onSave]
+    [readonly, multiple, isSelected, selectedUserIds, onChange, onSave],
   );
 
   // Handle keyboard shortcuts
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter') {
+      if (e.key === "Enter") {
         e.preventDefault();
         if (filteredUsers.length === 1) {
           handleSelect(filteredUsers[0].id);
         } else {
           onSave?.();
         }
-      } else if (e.key === 'Escape') {
+      } else if (e.key === "Escape") {
         e.preventDefault();
         onCancel?.();
       }
     },
-    [filteredUsers, handleSelect, onSave, onCancel]
+    [filteredUsers, handleSelect, onSave, onCancel],
   );
 
   // Calculate popup position if rect is provided
@@ -132,18 +161,18 @@ export const UserEditor: FC<IUserEditorProps> = ({
     <div
       className={className}
       style={{
-        position: 'absolute',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-        padding: '8px',
-        backgroundColor: '#ffffff',
-        border: '1px solid #d1d5db',
-        borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        position: "absolute",
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        padding: "8px",
+        backgroundColor: "#ffffff",
+        border: "1px solid #d1d5db",
+        borderRadius: "8px",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
         zIndex: 1000,
-        minWidth: '280px',
-        maxWidth: '360px',
+        minWidth: "280px",
+        maxWidth: "360px",
         ...popupPosition,
         ...style,
       }}
@@ -152,12 +181,12 @@ export const UserEditor: FC<IUserEditorProps> = ({
       {selectedUsers.length > 0 && multiple && (
         <div
           style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '6px',
-            padding: '8px',
-            backgroundColor: '#f9fafb',
-            borderRadius: '6px',
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "6px",
+            padding: "8px",
+            backgroundColor: "#f9fafb",
+            borderRadius: "6px",
           }}
         >
           {selectedUsers.map((user) => {
@@ -166,14 +195,14 @@ export const UserEditor: FC<IUserEditorProps> = ({
               <div
                 key={user.id}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '4px 8px',
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '16px',
-                  fontSize: '12px',
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "4px 8px",
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "16px",
+                  fontSize: "12px",
                 }}
               >
                 {/* Avatar */}
@@ -182,24 +211,24 @@ export const UserEditor: FC<IUserEditorProps> = ({
                     src={user.avatar}
                     alt={user.name}
                     style={{
-                      width: '20px',
-                      height: '20px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
                     }}
                   />
                 ) : (
                   <div
                     style={{
-                      width: '20px',
-                      height: '20px',
-                      borderRadius: '50%',
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "50%",
                       backgroundColor: avatarColor,
-                      color: '#ffffff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '10px',
+                      color: "#ffffff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "10px",
                       fontWeight: 600,
                     }}
                   >
@@ -214,17 +243,17 @@ export const UserEditor: FC<IUserEditorProps> = ({
                   <button
                     onClick={() => handleSelect(user.id)}
                     style={{
-                      width: '16px',
-                      height: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: 'none',
-                      borderRadius: '50%',
-                      backgroundColor: 'transparent',
-                      cursor: 'pointer',
-                      fontSize: '12px',
-                      color: '#9ca3af',
+                      width: "16px",
+                      height: "16px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "none",
+                      borderRadius: "50%",
+                      backgroundColor: "transparent",
+                      cursor: "pointer",
+                      fontSize: "12px",
+                      color: "#9ca3af",
                     }}
                   >
                     ×
@@ -247,11 +276,11 @@ export const UserEditor: FC<IUserEditorProps> = ({
           placeholder="Search users..."
           disabled={readonly}
           style={{
-            padding: '6px 8px',
-            border: '1px solid #d1d5db',
-            borderRadius: '4px',
-            fontSize: '13px',
-            outline: 'none',
+            padding: "6px 8px",
+            border: "1px solid #d1d5db",
+            borderRadius: "4px",
+            fontSize: "13px",
+            outline: "none",
           }}
         />
       )}
@@ -259,11 +288,11 @@ export const UserEditor: FC<IUserEditorProps> = ({
       {/* Users list */}
       <div
         style={{
-          maxHeight: '280px',
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '2px',
+          maxHeight: "280px",
+          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: "2px",
         }}
       >
         {filteredUsers.map((user) => {
@@ -275,41 +304,49 @@ export const UserEditor: FC<IUserEditorProps> = ({
               key={user.id}
               onClick={() => handleSelect(user.id)}
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '8px',
-                borderRadius: '6px',
-                cursor: readonly ? 'not-allowed' : 'pointer',
-                backgroundColor: selected ? '#dbeafe' : 'transparent',
-                transition: 'background-color 0.15s',
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                padding: "8px",
+                borderRadius: "6px",
+                cursor: readonly ? "not-allowed" : "pointer",
+                backgroundColor: selected ? "#dbeafe" : "transparent",
+                transition: "background-color 0.15s",
               }}
               onMouseEnter={(e) => {
                 if (!readonly) {
-                  e.currentTarget.style.backgroundColor = selected ? '#bfdbfe' : '#f3f4f6';
+                  e.currentTarget.style.backgroundColor = selected
+                    ? "#bfdbfe"
+                    : "#f3f4f6";
                 }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = selected ? '#dbeafe' : 'transparent';
+                e.currentTarget.style.backgroundColor = selected
+                  ? "#dbeafe"
+                  : "transparent";
               }}
             >
               {/* Checkbox for multiple selection */}
               {multiple && (
                 <div
                   style={{
-                    width: '16px',
-                    height: '16px',
-                    border: '2px solid #d1d5db',
-                    borderRadius: '2px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: selected ? '#3b82f6' : '#ffffff',
-                    borderColor: selected ? '#3b82f6' : '#d1d5db',
+                    width: "16px",
+                    height: "16px",
+                    border: "2px solid #d1d5db",
+                    borderRadius: "2px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: selected ? "#3b82f6" : "#ffffff",
+                    borderColor: selected ? "#3b82f6" : "#d1d5db",
                     flexShrink: 0,
                   }}
                 >
-                  {selected && <span style={{ color: '#ffffff', fontSize: '11px' }}>✓</span>}
+                  {selected && (
+                    <span style={{ color: "#ffffff", fontSize: "11px" }}>
+                      ✓
+                    </span>
+                  )}
                 </div>
               )}
 
@@ -319,25 +356,25 @@ export const UserEditor: FC<IUserEditorProps> = ({
                   src={user.avatar}
                   alt={user.name}
                   style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    objectFit: 'cover',
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
                     flexShrink: 0,
                   }}
                 />
               ) : (
                 <div
                   style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "50%",
                     backgroundColor: avatarColor,
-                    color: '#ffffff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '13px',
+                    color: "#ffffff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "13px",
                     fontWeight: 600,
                     flexShrink: 0,
                   }}
@@ -350,12 +387,12 @@ export const UserEditor: FC<IUserEditorProps> = ({
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div
                   style={{
-                    fontSize: '13px',
+                    fontSize: "13px",
                     fontWeight: 500,
-                    color: '#374151',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
+                    color: "#374151",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   {user.name}
@@ -363,11 +400,11 @@ export const UserEditor: FC<IUserEditorProps> = ({
                 {user.email && (
                   <div
                     style={{
-                      fontSize: '12px',
-                      color: '#9ca3af',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
+                      fontSize: "12px",
+                      color: "#9ca3af",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
                     }}
                   >
                     {user.email}
@@ -382,10 +419,10 @@ export const UserEditor: FC<IUserEditorProps> = ({
         {filteredUsers.length === 0 && (
           <div
             style={{
-              padding: '16px',
-              textAlign: 'center',
-              color: '#9ca3af',
-              fontSize: '13px',
+              padding: "16px",
+              textAlign: "center",
+              color: "#9ca3af",
+              fontSize: "13px",
             }}
           >
             No users found
@@ -397,23 +434,23 @@ export const UserEditor: FC<IUserEditorProps> = ({
       {multiple && (
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '8px',
-            paddingTop: '8px',
-            borderTop: '1px solid #e5e7eb',
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "8px",
+            paddingTop: "8px",
+            borderTop: "1px solid #e5e7eb",
           }}
         >
           <button
             onClick={onCancel}
             style={{
-              padding: '6px 12px',
-              fontSize: '13px',
-              color: '#6b7280',
-              backgroundColor: '#f3f4f6',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
+              padding: "6px 12px",
+              fontSize: "13px",
+              color: "#6b7280",
+              backgroundColor: "#f3f4f6",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
             }}
           >
             Cancel
@@ -422,13 +459,13 @@ export const UserEditor: FC<IUserEditorProps> = ({
             onClick={onSave}
             disabled={readonly}
             style={{
-              padding: '6px 16px',
-              fontSize: '13px',
-              color: '#ffffff',
-              backgroundColor: '#3b82f6',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: readonly ? 'not-allowed' : 'pointer',
+              padding: "6px 16px",
+              fontSize: "13px",
+              color: "#ffffff",
+              backgroundColor: "#3b82f6",
+              border: "none",
+              borderRadius: "4px",
+              cursor: readonly ? "not-allowed" : "pointer",
               opacity: readonly ? 0.5 : 1,
             }}
           >
@@ -439,4 +476,3 @@ export const UserEditor: FC<IUserEditorProps> = ({
     </div>
   );
 };
-

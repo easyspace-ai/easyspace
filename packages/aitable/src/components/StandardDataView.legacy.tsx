@@ -1,14 +1,20 @@
-import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
-import type { IGridProps, IGridRef } from '../grid/core/Grid';
-import { Grid } from '../grid/core/Grid';
-import { GridErrorBoundary } from '../grid/error-handling/GridErrorBoundary';
-import { GridToolbar as RefactoredToolbar } from '../grid/components/toolbar/GridToolbar.refactored';
-import { cn, tokens, transitions, elevation } from '../grid/design-system';
-import { LoadingState, EmptyState, ErrorState } from './states';
-import type { EmptyStateProps, ErrorStateProps } from './states';
-import { getDeviceType, isTouchDevice } from './utils/responsive';
-import { createAdapter } from '../api/sdk-adapter';
+import React, {
+  useMemo,
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
+import { createPortal } from "react-dom";
+import type { IGridProps, IGridRef } from "../grid/core/Grid";
+import { Grid } from "../grid/core/Grid";
+import { GridErrorBoundary } from "../grid/error-handling/GridErrorBoundary";
+import { GridToolbar as RefactoredToolbar } from "../grid/components/toolbar/GridToolbar.refactored";
+import { cn, tokens, transitions, elevation } from "../grid/design-system";
+import { LoadingState, EmptyState, ErrorState } from "./states";
+import type { EmptyStateProps, ErrorStateProps } from "./states";
+import { getDeviceType, isTouchDevice } from "./utils/responsive";
+import { createAdapter } from "../api/sdk-adapter";
 import {
   FieldConfigPanel,
   FieldConfigCombobox,
@@ -17,9 +23,13 @@ import {
   type FieldConfig,
   type FieldConfigPanelProps,
   type FieldConfigComboboxProps,
-} from './field-config';
-import { AddRecordDialog, type AddRecordDialogProps } from './add-record';
-import { RowHeightCombobox, type RowHeight, type RowHeightComboboxProps } from './row-height';
+} from "./field-config";
+import { AddRecordDialog, type AddRecordDialogProps } from "./add-record";
+import {
+  RowHeightCombobox,
+  type RowHeight,
+  type RowHeightComboboxProps,
+} from "./row-height";
 // Lucide 图标
 import {
   Table,
@@ -34,7 +44,7 @@ import {
   Settings,
   Undo2,
   Redo2,
-} from 'lucide-react';
+} from "lucide-react";
 
 export interface StandardToolbarConfig {
   showUndoRedo?: boolean;
@@ -51,7 +61,7 @@ export interface StandardToolbarConfig {
   showCollaboration?: boolean;
 }
 
-export type DataViewState = 'idle' | 'loading' | 'empty' | 'error';
+export type DataViewState = "idle" | "loading" | "empty" | "error";
 
 export interface StandardDataViewProps {
   // Data state
@@ -110,12 +120,12 @@ export interface StandardDataViewProps {
     fieldType: string,
     insertIndex?: number,
     fieldName?: string,
-    options?: any
+    options?: any,
   ) => void; // 添加新列（用于 AddFieldMenu）
   onEditColumn?: (columnIndex: number, updatedColumn: any) => void; // 编辑字段（用于 EditFieldMenu）
   onDeleteColumn?: (columnIndex: number) => void; // 删除字段（用于右键菜单）
   onUpdateField?: (fieldName: string, fieldType: string) => void; // 更新字段
-  fieldConfigMode?: 'panel' | 'combobox'; // 字段配置模式：面板或下拉框
+  fieldConfigMode?: "panel" | "combobox"; // 字段配置模式：面板或下拉框
 
   // 行高配置 - 新增
   rowHeight?: RowHeight; // 当前行高设置（不传则组件内部管理）
@@ -138,8 +148,8 @@ export interface StandardDataViewProps {
 }
 
 const DEFAULT_TABS: Array<{ key: string; label: string }> = [
-  { key: 'table', label: '表' },
-  { key: 'chart', label: '示图' },
+  { key: "table", label: "表" },
+  { key: "chart", label: "示图" },
 ];
 
 const DEFAULT_TOOLBAR: Required<StandardToolbarConfig> = {
@@ -159,7 +169,7 @@ const DEFAULT_TOOLBAR: Required<StandardToolbarConfig> = {
 
 export function StandardDataView(props: StandardDataViewProps) {
   const {
-    state = 'idle',
+    state = "idle",
     loadingMessage,
     emptyStateProps,
     errorStateProps,
@@ -167,7 +177,7 @@ export function StandardDataView(props: StandardDataViewProps) {
     showToolbar = true,
     showStatus = true,
     tabs = DEFAULT_TABS,
-    defaultTabKey = 'table',
+    defaultTabKey = "table",
     onAdd,
     // 视图管理参数
     views,
@@ -195,9 +205,9 @@ export function StandardDataView(props: StandardDataViewProps) {
     onEditColumn,
     onDeleteColumn,
     onUpdateField,
-    fieldConfigMode = 'combobox', // 默认使用 combobox 模式
+    fieldConfigMode = "combobox", // 默认使用 combobox 模式
     // 行高配置参数
-    rowHeight = 'medium',
+    rowHeight = "medium",
     onRowHeightChange,
     toolbarConfig,
     onToolbar,
@@ -209,7 +219,9 @@ export function StandardDataView(props: StandardDataViewProps) {
 
   const gridRef = useRef<IGridRef>(null);
   const [activeKey, setActiveKey] = useState<string>(defaultTabKey);
-  const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
+  const [deviceType, setDeviceType] = useState<"mobile" | "tablet" | "desktop">(
+    "desktop",
+  );
   const [isTouch, setIsTouch] = useState(false);
 
   // 列宽状态管理（使用列ID作为key，不依赖列顺序）
@@ -234,7 +246,7 @@ export function StandardDataView(props: StandardDataViewProps) {
         onViewChange(viewId);
       }
     },
-    [onViewChange]
+    [onViewChange],
   );
 
   const handleCreateView = useCallback(
@@ -244,7 +256,7 @@ export function StandardDataView(props: StandardDataViewProps) {
       }
       setShowCreateViewMenu(false);
     },
-    [onCreateView]
+    [onCreateView],
   );
 
   // 字段配置处理函数
@@ -254,7 +266,7 @@ export function StandardDataView(props: StandardDataViewProps) {
         onFieldToggle(fieldId, visible);
       }
     },
-    [onFieldToggle]
+    [onFieldToggle],
   );
 
   const handleFieldReorder = useCallback(
@@ -263,7 +275,7 @@ export function StandardDataView(props: StandardDataViewProps) {
         onFieldReorder(fromIndex, toIndex);
       }
     },
-    [onFieldReorder]
+    [onFieldReorder],
   );
 
   const handleFieldEdit = useCallback(
@@ -277,7 +289,7 @@ export function StandardDataView(props: StandardDataViewProps) {
         onFieldEdit(fieldId);
       }
     },
-    [fields, onFieldEdit]
+    [fields, onFieldEdit],
   );
 
   const handleFieldDelete = useCallback(
@@ -286,7 +298,7 @@ export function StandardDataView(props: StandardDataViewProps) {
         onFieldDelete(fieldId);
       }
     },
-    [onFieldDelete]
+    [onFieldDelete],
   );
 
   const handleFieldGroup = useCallback(
@@ -295,12 +307,12 @@ export function StandardDataView(props: StandardDataViewProps) {
         onFieldGroup(fieldId);
       }
     },
-    [onFieldGroup]
+    [onFieldGroup],
   );
 
   const handleAddField = useCallback(
     async (fieldName: string, fieldType: string, options?: any) => {
-      console.log('🔍 StandardDataView handleAddField 被调用:', {
+      console.log("🔍 StandardDataView handleAddField 被调用:", {
         fieldName,
         fieldType,
         hasOnAddField: !!onAddField,
@@ -313,7 +325,7 @@ export function StandardDataView(props: StandardDataViewProps) {
       // 默认对接 SDK：当未传入 onAddField 时，自动调用后端创建字段
       try {
         if (!tableId || !(sdk || apiClient)) {
-          console.error('❌ 缺少 sdk/apiClient 或 tableId，无法创建字段');
+          console.error("❌ 缺少 sdk/apiClient 或 tableId，无法创建字段");
           return;
         }
 
@@ -323,7 +335,7 @@ export function StandardDataView(props: StandardDataViewProps) {
           type: fieldType as any,
           options: options || {},
         } as any;
-        console.log('🛠️ 正在通过适配器创建字段:', payload);
+        console.log("🛠️ 正在通过适配器创建字段:", payload);
         await adapter.createField(tableId, payload);
 
         // 关闭弹窗
@@ -331,18 +343,23 @@ export function StandardDataView(props: StandardDataViewProps) {
 
         // 触发外部刷新
         gridProps.onDataRefresh?.();
-        console.log('✅ 字段创建成功并已刷新');
+        console.log("✅ 字段创建成功并已刷新");
       } catch (error) {
-        console.error('❌ 字段创建失败:', error);
+        console.error("❌ 字段创建失败:", error);
       }
     },
-    [onAddField, sdk, apiClient, tableId, gridProps]
+    [onAddField, sdk, apiClient, tableId, gridProps],
   );
 
   // Grid 组件的 onAddColumn 处理函数（表头 + 按钮添加字段）
   const handleGridAddColumn = useCallback(
-    async (fieldType: any, insertIndex?: number, fieldName?: string, options?: any) => {
-      console.log('🔍 StandardDataView handleGridAddColumn 被调用:', {
+    async (
+      fieldType: any,
+      insertIndex?: number,
+      fieldName?: string,
+      options?: any,
+    ) => {
+      console.log("🔍 StandardDataView handleGridAddColumn 被调用:", {
         fieldType,
         insertIndex,
         fieldName,
@@ -357,7 +374,7 @@ export function StandardDataView(props: StandardDataViewProps) {
       // 默认对接 SDK：当未传入 onAddColumn 时，自动调用后端创建字段
       try {
         if (!tableId || !(sdk || apiClient)) {
-          console.error('❌ 缺少 sdk/apiClient 或 tableId，无法创建字段');
+          console.error("❌ 缺少 sdk/apiClient 或 tableId，无法创建字段");
           return;
         }
 
@@ -367,23 +384,23 @@ export function StandardDataView(props: StandardDataViewProps) {
           type: fieldType,
           options: options || {},
         } as any;
-        console.log('🛠️ 正在通过 Grid 适配器创建字段:', payload);
+        console.log("🛠️ 正在通过 Grid 适配器创建字段:", payload);
         await adapter.createField(tableId, payload);
 
         // 触发外部刷新
         gridProps.onDataRefresh?.();
-        console.log('✅ Grid 字段创建成功并已刷新');
+        console.log("✅ Grid 字段创建成功并已刷新");
       } catch (error) {
-        console.error('❌ Grid 字段创建失败:', error);
+        console.error("❌ Grid 字段创建失败:", error);
       }
     },
-    [onAddColumn, sdk, apiClient, tableId, gridProps]
+    [onAddColumn, sdk, apiClient, tableId, gridProps],
   );
 
   // Grid 组件的列宽调整处理函数
   const handleColumnResize = useCallback(
     (column: any, newSize: number, colIndex: number) => {
-      console.log('🔍 StandardDataView handleColumnResize 被调用:', {
+      console.log("🔍 StandardDataView handleColumnResize 被调用:", {
         column: column.name,
         newSize,
         colIndex,
@@ -397,19 +414,21 @@ export function StandardDataView(props: StandardDataViewProps) {
       }
 
       // 默认行为：更新列宽状态（使用列ID作为key）
-      console.log(`📏 列 "${column.name}" (ID: ${column.id}) 宽度调整为: ${newSize}px`);
+      console.log(
+        `📏 列 "${column.name}" (ID: ${column.id}) 宽度调整为: ${newSize}px`,
+      );
       setColumnWidths((prev) => ({
         ...prev,
         [column.id]: newSize,
       }));
     },
-    [gridProps]
+    [gridProps],
   );
 
   // Grid 组件的列排序处理函数
   const handleColumnOrdered = useCallback(
     (dragColIndexCollection: number[], dropColIndex: number) => {
-      console.log('🔍 StandardDataView handleColumnOrdered 被调用:', {
+      console.log("🔍 StandardDataView handleColumnOrdered 被调用:", {
         dragColIndexCollection,
         dropColIndex,
       });
@@ -421,7 +440,9 @@ export function StandardDataView(props: StandardDataViewProps) {
       }
 
       // 默认行为：更新列顺序状态
-      console.log(`🔄 列排序变化: 拖拽列 ${dragColIndexCollection} 到位置 ${dropColIndex}`);
+      console.log(
+        `🔄 列排序变化: 拖拽列 ${dragColIndexCollection} 到位置 ${dropColIndex}`,
+      );
 
       setColumnOrder((prev) => {
         // 创建新的列顺序数组
@@ -429,7 +450,10 @@ export function StandardDataView(props: StandardDataViewProps) {
 
         // 如果没有初始顺序，创建默认顺序
         if (newOrder.length === 0) {
-          return Array.from({ length: gridProps.columns?.length || 0 }, (_, i) => i);
+          return Array.from(
+            { length: gridProps.columns?.length || 0 },
+            (_, i) => i,
+          );
         }
 
         // 移除被拖拽的列
@@ -440,13 +464,15 @@ export function StandardDataView(props: StandardDataViewProps) {
 
         // 在目标位置插入被拖拽的列
         const adjustedDropIndex =
-          draggedItems[0] < dropColIndex ? dropColIndex - draggedItems.length : dropColIndex;
+          draggedItems[0] < dropColIndex
+            ? dropColIndex - draggedItems.length
+            : dropColIndex;
         newOrder.splice(adjustedDropIndex, 0, ...dragColIndexCollection);
 
         return newOrder;
       });
     },
-    [gridProps]
+    [gridProps],
   );
 
   const handleUpdateField = useCallback(
@@ -458,7 +484,7 @@ export function StandardDataView(props: StandardDataViewProps) {
       setShowEditFieldDialog(false);
       setEditingField(null);
     },
-    [editingField, onUpdateField]
+    [editingField, onUpdateField],
   );
 
   const handleOpenFieldConfig = useCallback(() => {
@@ -489,18 +515,18 @@ export function StandardDataView(props: StandardDataViewProps) {
 
   const handleAddRecordSuccess = useCallback(
     (record: any) => {
-      console.log('✅ 记录创建成功:', record);
+      console.log("✅ 记录创建成功:", record);
       // 触发外部刷新回调（如果有）
       if (gridProps.onDataRefresh) {
         gridProps.onDataRefresh();
       }
       // TODO: 可以触发 React Query 的 invalidateQueries
     },
-    [gridProps]
+    [gridProps],
   );
 
   const handleAddRecordError = useCallback((error: any) => {
-    console.error('❌ 记录创建失败:', error);
+    console.error("❌ 记录创建失败:", error);
   }, []);
 
   // 行高变更处理函数
@@ -518,7 +544,7 @@ export function StandardDataView(props: StandardDataViewProps) {
       onRowHeightChange?.(newRowHeight);
       console.log(`行高变更为: ${newRowHeight}`);
     },
-    [onRowHeightChange]
+    [onRowHeightChange],
   );
 
   // 检测设备类型
@@ -529,8 +555,8 @@ export function StandardDataView(props: StandardDataViewProps) {
     };
 
     updateDeviceType();
-    window.addEventListener('resize', updateDeviceType);
-    return () => window.removeEventListener('resize', updateDeviceType);
+    window.addEventListener("resize", updateDeviceType);
+    return () => window.removeEventListener("resize", updateDeviceType);
   }, []);
 
   const mergedToolbar = useMemo(
@@ -538,24 +564,24 @@ export function StandardDataView(props: StandardDataViewProps) {
       ...DEFAULT_TOOLBAR,
       ...(toolbarConfig ?? {}),
     }),
-    [toolbarConfig]
+    [toolbarConfig],
   );
 
   // 移动端优化配置
-  const isMobile = deviceType === 'mobile';
-  const isTablet = deviceType === 'tablet';
+  const isMobile = deviceType === "mobile";
+  const isTablet = deviceType === "tablet";
 
   // 将行高枚举映射为实际像素值
   const resolvedRowHeight = useMemo(() => {
     const current = rowHeightState;
     switch (current) {
-      case 'short':
+      case "short":
         return 28; // 紧凑
-      case 'tall':
+      case "tall":
         return 40; // 稍高
-      case 'extra-tall':
+      case "extra-tall":
         return 56; // 超高
-      case 'medium':
+      case "medium":
       default:
         return 32; // 默认
     }
@@ -589,7 +615,7 @@ export function StandardDataView(props: StandardDataViewProps) {
 
   return (
     <div
-      className={cn('flex h-full w-full flex-col', className)}
+      className={cn("flex h-full w-full flex-col", className)}
       style={style}
       role="application"
       aria-label="数据视图"
@@ -598,9 +624,9 @@ export function StandardDataView(props: StandardDataViewProps) {
       {showHeader && (
         <div
           className={cn(
-            'flex items-center relative',
-            isMobile ? 'px-2 h-11' : 'px-4 h-12',
-            'border-b'
+            "flex items-center relative",
+            isMobile ? "px-2 h-11" : "px-4 h-12",
+            "border-b",
           )}
           style={{
             backgroundColor: tokens.colors.surface.base,
@@ -612,7 +638,7 @@ export function StandardDataView(props: StandardDataViewProps) {
           <div
             role="tablist"
             className="flex items-center gap-0 py-0"
-            style={{ position: 'relative' }}
+            style={{ position: "relative" }}
           >
             {/* 如果有视图列表，使用动态视图标签 */}
             {views && views.length > 0
@@ -623,21 +649,21 @@ export function StandardDataView(props: StandardDataViewProps) {
                       key={view.id}
                       role="tab"
                       aria-selected={active}
-                      data-state={active ? 'active' : 'inactive'}
+                      data-state={active ? "active" : "inactive"}
                       onClick={() => handleViewChange(view.id)}
                       className={cn(
-                        isMobile ? 'h-9 px-2 text-xs' : 'h-10 px-3 text-sm',
-                        '-mb-px font-medium',
-                        'transition-all focus-visible:outline-none',
-                        'border border-solid',
+                        isMobile ? "h-9 px-2 text-xs" : "h-10 px-3 text-sm",
+                        "-mb-px font-medium",
+                        "transition-all focus-visible:outline-none",
+                        "border border-solid",
                         // 选中状态：上、左、右边框 + 圆角
-                        active ? 'rounded-t-md' : 'rounded-none',
+                        active ? "rounded-t-md" : "rounded-none",
                         // 固定宽度，支持四个字符
-                        isMobile ? 'w-16' : 'w-20',
+                        isMobile ? "w-16" : "w-20",
                         // 文字超出省略
-                        'overflow-hidden whitespace-nowrap text-ellipsis',
+                        "overflow-hidden whitespace-nowrap text-ellipsis",
                         // 移动端增大触摸区域
-                        isTouch && 'min-w-[44px]'
+                        isTouch && "min-w-[44px]",
                       )}
                       style={
                         active
@@ -649,37 +675,40 @@ export function StandardDataView(props: StandardDataViewProps) {
                               borderLeftColor: tokens.colors.border.subtle,
                               borderRightColor: tokens.colors.border.subtle,
                               borderBottomColor: tokens.colors.surface.base, // 与背景色一致，形成"连接"效果
-                              borderBottomWidth: '1px', // 确保有下边框，但颜色与背景一致
+                              borderBottomWidth: "1px", // 确保有下边框，但颜色与背景一致
                               transition: transitions.presets.all,
                               // 稍微提升层级，确保在未选中标签之上
                               zIndex: 1,
-                              position: 'relative',
+                              position: "relative",
                               // 确保选中标签与内容区域无缝连接
-                              marginBottom: '-1px',
+                              marginBottom: "-1px",
                             }
                           : {
                               // 未选中状态：默认样式
-                              backgroundColor: 'transparent',
+                              backgroundColor: "transparent",
                               color: tokens.colors.text.secondary,
-                              borderTopColor: 'transparent',
-                              borderLeftColor: 'transparent',
-                              borderRightColor: 'transparent',
+                              borderTopColor: "transparent",
+                              borderLeftColor: "transparent",
+                              borderRightColor: "transparent",
                               borderBottomColor: tokens.colors.border.subtle,
-                              borderBottomWidth: '1px',
+                              borderBottomWidth: "1px",
                               transition: transitions.presets.all,
                               zIndex: 0,
                             }
                       }
                       onMouseEnter={(e) => {
                         if (!active) {
-                          e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
-                          e.currentTarget.style.color = tokens.colors.text.primary;
+                          e.currentTarget.style.backgroundColor =
+                            tokens.colors.surface.hover;
+                          e.currentTarget.style.color =
+                            tokens.colors.text.primary;
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!active) {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.color = tokens.colors.text.secondary;
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.color =
+                            tokens.colors.text.secondary;
                         }
                       }}
                     >
@@ -695,21 +724,21 @@ export function StandardDataView(props: StandardDataViewProps) {
                       key={t.key}
                       role="tab"
                       aria-selected={active}
-                      data-state={active ? 'active' : 'inactive'}
+                      data-state={active ? "active" : "inactive"}
                       onClick={() => setActiveKey(t.key)}
                       className={cn(
-                        isMobile ? 'h-9 px-2 text-xs' : 'h-10 px-3 text-sm',
-                        '-mb-px font-medium',
-                        'transition-all focus-visible:outline-none',
-                        'border border-solid',
+                        isMobile ? "h-9 px-2 text-xs" : "h-10 px-3 text-sm",
+                        "-mb-px font-medium",
+                        "transition-all focus-visible:outline-none",
+                        "border border-solid",
                         // 选中状态：上、左、右边框 + 圆角
-                        active ? 'rounded-t-md' : 'rounded-none',
+                        active ? "rounded-t-md" : "rounded-none",
                         // 固定宽度，支持四个字符
-                        isMobile ? 'w-16' : 'w-20',
+                        isMobile ? "w-16" : "w-20",
                         // 文字超出省略
-                        'overflow-hidden whitespace-nowrap text-ellipsis',
+                        "overflow-hidden whitespace-nowrap text-ellipsis",
                         // 移动端增大触摸区域
-                        isTouch && 'min-w-[44px]'
+                        isTouch && "min-w-[44px]",
                       )}
                       style={
                         active
@@ -721,37 +750,40 @@ export function StandardDataView(props: StandardDataViewProps) {
                               borderLeftColor: tokens.colors.border.subtle,
                               borderRightColor: tokens.colors.border.subtle,
                               borderBottomColor: tokens.colors.surface.base, // 与背景色一致，形成"连接"效果
-                              borderBottomWidth: '1px', // 确保有下边框，但颜色与背景一致
+                              borderBottomWidth: "1px", // 确保有下边框，但颜色与背景一致
                               transition: transitions.presets.all,
                               // 稍微提升层级，确保在未选中标签之上
                               zIndex: 1,
-                              position: 'relative',
+                              position: "relative",
                               // 确保选中标签与内容区域无缝连接
-                              marginBottom: '-1px',
+                              marginBottom: "-1px",
                             }
                           : {
                               // 未选中状态：默认样式
-                              backgroundColor: 'transparent',
+                              backgroundColor: "transparent",
                               color: tokens.colors.text.secondary,
-                              borderTopColor: 'transparent',
-                              borderLeftColor: 'transparent',
-                              borderRightColor: 'transparent',
+                              borderTopColor: "transparent",
+                              borderLeftColor: "transparent",
+                              borderRightColor: "transparent",
                               borderBottomColor: tokens.colors.border.subtle,
-                              borderBottomWidth: '1px',
+                              borderBottomWidth: "1px",
                               transition: transitions.presets.all,
                               zIndex: 0,
                             }
                       }
                       onMouseEnter={(e) => {
                         if (!active) {
-                          e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
-                          e.currentTarget.style.color = tokens.colors.text.primary;
+                          e.currentTarget.style.backgroundColor =
+                            tokens.colors.surface.hover;
+                          e.currentTarget.style.color =
+                            tokens.colors.text.primary;
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!active) {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.color = tokens.colors.text.secondary;
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.color =
+                            tokens.colors.text.secondary;
                         }
                       }}
                     >
@@ -767,28 +799,29 @@ export function StandardDataView(props: StandardDataViewProps) {
                 title="添加视图"
                 onClick={() => setShowCreateViewMenu(!showCreateViewMenu)}
                 className={cn(
-                  isMobile ? 'h-9 px-2 text-xs' : 'h-10 px-3 text-sm',
-                  '-mb-px font-medium',
-                  'transition-all focus-visible:outline-none',
-                  'border border-solid',
-                  'rounded-t-md'
+                  isMobile ? "h-9 px-2 text-xs" : "h-10 px-3 text-sm",
+                  "-mb-px font-medium",
+                  "transition-all focus-visible:outline-none",
+                  "border border-solid",
+                  "rounded-t-md",
                 )}
                 style={{
-                  backgroundColor: 'transparent',
+                  backgroundColor: "transparent",
                   color: tokens.colors.text.secondary,
-                  borderTopColor: 'transparent',
+                  borderTopColor: "transparent",
                   borderLeftColor: tokens.colors.border.subtle,
                   borderRightColor: tokens.colors.border.subtle,
                   borderBottomColor: tokens.colors.border.subtle,
-                  borderBottomWidth: '1px',
-                  marginLeft: '8px',
+                  borderBottomWidth: "1px",
+                  marginLeft: "8px",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
+                  e.currentTarget.style.backgroundColor =
+                    tokens.colors.surface.hover;
                   e.currentTarget.style.color = tokens.colors.text.primary;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.backgroundColor = "transparent";
                   e.currentTarget.style.color = tokens.colors.text.secondary;
                 }}
               >
@@ -802,7 +835,7 @@ export function StandardDataView(props: StandardDataViewProps) {
                 {/* 背景遮罩 */}
                 <div
                   style={{
-                    position: 'fixed',
+                    position: "fixed",
                     top: 0,
                     left: 0,
                     right: 0,
@@ -815,26 +848,26 @@ export function StandardDataView(props: StandardDataViewProps) {
                 {/* 菜单内容 */}
                 <div
                   style={{
-                    position: 'absolute',
-                    top: 'calc(100% + 8px)',
-                    right: '0',
+                    position: "absolute",
+                    top: "calc(100% + 8px)",
+                    right: "0",
                     backgroundColor: tokens.colors.surface.base,
                     border: `1px solid ${tokens.colors.border.subtle}`,
-                    borderRadius: '8px',
+                    borderRadius: "8px",
                     boxShadow: elevation.lg,
-                    padding: '8px',
+                    padding: "8px",
                     zIndex: 20,
-                    minWidth: '200px',
+                    minWidth: "200px",
                   }}
                 >
                   <div
                     style={{
-                      padding: '8px 12px',
-                      fontSize: '12px',
+                      padding: "8px 12px",
+                      fontSize: "12px",
                       fontWeight: 600,
                       color: tokens.colors.text.primary,
                       borderBottom: `1px solid ${tokens.colors.border.subtle}`,
-                      marginBottom: '4px',
+                      marginBottom: "4px",
                     }}
                   >
                     基础视图
@@ -842,12 +875,42 @@ export function StandardDataView(props: StandardDataViewProps) {
 
                   {/* 视图类型选项 */}
                   {[
-                    { type: 'grid', name: '表格视图', icon: Table, color: '#3b82f6' },
-                    { type: 'kanban', name: '看板视图', icon: LayoutGrid, color: '#10b981' },
-                    { type: 'calendar', name: '日历视图', icon: Calendar, color: '#06b6d4' },
-                    { type: 'gantt', name: '甘特视图', icon: BarChart3, color: '#ec4899' },
-                    { type: 'gallery', name: '画册视图', icon: Image, color: '#8b5cf6' },
-                    { type: 'form', name: '表单视图', icon: FileText, color: '#f59e0b' },
+                    {
+                      type: "grid",
+                      name: "表格视图",
+                      icon: Table,
+                      color: "#3b82f6",
+                    },
+                    {
+                      type: "kanban",
+                      name: "看板视图",
+                      icon: LayoutGrid,
+                      color: "#10b981",
+                    },
+                    {
+                      type: "calendar",
+                      name: "日历视图",
+                      icon: Calendar,
+                      color: "#06b6d4",
+                    },
+                    {
+                      type: "gantt",
+                      name: "甘特视图",
+                      icon: BarChart3,
+                      color: "#ec4899",
+                    },
+                    {
+                      type: "gallery",
+                      name: "画册视图",
+                      icon: Image,
+                      color: "#8b5cf6",
+                    },
+                    {
+                      type: "form",
+                      name: "表单视图",
+                      icon: FileText,
+                      color: "#f59e0b",
+                    },
                   ].map((viewType) => {
                     const IconComponent = viewType.icon;
                     return (
@@ -855,28 +918,32 @@ export function StandardDataView(props: StandardDataViewProps) {
                         key={viewType.type}
                         onClick={() => handleCreateView(viewType.type)}
                         style={{
-                          width: '100%',
-                          padding: '8px 12px',
-                          fontSize: '13px',
+                          width: "100%",
+                          padding: "8px 12px",
+                          fontSize: "13px",
                           color: tokens.colors.text.primary,
-                          backgroundColor: 'transparent',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          textAlign: 'left',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
+                          backgroundColor: "transparent",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
                           transition: transitions.presets.all,
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
+                          e.currentTarget.style.backgroundColor =
+                            tokens.colors.surface.hover;
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.backgroundColor = "transparent";
                         }}
                       >
-                        <IconComponent size={14} style={{ color: viewType.color }} />
+                        <IconComponent
+                          size={14}
+                          style={{ color: viewType.color }}
+                        />
                         {viewType.name}
                       </button>
                     );
@@ -891,11 +958,11 @@ export function StandardDataView(props: StandardDataViewProps) {
             <button
               onClick={onAdd}
               className={cn(
-                isMobile ? 'h-9 w-9' : 'h-8 w-8',
-                'inline-flex items-center justify-center rounded-full',
-                'border focus-visible:outline-none',
+                isMobile ? "h-9 w-9" : "h-8 w-8",
+                "inline-flex items-center justify-center rounded-full",
+                "border focus-visible:outline-none",
                 // 移动端确保足够大的触摸区域
-                isTouch && 'min-w-[44px] min-h-[44px]'
+                isTouch && "min-w-[44px] min-h-[44px]",
               )}
               style={{
                 backgroundColor: tokens.colors.surface.base,
@@ -905,20 +972,22 @@ export function StandardDataView(props: StandardDataViewProps) {
                 boxShadow: elevation.xs,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
+                e.currentTarget.style.backgroundColor =
+                  tokens.colors.surface.hover;
                 e.currentTarget.style.boxShadow = elevation.sm;
-                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.transform = "scale(1.05)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = tokens.colors.surface.base;
+                e.currentTarget.style.backgroundColor =
+                  tokens.colors.surface.base;
                 e.currentTarget.style.boxShadow = elevation.xs;
-                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.transform = "scale(1)";
               }}
               onMouseDown={(e) => {
-                e.currentTarget.style.transform = 'scale(0.95)';
+                e.currentTarget.style.transform = "scale(0.95)";
               }}
               onMouseUp={(e) => {
-                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.transform = "scale(1.05)";
               }}
               aria-label="添加新项"
             >
@@ -929,7 +998,7 @@ export function StandardDataView(props: StandardDataViewProps) {
       )}
 
       {/* Section 2: Toolbar */}
-      {showToolbar && activeKey === 'table' && (
+      {showToolbar && activeKey === "table" && (
         <div role="toolbar" aria-label="数据操作工具栏">
           <div
             className="flex items-center gap-2 px-4 py-2 border-b"
@@ -943,14 +1012,14 @@ export function StandardDataView(props: StandardDataViewProps) {
               <button
                 onClick={() => setShowAddRecordDialog(true)}
                 className={cn(
-                  'inline-flex items-center justify-center gap-2',
-                  'h-8 px-3 rounded-md text-sm font-medium',
-                  'bg-white border border-gray-200',
-                  'text-gray-700 hover:text-gray-900',
-                  'hover:bg-gray-50 hover:border-gray-300',
-                  'active:bg-gray-100',
-                  'transition-all duration-200 ease-out',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500'
+                  "inline-flex items-center justify-center gap-2",
+                  "h-8 px-3 rounded-md text-sm font-medium",
+                  "bg-white border border-gray-200",
+                  "text-gray-700 hover:text-gray-900",
+                  "hover:bg-gray-50 hover:border-gray-300",
+                  "active:bg-gray-100",
+                  "transition-all duration-200 ease-out",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
                 )}
               >
                 <Plus size={14} />
@@ -961,7 +1030,7 @@ export function StandardDataView(props: StandardDataViewProps) {
             {/* 字段配置 - 根据模式选择组件 */}
             {mergedToolbar.showFieldConfig &&
               fields &&
-              (fieldConfigMode === 'combobox' ? (
+              (fieldConfigMode === "combobox" ? (
                 <FieldConfigCombobox
                   fields={fields}
                   onFieldToggle={handleFieldToggle}
@@ -980,14 +1049,14 @@ export function StandardDataView(props: StandardDataViewProps) {
                 <button
                   onClick={handleOpenFieldConfig}
                   className={cn(
-                    'inline-flex items-center justify-center gap-2',
-                    'h-8 px-3 rounded-md text-sm font-medium',
-                    'bg-white border border-gray-200',
-                    'text-gray-700 hover:text-gray-900',
-                    'hover:bg-gray-50 hover:border-gray-300',
-                    'active:bg-gray-100',
-                    'transition-all duration-200 ease-out',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500'
+                    "inline-flex items-center justify-center gap-2",
+                    "h-8 px-3 rounded-md text-sm font-medium",
+                    "bg-white border border-gray-200",
+                    "text-gray-700 hover:text-gray-900",
+                    "hover:bg-gray-50 hover:border-gray-300",
+                    "active:bg-gray-100",
+                    "transition-all duration-200 ease-out",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
                   )}
                 >
                   <Settings size={14} />
@@ -997,7 +1066,10 @@ export function StandardDataView(props: StandardDataViewProps) {
 
             {/* 行高配置 */}
             {mergedToolbar.showRowHeight && (
-              <RowHeightCombobox value={rowHeightState} onChange={handleRowHeightChange} />
+              <RowHeightCombobox
+                value={rowHeightState}
+                onChange={handleRowHeightChange}
+              />
             )}
 
             {/* 其他工具栏按钮 */}
@@ -1007,14 +1079,14 @@ export function StandardDataView(props: StandardDataViewProps) {
                   <button
                     onClick={onToolbar?.onUndo}
                     className={cn(
-                      'inline-flex items-center justify-center gap-2',
-                      'h-8 px-3 rounded-md text-sm font-medium',
-                      'bg-white border border-gray-200',
-                      'text-gray-700 hover:text-gray-900',
-                      'hover:bg-gray-50 hover:border-gray-300',
-                      'active:bg-gray-100',
-                      'transition-all duration-200 ease-out',
-                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500'
+                      "inline-flex items-center justify-center gap-2",
+                      "h-8 px-3 rounded-md text-sm font-medium",
+                      "bg-white border border-gray-200",
+                      "text-gray-700 hover:text-gray-900",
+                      "hover:bg-gray-50 hover:border-gray-300",
+                      "active:bg-gray-100",
+                      "transition-all duration-200 ease-out",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
                     )}
                   >
                     <Undo2 size={14} />
@@ -1023,14 +1095,14 @@ export function StandardDataView(props: StandardDataViewProps) {
                   <button
                     onClick={onToolbar?.onRedo}
                     className={cn(
-                      'inline-flex items-center justify-center gap-2',
-                      'h-8 px-3 rounded-md text-sm font-medium',
-                      'bg-white border border-gray-200',
-                      'text-gray-700 hover:text-gray-900',
-                      'hover:bg-gray-50 hover:border-gray-300',
-                      'active:bg-gray-100',
-                      'transition-all duration-200 ease-out',
-                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500'
+                      "inline-flex items-center justify-center gap-2",
+                      "h-8 px-3 rounded-md text-sm font-medium",
+                      "bg-white border border-gray-200",
+                      "text-gray-700 hover:text-gray-900",
+                      "hover:bg-gray-50 hover:border-gray-300",
+                      "active:bg-gray-100",
+                      "transition-all duration-200 ease-out",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
                     )}
                   >
                     <Redo2 size={14} />
@@ -1044,19 +1116,23 @@ export function StandardDataView(props: StandardDataViewProps) {
       )}
 
       {/* Section 3: Content */}
-      <div className="flex min-h-0 flex-1 flex-col" role="main" aria-label="主内容区">
-        {activeKey === 'table' ? (
+      <div
+        className="flex min-h-0 flex-1 flex-col"
+        role="main"
+        aria-label="主内容区"
+      >
+        {activeKey === "table" ? (
           <div className="relative flex min-h-0 flex-1">
             {/* 根据状态渲染不同的内容 */}
-            {state === 'loading' ? (
+            {state === "loading" ? (
               <div role="status" aria-live="polite" aria-label="正在加载">
                 <LoadingState message={loadingMessage} />
               </div>
-            ) : state === 'empty' ? (
+            ) : state === "empty" ? (
               <div role="status" aria-live="polite" aria-label="无数据">
                 <EmptyState {...emptyStateProps} />
               </div>
-            ) : state === 'error' ? (
+            ) : state === "error" ? (
               <div role="alert" aria-live="assertive" aria-label="发生错误">
                 <ErrorState {...errorStateProps} />
               </div>
@@ -1090,10 +1166,10 @@ export function StandardDataView(props: StandardDataViewProps) {
       {showStatus && (
         <div
           className={cn(
-            'border-t flex items-center',
+            "border-t flex items-center",
             isMobile
-              ? 'h-9 px-2 text-xs flex-col gap-1 justify-center'
-              : 'h-10 px-4 text-sm justify-between'
+              ? "h-9 px-2 text-xs flex-col gap-1 justify-center"
+              : "h-10 px-4 text-sm justify-between",
           )}
           style={{
             borderColor: tokens.colors.border.subtle,
@@ -1104,7 +1180,9 @@ export function StandardDataView(props: StandardDataViewProps) {
           aria-live="polite"
           aria-label="状态栏"
         >
-          <div aria-label={`共 ${gridProps.rowCount} 条记录`}>共 {gridProps.rowCount} 条记录</div>
+          <div aria-label={`共 ${gridProps.rowCount} 条记录`}>
+            共 {gridProps.rowCount} 条记录
+          </div>
           {!isMobile && statusContent && <div>{statusContent}</div>}
         </div>
       )}

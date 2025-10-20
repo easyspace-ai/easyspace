@@ -1,2 +1,2 @@
-export * from './CoordinateManager';
-export * from './interface';
+export * from "./CoordinateManager";
+export * from "./interface";

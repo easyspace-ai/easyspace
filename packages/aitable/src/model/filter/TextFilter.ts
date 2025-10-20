@@ -3,9 +3,9 @@
  * 文本字段过滤器
  */
 
-import { BaseFilter, type IFilterConfig } from './BaseFilter';
-import type { Field } from '../field/Field';
-import type { RecordModel } from '../record/Record';
+import { BaseFilter, type IFilterConfig } from "./BaseFilter";
+import type { Field } from "../field/Field";
+import type { RecordModel } from "../record/Record";
 
 export class TextFilter extends BaseFilter {
   constructor(field: Field, config: IFilterConfig) {
@@ -16,21 +16,21 @@ export class TextFilter extends BaseFilter {
     const { operator } = this.config;
 
     switch (operator) {
-      case 'isEmpty':
+      case "isEmpty":
         return this.matchIsEmpty(record);
-      case 'isNotEmpty':
+      case "isNotEmpty":
         return this.matchIsNotEmpty(record);
-      case 'is':
+      case "is":
         return this.matchIs(record);
-      case 'isNot':
+      case "isNot":
         return !this.matchIs(record);
-      case 'contains':
+      case "contains":
         return this.matchContains(record);
-      case 'doesNotContain':
+      case "doesNotContain":
         return !this.matchContains(record);
-      case 'startsWith':
+      case "startsWith":
         return this.matchStartsWith(record);
-      case 'endsWith':
+      case "endsWith":
         return this.matchEndsWith(record);
       default:
         return false;
@@ -42,62 +42,74 @@ export class TextFilter extends BaseFilter {
     const fieldName = this.field.name;
 
     switch (operator) {
-      case 'isEmpty':
+      case "isEmpty":
         return `${fieldName} 为空`;
-      case 'isNotEmpty':
+      case "isNotEmpty":
         return `${fieldName} 不为空`;
-      case 'is':
+      case "is":
         return `${fieldName} 是 "${value}"`;
-      case 'isNot':
+      case "isNot":
         return `${fieldName} 不是 "${value}"`;
-      case 'contains':
+      case "contains":
         return `${fieldName} 包含 "${value}"`;
-      case 'doesNotContain':
+      case "doesNotContain":
         return `${fieldName} 不包含 "${value}"`;
-      case 'startsWith':
+      case "startsWith":
         return `${fieldName} 以 "${value}" 开头`;
-      case 'endsWith':
+      case "endsWith":
         return `${fieldName} 以 "${value}" 结尾`;
       default:
-        return '';
+        return "";
     }
   }
 
   private matchIs(record: RecordModel): boolean {
     const value = this.getValue(record);
     const filterValue = this.config.value;
-    
-    if (this.isEmpty(value)) {return false;}
-    
+
+    if (this.isEmpty(value)) {
+      return false;
+    }
+
     return String(value).toLowerCase() === String(filterValue).toLowerCase();
   }
 
   private matchContains(record: RecordModel): boolean {
     const value = this.getValue(record);
     const filterValue = this.config.value;
-    
-    if (this.isEmpty(value)) {return false;}
-    
-    return String(value).toLowerCase().includes(String(filterValue).toLowerCase());
+
+    if (this.isEmpty(value)) {
+      return false;
+    }
+
+    return String(value)
+      .toLowerCase()
+      .includes(String(filterValue).toLowerCase());
   }
 
   private matchStartsWith(record: RecordModel): boolean {
     const value = this.getValue(record);
     const filterValue = this.config.value;
-    
-    if (this.isEmpty(value)) {return false;}
-    
-    return String(value).toLowerCase().startsWith(String(filterValue).toLowerCase());
+
+    if (this.isEmpty(value)) {
+      return false;
+    }
+
+    return String(value)
+      .toLowerCase()
+      .startsWith(String(filterValue).toLowerCase());
   }
 
   private matchEndsWith(record: RecordModel): boolean {
     const value = this.getValue(record);
     const filterValue = this.config.value;
-    
-    if (this.isEmpty(value)) {return false;}
-    
-    return String(value).toLowerCase().endsWith(String(filterValue).toLowerCase());
+
+    if (this.isEmpty(value)) {
+      return false;
+    }
+
+    return String(value)
+      .toLowerCase()
+      .endsWith(String(filterValue).toLowerCase());
   }
 }
-
-

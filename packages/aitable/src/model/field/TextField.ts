@@ -1,7 +1,7 @@
 /**
  * Text Field Model
  * Handles single line text and long text fields with strict typing
- * 
+ *
  * @example
  * ```typescript
  * const field = new TextField({
@@ -20,16 +20,21 @@
  * ```
  */
 
-import { Field, type StrictFieldConfig } from './Field';
-import { FIELD_TYPES } from '../../types/core/field-types';
-import type { FieldType } from '../../types/core/field-types';
-import type { TextFieldOptions } from '../../types/core/field-options';
-import type { GetCellValue, GetDisplayValue } from '../../types/core/cell-values';
+import { Field, type StrictFieldConfig } from "./Field";
+import { FIELD_TYPES } from "../../types/core/field-types";
+import type { FieldType } from "../../types/core/field-types";
+import type { TextFieldOptions } from "../../types/core/field-options";
+import type {
+  GetCellValue,
+  GetDisplayValue,
+} from "../../types/core/cell-values";
 
 /**
  * Text field type union
  */
-export type TextFieldType = typeof FIELD_TYPES.SingleLineText | typeof FIELD_TYPES.LongText;
+export type TextFieldType =
+  | typeof FIELD_TYPES.SingleLineText
+  | typeof FIELD_TYPES.LongText;
 
 /**
  * Text field configuration
@@ -56,7 +61,7 @@ export class TextField extends Field<TextFieldType> {
 
   /**
    * Validate text value
-   * 
+   *
    * @param value - Value to validate
    * @returns true if valid, false otherwise
    */
@@ -70,7 +75,7 @@ export class TextField extends Field<TextFieldType> {
     }
 
     // Must be string
-    if (typeof value !== 'string') {
+    if (typeof value !== "string") {
       return false;
     }
 
@@ -86,13 +91,13 @@ export class TextField extends Field<TextFieldType> {
 
   /**
    * Format text value for display
-   * 
+   *
    * @param value - Cell value
    * @returns Formatted string for display
    */
   format(value: GetCellValue<TextFieldType>): GetDisplayValue<TextFieldType> {
-    if (value === null || value === undefined || value === '') {
-      return '';
+    if (value === null || value === undefined || value === "") {
+      return "";
     }
 
     return String(value);
@@ -100,7 +105,7 @@ export class TextField extends Field<TextFieldType> {
 
   /**
    * Convert input value to cell value format
-   * 
+   *
    * @param value - Input value
    * @returns Typed cell value
    */
@@ -109,7 +114,7 @@ export class TextField extends Field<TextFieldType> {
       return null;
     }
 
-    if (typeof value !== 'string') {
+    if (typeof value !== "string") {
       return String(value);
     }
 
@@ -117,7 +122,7 @@ export class TextField extends Field<TextFieldType> {
     let result = value;
     if (this.type === FIELD_TYPES.SingleLineText) {
       // Remove line breaks for single line text
-      result = value.replace(/[\r\n]+/g, ' ');
+      result = value.replace(/[\r\n]+/g, " ");
     }
 
     // Apply max length if specified
@@ -130,13 +135,13 @@ export class TextField extends Field<TextFieldType> {
 
   /**
    * Convert cell value to editable format
-   * 
+   *
    * @param cellValue - Stored cell value
    * @returns Editable value
    */
   fromCellValue(cellValue: GetCellValue<TextFieldType>): string {
     if (cellValue === null || cellValue === undefined) {
-      return this.textOptions.defaultValue ?? '';
+      return this.textOptions.defaultValue ?? "";
     }
 
     return String(cellValue);
@@ -144,21 +149,20 @@ export class TextField extends Field<TextFieldType> {
 
   /**
    * Get default empty value
-   * 
+   *
    * @returns Empty string
    */
   getDefaultValue(): string {
-    return this.textOptions.defaultValue ?? '';
+    return this.textOptions.defaultValue ?? "";
   }
 
   /**
    * Check if value is empty
-   * 
+   *
    * @param value - Value to check
    * @returns true if empty
    */
   protected isEmpty(value: unknown): boolean {
-    return value === null || value === undefined || value === '';
+    return value === null || value === undefined || value === "";
   }
 }
-

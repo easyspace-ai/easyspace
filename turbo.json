@@ -1,17 +1,19 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "globalDependencies": ["**/.env"],
+  "globalDependencies": ["**/.env", "package.json", "versions.json"],
   "pipeline": {
     "topo": {
       "dependsOn": ["^topo"]
     },
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "next-env.d.ts", "dist/**"]
+      "dependsOn": ["^build", "typecheck"],
+      "outputs": [".next/**", "!.next/cache/**", "next-env.d.ts", "dist/**", "build/**"],
+      "env": ["NODE_ENV", "VITE_*", "NEXT_PUBLIC_*"]
     },
     "dev": {
       "persistent": true,
-      "cache": false
+      "cache": false,
+      "env": ["NODE_ENV", "VITE_*", "NEXT_PUBLIC_*"]
     },
     "format": {
       "outputs": ["node_modules/.cache/.prettiercache"],
@@ -23,9 +25,19 @@
     },
     "typecheck": {
       "dependsOn": ["^topo"],
-      "outputs": ["node_modules/.cache/tsbuildinfo.json"]
+      "outputs": ["node_modules/.cache/tsbuildinfo.json", "tsconfig.tsbuildinfo"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
     },
     "clean": {
+      "cache": false
+    },
+    "deps:check": {
+      "cache": false
+    },
+    "deps:update": {
       "cache": false
     }
   }

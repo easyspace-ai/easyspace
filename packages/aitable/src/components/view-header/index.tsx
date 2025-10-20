@@ -1,6 +1,6 @@
 /**
  * ViewHeader - 视图头部组件
- * 
+ *
  * 设计原则：
  * 1. 统一的视图头部布局
  * 2. 支持多种视图类型
@@ -8,23 +8,23 @@
  * 4. 响应式设计
  */
 
-import React from 'react';
-import { cn, tokens } from '../../grid/design-system';
+import React from "react";
+import { cn, tokens } from "../../grid/design-system";
 
-export type ViewType = 'grid' | 'kanban' | 'calendar' | 'gallery' | 'form';
+export type ViewType = "grid" | "kanban" | "calendar" | "gallery" | "form";
 
 export interface ViewHeaderProps {
   // 基础配置
   title: string;
   viewType: ViewType;
-  
+
   // 工具栏配置
   showToolbar?: boolean;
   toolbarItems?: React.ReactNode[];
-  
+
   // 样式
   className?: string;
-  
+
   // 事件
   onViewTypeChange?: (viewType: ViewType) => void;
   onTitleChange?: (title: string) => void;
@@ -42,10 +42,10 @@ export function ViewHeader({
   return (
     <div
       className={cn(
-        'flex items-center justify-between',
-        'px-4 py-3 border-b',
-        'bg-white',
-        className
+        "flex items-center justify-between",
+        "px-4 py-3 border-b",
+        "bg-white",
+        className,
       )}
       style={{
         borderColor: tokens.colors.border.subtle,
@@ -72,9 +72,7 @@ export function ViewHeader({
 
       {/* 右侧：工具栏 */}
       {showToolbar && (
-        <div className="flex items-center gap-2">
-          {toolbarItems}
-        </div>
+        <div className="flex items-center gap-2">{toolbarItems}</div>
       )}
     </div>
   );
@@ -94,17 +92,21 @@ export function CreateViewMenu({
   if (!isOpen) return null;
 
   const viewTypes: { type: ViewType; label: string; description: string }[] = [
-    { type: 'grid', label: '表格视图', description: '以表格形式显示数据' },
-    { type: 'kanban', label: '看板视图', description: '以看板形式管理任务' },
-    { type: 'calendar', label: '日历视图', description: '以日历形式显示时间数据' },
-    { type: 'gallery', label: '画廊视图', description: '以卡片形式展示数据' },
-    { type: 'form', label: '表单视图', description: '以表单形式编辑数据' },
+    { type: "grid", label: "表格视图", description: "以表格形式显示数据" },
+    { type: "kanban", label: "看板视图", description: "以看板形式管理任务" },
+    {
+      type: "calendar",
+      label: "日历视图",
+      description: "以日历形式显示时间数据",
+    },
+    { type: "gallery", label: "画廊视图", description: "以卡片形式展示数据" },
+    { type: "form", label: "表单视图", description: "以表单形式编辑数据" },
   ];
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
       onClick={onClose}
     >
       <div

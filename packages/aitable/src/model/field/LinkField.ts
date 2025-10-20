@@ -3,11 +3,11 @@
  * Record link/relationship fields
  */
 
-import { Field } from './Field';
+import { Field } from "./Field";
 
 export interface ILinkFieldOptions {
   foreignTableId?: string;
-  relationship?: 'manyOne' | 'manyMany' | 'oneOne';
+  relationship?: "manyOne" | "manyMany" | "oneOne";
   isOneWay?: boolean;
   symmetricFieldId?: string;
 }
@@ -18,28 +18,31 @@ export interface ILinkedRecord {
 }
 
 export class LinkField extends Field {
-
   validate(value: unknown): boolean {
     if (this.isEmpty(value)) {
       return true;
     }
 
     // Single link
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       return true;
     }
 
     // Multiple links
     if (Array.isArray(value)) {
       return value.every((item) => {
-        if (typeof item === 'string') {return true;}
-        if (item && typeof item === 'object' && 'id' in item) {return true;}
+        if (typeof item === "string") {
+          return true;
+        }
+        if (item && typeof item === "object" && "id" in item) {
+          return true;
+        }
         return false;
       });
     }
 
     // Single link object
-    if (value && typeof value === 'object' && 'id' in value) {
+    if (value && typeof value === "object" && "id" in value) {
       return true;
     }
 
@@ -48,16 +51,16 @@ export class LinkField extends Field {
 
   format(value: unknown): string {
     if (this.isEmpty(value)) {
-      return '';
+      return "";
     }
 
     // Single link ID
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       return value;
     }
 
     // Single link object
-    if (value && typeof value === 'object' && 'id' in value) {
+    if (value && typeof value === "object" && "id" in value) {
       const record = value as ILinkedRecord;
       return record.title ?? record.id;
     }
@@ -66,17 +69,19 @@ export class LinkField extends Field {
     if (Array.isArray(value)) {
       return value
         .map((item) => {
-          if (typeof item === 'string') {return item;}
-          if (item && typeof item === 'object' && 'id' in item) {
+          if (typeof item === "string") {
+            return item;
+          }
+          if (item && typeof item === "object" && "id" in item) {
             return (item as ILinkedRecord).title ?? item.id;
           }
-          return '';
+          return "";
         })
         .filter(Boolean)
-        .join(', ');
+        .join(", ");
     }
 
-    return '';
+    return "";
   }
 
   getEmptyValue(): null {
@@ -90,9 +95,9 @@ export class LinkField extends Field {
 
     // Already in correct format
     if (
-      typeof value === 'string' ||
+      typeof value === "string" ||
       Array.isArray(value) ||
-      (value && typeof value === 'object')
+      (value && typeof value === "object")
     ) {
       return value as any;
     }
@@ -100,7 +105,9 @@ export class LinkField extends Field {
     return null;
   }
 
-  fromCellValue(cellValue: any): string | string[] | ILinkedRecord | ILinkedRecord[] | null {
+  fromCellValue(
+    cellValue: any,
+  ): string | string[] | ILinkedRecord | ILinkedRecord[] | null {
     if (cellValue === null || cellValue === undefined) {
       return null;
     }
@@ -113,8 +120,8 @@ export class LinkField extends Field {
    */
   isManyRelationship(): boolean {
     return (
-      (this.options as any).relationship === 'manyMany' ||
-      (this.options as any).relationship === 'manyOne'
+      (this.options as any).relationship === "manyMany" ||
+      (this.options as any).relationship === "manyOne"
     );
   }
 
@@ -126,26 +133,28 @@ export class LinkField extends Field {
       return [];
     }
 
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       return [value];
     }
 
-    if (value && typeof value === 'object' && 'id' in value) {
+    if (value && typeof value === "object" && "id" in value) {
       return [(value as ILinkedRecord).id];
     }
 
     if (Array.isArray(value)) {
-      return value.map((item) => {
-        if (typeof item === 'string') {return item;}
-        if (item && typeof item === 'object' && 'id' in item) {
-          return (item as ILinkedRecord).id;
-        }
-        return '';
-      }).filter(Boolean);
+      return value
+        .map((item) => {
+          if (typeof item === "string") {
+            return item;
+          }
+          if (item && typeof item === "object" && "id" in item) {
+            return (item as ILinkedRecord).id;
+          }
+          return "";
+        })
+        .filter(Boolean);
     }
 
     return [];
   }
 }
-
-

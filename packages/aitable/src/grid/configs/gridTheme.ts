@@ -1,5 +1,5 @@
-import colors from 'tailwindcss/colors';
-import { hexToRGBA } from '../utils';
+import colors from "tailwindcss/colors";
+import { hexToRGBA } from "../utils";
 
 export interface IGridTheme {
   staticWhite: string;
@@ -64,8 +64,8 @@ export interface IGridTheme {
 
 export const gridTheme: IGridTheme = {
   // Common
-  staticWhite: '#FFFFFF',
-  staticBlack: '#000000',
+  staticWhite: "#FFFFFF",
+  staticBlack: "#000000",
   iconFgCommon: colors.gray[500],
   iconBgCommon: colors.transparent,
   iconFgHighlight: colors.yellow[400],
@@ -82,7 +82,7 @@ export const gridTheme: IGridTheme = {
   fontSizeMD: 14,
   fontSizeLG: 16,
   fontFamily:
-    'Inter, Roboto, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, noto, arial, sans-serif',
+    "Inter, Roboto, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, noto, arial, sans-serif",
   fontSize: 13,
   textColor: colors.gray[900],
   textColorSecondary: colors.gray[500],
@@ -131,7 +131,7 @@ export const gridTheme: IGridTheme = {
   avatarSizeSM: 20,
   avatarSizeMD: 24,
 
-  themeKey: 'light',
+  themeKey: "light",
 
   // ScrollBar
   scrollBarBg: colors.gray[400],

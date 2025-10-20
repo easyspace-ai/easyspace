@@ -2,10 +2,10 @@
  * 评分编辑器（星级）
  */
 
-import React from 'react';
-import { cn } from '../../../grid/design-system';
-import type { FieldEditorProps } from '../types';
-import { Star } from 'lucide-react';
+import React from "react";
+import { cn } from "../../../grid/design-system";
+import type { FieldEditorProps } from "../types";
+import { Star } from "lucide-react";
 
 export function RatingEditor({
   field,
@@ -14,7 +14,7 @@ export function RatingEditor({
   error,
 }: FieldEditorProps) {
   const max = field.options?.max || 5;
-  const currentRating = typeof value === 'number' ? value : 0;
+  const currentRating = typeof value === "number" ? value : 0;
 
   const handleClick = (rating: number) => {
     if (field.locked) return;
@@ -34,32 +34,29 @@ export function RatingEditor({
               onClick={() => handleClick(rating)}
               disabled={field.locked}
               className={cn(
-                'p-1 rounded transition-all',
-                'hover:scale-110 active:scale-95',
-                field.locked && 'cursor-not-allowed opacity-50'
+                "p-1 rounded transition-all",
+                "hover:scale-110 active:scale-95",
+                field.locked && "cursor-not-allowed opacity-50",
               )}
               aria-label={`评分 ${rating}`}
             >
               <Star
                 size={24}
                 className={cn(
-                  'transition-all',
+                  "transition-all",
                   isFilled
-                    ? 'fill-yellow-400 text-yellow-400'
-                    : 'fill-none text-gray-300'
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "fill-none text-gray-300",
                 )}
               />
             </button>
           );
         })}
         <span className="ml-2 text-sm text-gray-600">
-          {currentRating > 0 ? `${currentRating} / ${max}` : '未评分'}
+          {currentRating > 0 ? `${currentRating} / ${max}` : "未评分"}
         </span>
       </div>
-      {error && (
-        <p className="mt-1 text-xs text-red-600">{error}</p>
-      )}
+      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
   );
 }
-

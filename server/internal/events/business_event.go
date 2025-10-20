@@ -2,10 +2,12 @@ package events
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
 
@@ -30,6 +32,11 @@ const (
 
 	// 计算相关事件
 	BusinessEventTypeCalculationUpdate BusinessEventType = "calculation.update"
+
+	// 视图相关事件
+	BusinessEventTypeViewCreate BusinessEventType = "view.create"
+	BusinessEventTypeViewUpdate BusinessEventType = "view.update"
+	BusinessEventTypeViewDelete BusinessEventType = "view.delete"
 )
 
 // BusinessEvent 业务事件结构
@@ -77,6 +84,8 @@ type BusinessEventManager struct {
 	subscribers map[string]chan *BusinessEvent
 	subMutex    sync.RWMutex
 	logger      *zap.Logger
+	redisClient *redis.Client
+	redisPrefix string
 }
 
 // NewBusinessEventManager 创建业务事件管理器
@@ -84,7 +93,25 @@ func NewBusinessEventManager(logger *zap.Logger) *BusinessEventManager {
 	return &BusinessEventManager{
 		subscribers: make(map[string]chan *BusinessEvent),
 		logger:      logger,
+		redisPrefix: "luckdb:events",
 	}
+}
+
+// NewBusinessEventManagerWithRedis 创建带Redis分布式广播的业务事件管理器
+func NewBusinessEventManagerWithRedis(logger *zap.Logger, redisClient *redis.Client, redisPrefix string) *BusinessEventManager {
+	manager := &BusinessEventManager{
+		subscribers: make(map[string]chan *BusinessEvent),
+		logger:      logger,
+		redisClient: redisClient,
+		redisPrefix: redisPrefix,
+	}
+
+	// 启动Redis订阅监听
+	if redisClient != nil {
+		go manager.startRedisSubscriber()
+	}
+
+	return manager
 }
 
 // Subscribe 订阅业务事件
@@ -134,6 +161,33 @@ func (m *BusinessEventManager) Publish(event *BusinessEvent) error {
 		event.Timestamp = time.Now().UnixNano()
 	}
 
+	// 如果配置了Redis，先发布到Redis进行分布式广播
+	if m.redisClient != nil {
+		if err := m.publishToRedis(event); err != nil {
+			m.logger.Error("Failed to publish event to Redis",
+				zap.String("event_id", event.ID),
+				zap.Error(err))
+			// 继续本地广播，不因Redis失败而阻塞
+		}
+	}
+
+	// 本地广播
+	return m.publishLocally(event)
+}
+
+// publishToRedis 发布事件到Redis进行分布式广播
+func (m *BusinessEventManager) publishToRedis(event *BusinessEvent) error {
+	eventData, err := json.Marshal(event)
+	if err != nil {
+		return fmt.Errorf("failed to marshal event: %w", err)
+	}
+
+	channel := fmt.Sprintf("%s:broadcast", m.redisPrefix)
+	return m.redisClient.Publish(context.Background(), channel, eventData).Err()
+}
+
+// publishLocally 本地广播事件
+func (m *BusinessEventManager) publishLocally(event *BusinessEvent) error {
 	m.subMutex.RLock()
 	subscriberCount := len(m.subscribers)
 	subscribers := make([]chan *BusinessEvent, 0, subscriberCount)
@@ -306,3 +360,40 @@ func (s *BusinessEventSubscription) Close() {
 	}
 }
 
+// startRedisSubscriber 启动Redis订阅监听
+func (m *BusinessEventManager) startRedisSubscriber() {
+	if m.redisClient == nil {
+		return
+	}
+
+	channel := fmt.Sprintf("%s:broadcast", m.redisPrefix)
+	pubsub := m.redisClient.Subscribe(context.Background(), channel)
+	defer pubsub.Close()
+
+	m.logger.Info("Started Redis event subscriber", zap.String("channel", channel))
+
+	for {
+		msg, err := pubsub.ReceiveMessage(context.Background())
+		if err != nil {
+			m.logger.Error("Redis subscription error", zap.Error(err))
+			time.Sleep(time.Second) // 避免快速重连
+			continue
+		}
+
+		// 解析事件
+		var event BusinessEvent
+		if err := json.Unmarshal([]byte(msg.Payload), &event); err != nil {
+			m.logger.Error("Failed to unmarshal Redis event",
+				zap.String("payload", msg.Payload),
+				zap.Error(err))
+			continue
+		}
+
+		// 本地广播（避免重复发布到Redis）
+		if err := m.publishLocally(&event); err != nil {
+			m.logger.Error("Failed to broadcast Redis event locally",
+				zap.String("event_id", event.ID),
+				zap.Error(err))
+		}
+	}
+}

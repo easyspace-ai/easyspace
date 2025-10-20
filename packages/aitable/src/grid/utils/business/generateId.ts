@@ -22,7 +22,9 @@ export const generateRandomId = (): string => {
 /**
  * Generate cell ID
  */
-export const generateCellId = (rowIndex: number, columnIndex: number): string => {
+export const generateCellId = (
+  rowIndex: number,
+  columnIndex: number,
+): string => {
   return `cell-${rowIndex}-${columnIndex}`;
 };
-

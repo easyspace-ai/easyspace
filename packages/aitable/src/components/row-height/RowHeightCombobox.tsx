@@ -1,6 +1,6 @@
 /**
  * RowHeightCombobox - 行高配置下拉组件（重构版）
- * 
+ *
  * 设计原则：
  * 1. 基于统一的 Combobox 基类
  * 2. 纯 Tailwind 实现
@@ -8,11 +8,11 @@
  * 4. 视觉化的行高预览
  */
 
-import React from 'react';
-import { Combobox, type ComboboxOption } from '../ui/Combobox';
-import { ChevronDown, Check, type LucideIcon } from 'lucide-react';
+import React from "react";
+import { Combobox, type ComboboxOption } from "../ui/Combobox";
+import { ChevronDown, Check, type LucideIcon } from "lucide-react";
 
-export type RowHeight = 'short' | 'medium' | 'tall' | 'extra-tall';
+export type RowHeight = "short" | "medium" | "tall" | "extra-tall";
 
 export interface RowHeightOption {
   value: RowHeight;
@@ -38,17 +38,22 @@ interface RowHeightIconProps {
 function RowHeightIcon({ height, size = 16 }: RowHeightIconProps) {
   const getGap = () => {
     switch (height) {
-      case 'short': return 'gap-0.5';
-      case 'medium': return 'gap-1';
-      case 'tall': return 'gap-1.5';
-      case 'extra-tall': return 'gap-2';
-      default: return 'gap-1';
+      case "short":
+        return "gap-0.5";
+      case "medium":
+        return "gap-1";
+      case "tall":
+        return "gap-1.5";
+      case "extra-tall":
+        return "gap-2";
+      default:
+        return "gap-1";
     }
   };
 
   return (
-    <div className={cn('flex items-center gap-1')}>
-      <div className={cn('flex flex-col', getGap())}>
+    <div className={cn("flex items-center gap-1")}>
+      <div className={cn("flex flex-col", getGap())}>
         <div className="w-3 h-0.5 bg-current opacity-60"></div>
         <div className="w-4 h-0.5 bg-current"></div>
         <div className="w-3 h-0.5 bg-current opacity-60"></div>
@@ -63,35 +68,38 @@ function RowHeightIcon({ height, size = 16 }: RowHeightIconProps) {
  */
 const rowHeightOptions: ComboboxOption<RowHeight>[] = [
   {
-    value: 'short',
-    label: '低',
-    description: '紧凑显示，适合大量数据',
+    value: "short",
+    label: "低",
+    description: "紧凑显示，适合大量数据",
   },
   {
-    value: 'medium',
-    label: '中等',
-    description: '标准显示，平衡美观与效率',
+    value: "medium",
+    label: "中等",
+    description: "标准显示，平衡美观与效率",
   },
   {
-    value: 'tall',
-    label: '高',
-    description: '宽松显示，提升可读性',
+    value: "tall",
+    label: "高",
+    description: "宽松显示，提升可读性",
   },
   {
-    value: 'extra-tall',
-    label: '超高',
-    description: '最大显示，最佳可读性',
+    value: "extra-tall",
+    label: "超高",
+    description: "最大显示，最佳可读性",
   },
 ];
 
 export function RowHeightCombobox({
-  value = 'medium',
+  value = "medium",
   onChange,
   disabled = false,
   className,
 }: RowHeightComboboxProps) {
   // 自定义渲染选项
-  const renderOption = (option: ComboboxOption<RowHeight>, isSelected: boolean) => {
+  const renderOption = (
+    option: ComboboxOption<RowHeight>,
+    isSelected: boolean,
+  ) => {
     return (
       <div className="flex items-center gap-3 px-3 py-2">
         {/* 选中状态指示器 */}
@@ -138,5 +146,5 @@ export function RowHeightCombobox({
 
 // 辅助函数：cn
 function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }

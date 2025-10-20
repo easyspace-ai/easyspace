@@ -47,7 +47,8 @@ export interface ISelectOption {
 /**
  * Select editor props
  */
-export interface ISelectEditorProps extends IBaseEditorProps<string | string[] | null> {
+export interface ISelectEditorProps
+  extends IBaseEditorProps<string | string[] | null> {
   value: string | string[] | null;
   options: ISelectOption[];
   multiple?: boolean;
@@ -66,7 +67,7 @@ export interface INumberEditorProps extends IBaseEditorProps<number | null> {
   max?: number;
   step?: number;
   precision?: number;
-  format?: 'decimal' | 'percent' | 'currency';
+  format?: "decimal" | "percent" | "currency";
   currencySymbol?: string;
   thousandsSeparator?: boolean;
   onChange: (value: number | null) => void;
@@ -139,4 +140,3 @@ export interface IFilePreviewerProps {
   onDelete?: (fileId: string) => void;
   onDownload?: (file: IAttachmentFile) => void;
 }
-

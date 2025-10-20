@@ -1,0 +1,18 @@
+
+> luckdb-manage@1.0.0 build /Users/leven/space/easy/luckdb/apps/manage
+> tsc -b && vite build
+
+[96mtsconfig.json[0m:[93m31[0m:[93m18[0m - [91merror[0m[90m TS6306: [0mReferenced project '/Users/leven/space/easy/luckdb/apps/manage/tsconfig.node.json' must have setting "composite": true.
+
+[7m31[0m   "references": [{ "path": "./tsconfig.node.json" }]
+[7m  [0m [91m                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96mtsconfig.json[0m:[93m31[0m:[93m18[0m - [91merror[0m[90m TS6310: [0mReferenced project '/Users/leven/space/easy/luckdb/apps/manage/tsconfig.node.json' may not disable emit.
+
+[7m31[0m   "references": [{ "path": "./tsconfig.node.json" }]
+[7m  [0m [91m                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+Found 2 errors.
+
+[41m[30m ELIFECYCLE [39m[49m [31mCommand failed with exit code 2.[39m

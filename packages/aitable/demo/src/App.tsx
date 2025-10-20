@@ -10,7 +10,7 @@
  */
 
 import React, { useState, useEffect, createContext, useContext, useCallback, useMemo } from 'react';
-import { LuckDB } from '@luckdb/sdk';
+import { LuckDB } from '@easyspace/sdk';
 import {
   StandardDataView,
   AppProviders,
@@ -18,11 +18,9 @@ import {
   createGetCellContent,
   convertFieldsToColumns,
   FieldManagementProvider,
-  type FilterField,
-  type FilterCondition,
   type IGridProps,
   type FieldConfig,
-} from '@luckdb/aitable';
+} from '@easyspace/aitable';
 import { config } from './config';
 import { StyleTest } from './StyleTest';
 import AddRecordTest from './AddRecordTest';
@@ -38,6 +36,8 @@ interface SDKContextType {
   error: Error | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  currentUser?: any | null;
+  accessToken?: string | null;
 }
 
 const SDKContext = createContext<SDKContextType>({
@@ -46,12 +46,16 @@ const SDKContext = createContext<SDKContextType>({
   error: null,
   login: async () => {},
   logout: () => {},
+  currentUser: null,
+  accessToken: null,
 });
 
 export function SDKProvider({ children }: { children: React.ReactNode }) {
   const [sdk, setSdk] = useState<LuckDB | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [currentUser, setCurrentUser] = useState<any | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   // 初始化 SDK
   useEffect(() => {
@@ -61,7 +65,6 @@ export function SDKProvider({ children }: { children: React.ReactNode }) {
 
         const luckDB = new LuckDB({
           baseUrl: config.baseURL,
-          websocketURL: config.wsURL,
           accessToken: localStorage.getItem('luckdb_token') || '',
           debug: config.debug,
         });
@@ -73,16 +76,17 @@ export function SDKProvider({ children }: { children: React.ReactNode }) {
             const user = await luckDB.getCurrentUser();
             console.log('✅ 已登录:', user);
 
-            // 确保 WebSocket 连接
-            if (luckDB.getWebSocketClient()) {
-              console.log('🔌 尝试连接 WebSocket...');
-              await luckDB.getWebSocketClient()!.connect();
-            }
+            // 说明：通用 WebSocket 客户端面向广播/通知，YJS 实时协作走专用连接
+            // 这里不再强制自动连接，避免误连到需要 document 的 /yjs/ws 导致 400
 
             setSdk(luckDB);
+            setCurrentUser(user);
+            setAccessToken(token);
           } catch (err) {
             console.warn('⚠️ Token 失效，需要重新登录');
             localStorage.removeItem('luckdb_token');
+            setCurrentUser(null);
+            setAccessToken(null);
           }
         } else {
           console.log('ℹ️ 未登录');
@@ -108,7 +112,6 @@ export function SDKProvider({ children }: { children: React.ReactNode }) {
 
       const luckDB = new LuckDB({
         baseUrl: config.baseURL,
-        websocketURL: config.wsURL,
         debug: config.debug,
       });
 
@@ -119,6 +122,8 @@ export function SDKProvider({ children }: { children: React.ReactNode }) {
 
       console.log('✅ 登录成功:', response.user);
       setSdk(luckDB);
+      setCurrentUser(response.user || null);
+      setAccessToken(response.accessToken || null);
     } catch (err: any) {
       console.error('❌ 登录失败:', err);
       setError(err);
@@ -133,10 +138,12 @@ export function SDKProvider({ children }: { children: React.ReactNode }) {
     console.log('👋 登出');
     localStorage.removeItem('luckdb_token');
     setSdk(null);
+    setCurrentUser(null);
+    setAccessToken(null);
   }, []);
 
   return (
-    <SDKContext.Provider value={{ sdk, isLoading, error, login, logout }}>
+    <SDKContext.Provider value={{ sdk, isLoading, error, login, logout, currentUser, accessToken }}>
       {children}
     </SDKContext.Provider>
   );
@@ -326,7 +333,7 @@ function LoginForm() {
 // ==================== Table View Component ====================
 
 function TableView() {
-  const { sdk, logout } = useSDK();
+  const { sdk, logout, currentUser, accessToken } = useSDK();
   const [currentView, setCurrentView] = useState<'table' | 'test' | 'realtime'>('table');
 
   // 🚀 使用YJS实时同步 Hook
@@ -340,8 +347,10 @@ function TableView() {
     });
 
   // 过滤状态
-  const [filterConditions, setFilterConditions] = useState<FilterCondition[]>([]);
+  const [filterConditions, setFilterConditions] = useState<any[]>([]);
   const [filteredRecords, setFilteredRecords] = useState<any[]>([]);
+
+  const activeViewId = 112358;
 
   // 🎉 使用内置字段映射工具 - 自动处理所有字段类型！
   // 将所有 Hooks 移到条件渲染之前，确保 Hooks 调用顺序一致
@@ -349,16 +358,14 @@ function TableView() {
   const getCellContent = useMemo(() => createGetCellContent(fields, records), [fields, records]);
 
   // 生成过滤字段配置
-  const filterFields: FilterField[] = useMemo(() => {
+  const filterFields: any[] = useMemo(() => {
     return fields.map((field: any) => ({
       id: field.id ?? field.fieldId ?? String(field.key ?? field.name),
       name: field.name ?? field.title ?? String(field.id ?? ''),
-      type: (field.type ?? 'text') as FilterField['type'],
+      type: (field.type ?? 'text') as any,
       options: field.options?.choices || field.options?.selectOptions || undefined,
     }));
   }, [fields]);
-
-  // 数据加载已由 useRealtimeSync Hook 处理
 
   // 当记录数据变化时，更新过滤后的记录
   useEffect(() => {
@@ -366,7 +373,7 @@ function TableView() {
   }, [records]);
 
   // 处理过滤条件变化
-  const handleFilterConditionsChange = useCallback((conditions: FilterCondition[]) => {
+  const handleFilterConditionsChange = useCallback((conditions: any[]) => {
     setFilterConditions(conditions);
   }, []);
 
@@ -374,6 +381,53 @@ function TableView() {
   const handleFilteredDataChange = useCallback((filteredData: any[]) => {
     setFilteredRecords(filteredData);
   }, []);
+
+  // 统一的数据刷新回调，供各处调用
+  const onDataRefresh = useCallback(async () => {
+    console.log('🔄 自动刷新数据...');
+    await refresh();
+  }, [refresh]);
+
+  // 字段管理回调
+  const handleFieldUpdated = useCallback((field: any) => {
+    console.log('✅ 字段已更新:', field);
+    onDataRefresh();
+  }, [onDataRefresh]);
+
+  const handleFieldDeleted = useCallback((fieldId: string) => {
+    console.log('🗑️ 字段已删除:', fieldId);
+    onDataRefresh();
+  }, [onDataRefresh]);
+
+  const handleFieldError = useCallback((error: any, operation: string) => {
+    console.error(`❌ 字段${operation === 'edit' ? '编辑' : '删除'}失败:`, error);
+  }, []);
+
+  // 创建视图回调
+  const handleCreateView = useCallback(async (viewType: string) => {
+    try {
+      console.log('🆕 创建视图:', viewType);
+
+      // 调用 LuckDB SDK 创建视图
+      const newView = await sdk!.createView({
+        tableId: config.testBase.tableId,
+        name: `${viewType}视图_${Date.now()}`,
+        type: viewType as any, // 确保类型匹配
+        description: `通过 Demo 创建的 ${viewType} 视图`,
+      });
+
+      console.log('✅ 视图创建成功:', newView);
+
+      // 刷新数据以获取最新的视图列表
+      await onDataRefresh();
+
+      // 可选：切换到新创建的视图
+      // setActiveViewId(newView.id);
+    } catch (error) {
+      console.error('❌ 创建视图失败:', error);
+      alert(`创建视图失败: ${(error as Error).message}`);
+    }
+  }, [sdk, onDataRefresh]);
 
   if (isLoading) {
     return (
@@ -467,7 +521,7 @@ function TableView() {
   // 只需要 2 行代码，替代原来的 30+ 行手动映射
   // 注意：useMemo 已移到组件顶部，确保 Hooks 调用顺序一致
 
-  const gridProps: IGridProps = {
+  const gridProps: IGridProps = useMemo(() => ({
     columns,
     rowCount: records.length,
     getCellContent,
@@ -485,21 +539,25 @@ function TableView() {
           value: newValue.data,
         });
 
+        // 调用后端 API 更新
         await sdk.updateRecord(config.testBase.tableId, record.id, {
           data: { [field.id]: newValue.data },
-          version: record.version, // 添加版本号以支持乐观锁
+          version: record.version, // 使用版本号进行乐观锁
         });
 
-        console.log('✅ 更新成功');
+        console.log('✅ 后端更新成功');
 
-        // 数据更新将由实时同步 Hook 自动处理
-        // 无需手动更新本地状态，useRealtimeSync 会通过 WebSocket 事件自动刷新
+        // 🚀 立即刷新数据，确保用户看到最新内容
+        // 这解决了编辑后回车不显示新内容的问题
+        await refresh();
+
+        console.log('✅ 数据已刷新，用户界面已更新');
       } catch (err) {
         console.error('❌ 更新失败:', err);
         alert('更新失败: ' + (err as Error).message);
       }
     },
-  };
+  }), [columns, records, fields, getCellContent, sdk, refresh]);
 
   return (
     <div
@@ -698,84 +756,52 @@ function TableView() {
             viewId={config.testBase.viewId}
           >
             <FieldManagementProvider
-              onFieldUpdated={(field) => {
-                console.log('✅ 字段已更新:', field);
-                // 刷新数据
-                if (gridProps.onDataRefresh) {
-                  gridProps.onDataRefresh();
-                }
-              }}
-              onFieldDeleted={(fieldId) => {
-                console.log('🗑️ 字段已删除:', fieldId);
-                // 刷新数据
-                if (gridProps.onDataRefresh) {
-                  gridProps.onDataRefresh();
-                }
-              }}
-              onError={(error, operation) => {
-                console.error(`❌ 字段${operation === 'edit' ? '编辑' : '删除'}失败:`, error);
-              }}
+              onFieldUpdated={handleFieldUpdated}
+              onFieldDeleted={handleFieldDeleted}
+              onError={handleFieldError}
             >
-              <StandardDataView
-                sdk={sdk}
-                tableId={config.testBase.tableId}
-                // 过滤配置
-                filterFields={filterFields}
-                filterConditions={filterConditions}
-                onFilterConditionsChange={handleFilterConditionsChange}
-                onFilteredDataChange={handleFilteredDataChange}
-                // 真实 API 调用创建视图
-                onCreateView={async (viewType: string) => {
-                  try {
-                    console.log('🆕 创建视图:', viewType);
-
-                    // 调用 LuckDB SDK 创建视图
-                    const newView = await sdk!.createView({
-                      tableId: config.testBase.tableId,
-                      name: `${viewType}视图_${Date.now()}`,
-                      type: viewType as any, // 确保类型匹配
-                      description: `通过 Demo 创建的 ${viewType} 视图`,
-                    });
-
-                    console.log('✅ 视图创建成功:', newView);
-
-                    // 刷新数据以获取最新的视图列表
-                    if (gridProps.onDataRefresh) {
-                      await gridProps.onDataRefresh();
-                    }
-
-                    // 可选：切换到新创建的视图
-                    // setActiveViewId(newView.id);
-                  } catch (error) {
-                    console.error('❌ 创建视图失败:', error);
-                    alert(`创建视图失败: ${(error as Error).message}`);
-                  }
-                }}
-                gridProps={{
-                  ...gridProps,
-                  // 数据刷新回调 - 使用实时同步的刷新功能
-                  onDataRefresh: async () => {
-                    console.log('🔄 自动刷新数据...');
-                    await refresh();
+              {(() => {
+                const standardProps: any = {
+                  sdk: sdk,
+                  tableId: config.testBase.tableId,
+                  // 过滤配置
+                  filterFields: filterFields,
+                  filterConditions: filterConditions,
+                  onFilterConditionsChange: handleFilterConditionsChange,
+                  onFilteredDataChange: handleFilteredDataChange,
+                  // 真实 API 调用创建视图
+                  onCreateView: handleCreateView,
+                  gridProps: {
+                    ...gridProps,
+                    onDataRefresh,
+                  } as any,
+                  // 🔄 表头实时协作（YJS header sync）
+                  syncHeader: {
+                    tableId: config.testBase.tableId,
+                    viewId: String(activeViewId),
+                    userId: (currentUser && (currentUser.id || currentUser.userId)) || 'anonymous',
+                    token: accessToken || undefined,
+                    endpoint: '/yjs/ws',
+                    debug: config.debug,
+                    baseUrl: config.baseURL,
                   },
-                }}
-                fields={fields.map((f: any) => ({
-                  id: f.id ?? f.fieldId ?? String(f.key ?? f.name),
-                  name: f.name ?? f.title ?? String(f.id ?? ''),
-                  type: f.type ?? 'text',
-                  visible: true,
-                  required: false,
-                  isPrimary: f.primary || false,
-                  description: f.description || '',
-                  options: f.options || {},
-                }))}
-                // 最简配置：显示所有功能，不传任何回调
-                showHeader
-                showToolbar
-                showStatus
-                // 不传 onAddField、onAddColumn 等回调，让组件自动处理
-                // 组件会自动使用 sdk + tableId 创建字段
-              />
+                  fields: fields.map((f: any) => ({
+                    id: f.id ?? f.fieldId ?? String(f.key ?? f.name),
+                    name: f.name ?? f.title ?? String(f.id ?? ''),
+                    type: f.type ?? 'text',
+                    visible: true,
+                    required: false,
+                    isPrimary: f.primary || false,
+                    description: f.description || '',
+                    options: f.options || {},
+                  })),
+                  // 最简配置：显示所有功能
+                  showHeader: true,
+                  showToolbar: true,
+                  showStatus: true,
+                };
+                return <StandardDataView {...standardProps} />;
+              })()}
             </FieldManagementProvider>
           </AppProviders>
         ) : (

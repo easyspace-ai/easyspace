@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface IBuildBaseAgentState {
   building: boolean;
@@ -12,7 +12,7 @@ interface IBuildBaseAgentState {
 export const useBuildBaseAgentStore = create<IBuildBaseAgentState>((set) => ({
   building: false,
   displayFieldIds: [],
-  tableId: '',
+  tableId: "",
   setBuilding: (building) => set({ building }),
   setDisplayFieldIds: (displayFieldIds) => set({ displayFieldIds }),
   setTableId: (tableId) => set({ tableId }),

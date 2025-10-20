@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef } from 'react';
-import type { ICellItem } from '../../interface';
-import { SelectionRegionType } from '../../interface';
-import { CombinedSelection, emptySelection } from '../../managers';
+import { useCallback, useEffect, useRef } from "react";
+import type { ICellItem } from "../../interface";
+import { SelectionRegionType } from "../../interface";
+import { CombinedSelection, emptySelection } from "../../managers";
 
 /**
  * Grid ref interface
@@ -33,7 +33,8 @@ export const useGridFileEvent = (props: IUseGridFileEventProps) => {
   useEffect(() => {
     if (gridRef.current) {
       const container = gridRef.current.getContainer();
-      stageRef.current = container?.querySelector('[data-t-grid-stage]') || null;
+      stageRef.current =
+        container?.querySelector("[data-t-grid-stage]") || null;
     }
   }, [gridRef]);
 
@@ -47,7 +48,7 @@ export const useGridFileEvent = (props: IUseGridFileEventProps) => {
       const y = event.clientY - rect.top;
       return gridRef.current?.getCellIndicesAtPosition(x, y) ?? null;
     },
-    [gridRef]
+    [gridRef],
   );
 
   /**
@@ -55,15 +56,17 @@ export const useGridFileEvent = (props: IUseGridFileEventProps) => {
    */
   const onDragLeave = useCallback(
     (e: DragEvent) => {
-      if (e.target !== stageRef.current) {return;}
+      if (e.target !== stageRef.current) {
+        return;
+      }
       e.preventDefault();
       e.stopPropagation();
-      
+
       // Clear selection when leaving
       gridRef.current?.setSelection(emptySelection);
       dropTargetRef.current = null;
     },
-    [gridRef]
+    [gridRef],
   );
 
   /**
@@ -71,13 +74,15 @@ export const useGridFileEvent = (props: IUseGridFileEventProps) => {
    */
   const onDragOver = useCallback(
     (e: DragEvent) => {
-      if (e.target !== stageRef.current) {return;}
+      if (e.target !== stageRef.current) {
+        return;
+      }
 
       e.preventDefault();
       e.stopPropagation();
 
       const cell = getDropCell(e);
-      
+
       // Validate if cell accepts file drop
       if (!cell || !onValidation(cell)) {
         dropTargetRef.current = null;
@@ -87,10 +92,13 @@ export const useGridFileEvent = (props: IUseGridFileEventProps) => {
       dropTargetRef.current = cell;
 
       // Highlight the drop target cell
-      const newSelection = new CombinedSelection(SelectionRegionType.Cells, [cell, cell]);
+      const newSelection = new CombinedSelection(SelectionRegionType.Cells, [
+        cell,
+        cell,
+      ]);
       gridRef.current?.setSelection(newSelection);
     },
-    [gridRef, getDropCell, onValidation]
+    [gridRef, getDropCell, onValidation],
   );
 
   /**
@@ -98,24 +106,30 @@ export const useGridFileEvent = (props: IUseGridFileEventProps) => {
    */
   const onDrop = useCallback(
     (e: DragEvent) => {
-      if (e.target !== stageRef.current) {return;}
+      if (e.target !== stageRef.current) {
+        return;
+      }
       e.preventDefault();
       e.stopPropagation();
 
-      if (!dropTargetRef.current) {return;}
+      if (!dropTargetRef.current) {
+        return;
+      }
 
       const files = e.dataTransfer?.files;
 
-      if (!files?.length) {return;}
+      if (!files?.length) {
+        return;
+      }
 
       // Process dropped files
       onCellDrop(dropTargetRef.current, files);
-      
+
       // Clear drop target
       dropTargetRef.current = null;
       gridRef.current?.setSelection(emptySelection);
     },
-    [onCellDrop, gridRef]
+    [onCellDrop, gridRef],
   );
 
   /**
@@ -123,16 +137,18 @@ export const useGridFileEvent = (props: IUseGridFileEventProps) => {
    */
   useEffect(() => {
     const stage = stageRef.current;
-    if (!stage) {return;}
+    if (!stage) {
+      return;
+    }
 
-    stage.addEventListener('dragover', onDragOver as EventListener);
-    stage.addEventListener('dragleave', onDragLeave as EventListener);
-    stage.addEventListener('drop', onDrop as EventListener);
+    stage.addEventListener("dragover", onDragOver as EventListener);
+    stage.addEventListener("dragleave", onDragLeave as EventListener);
+    stage.addEventListener("drop", onDrop as EventListener);
 
     return () => {
-      stage.removeEventListener('dragover', onDragOver as EventListener);
-      stage.removeEventListener('dragleave', onDragLeave as EventListener);
-      stage.removeEventListener('drop', onDrop as EventListener);
+      stage.removeEventListener("dragover", onDragOver as EventListener);
+      stage.removeEventListener("dragleave", onDragLeave as EventListener);
+      stage.removeEventListener("drop", onDrop as EventListener);
     };
   }, [onDragOver, onDragLeave, onDrop]);
 
@@ -146,11 +162,16 @@ export const useGridFileEvent = (props: IUseGridFileEventProps) => {
 /**
  * Check if file type is allowed
  */
-export const isAllowedFileType = (file: File, allowedTypes: string[]): boolean => {
-  if (allowedTypes.length === 0) {return true;}
-  
+export const isAllowedFileType = (
+  file: File,
+  allowedTypes: string[],
+): boolean => {
+  if (allowedTypes.length === 0) {
+    return true;
+  }
+
   return allowedTypes.some((type) => {
-    if (type.endsWith('/*')) {
+    if (type.endsWith("/*")) {
       const prefix = type.slice(0, -2);
       return file.type.startsWith(prefix);
     }
@@ -174,9 +195,13 @@ export const processFileList = (
     maxFiles?: number;
     maxSize?: number;
     allowedTypes?: string[];
-  } = {}
+  } = {},
 ): { valid: File[]; invalid: File[]; errors: string[] } => {
-  const { maxFiles = Infinity, maxSize = Infinity, allowedTypes = [] } = options;
+  const {
+    maxFiles = Infinity,
+    maxSize = Infinity,
+    allowedTypes = [],
+  } = options;
   const valid: File[] = [];
   const invalid: File[] = [];
   const errors: string[] = [];
@@ -199,7 +224,9 @@ export const processFileList = (
     // Check file size
     if (!isValidFileSize(file, maxSize)) {
       invalid.push(file);
-      errors.push(`File too large: ${file.name} (max size: ${maxSize / 1024 / 1024}MB)`);
+      errors.push(
+        `File too large: ${file.name} (max size: ${maxSize / 1024 / 1024}MB)`,
+      );
       return;
     }
 
@@ -208,4 +235,3 @@ export const processFileList = (
 
   return { valid, invalid, errors };
 };
-

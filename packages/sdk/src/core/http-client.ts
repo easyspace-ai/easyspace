@@ -406,4 +406,11 @@ export class HttpClient {
   public async getSystemInfo(): Promise<any> {
     return this.get('/api/info');
   }
+
+  /**
+   * 获取基础 URL
+   */
+  public getBaseUrl(): string {
+    return this.config.baseUrl;
+  }
 }

@@ -1,9 +1,20 @@
-import type { ForwardRefRenderFunction, MutableRefObject, ReactNode, UIEvent } from 'react';
-import { useMemo, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
-import { GRID_DEFAULT } from '../configs';
-import { useEventListener } from '../hooks/primitive';
-import type { IActiveCellBound } from '../types/grid';
-import { getWheelDelta } from '../utils/business/utils';
+import type {
+  ForwardRefRenderFunction,
+  MutableRefObject,
+  ReactNode,
+  UIEvent,
+} from "react";
+import {
+  useMemo,
+  useRef,
+  useCallback,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+import { GRID_DEFAULT } from "../configs";
+import { useEventListener } from "../hooks/primitive";
+import type { IActiveCellBound } from "../types/grid";
+import { getWheelDelta } from "../utils/business/utils";
 
 export interface CellScrollerProps {
   containerRef: MutableRefObject<HTMLDivElement | null>;
@@ -19,12 +30,19 @@ export interface CellScrollerRef {
 
 const { cellScrollBarPaddingY } = GRID_DEFAULT;
 
-const CellScrollerBase: ForwardRefRenderFunction<CellScrollerRef, CellScrollerProps> = (
-  props,
-  ref
-) => {
-  const { containerRef, style, scrollEnable, activeCellBound, setCellScrollTop } = props;
-  const { height: containerHeight, totalHeight: scrollHeight } = activeCellBound;
+const CellScrollerBase: ForwardRefRenderFunction<
+  CellScrollerRef,
+  CellScrollerProps
+> = (props, ref) => {
+  const {
+    containerRef,
+    style,
+    scrollEnable,
+    activeCellBound,
+    setCellScrollTop,
+  } = props;
+  const { height: containerHeight, totalHeight: scrollHeight } =
+    activeCellBound;
 
   const verticalScrollRef = useRef<HTMLDivElement | null>(null);
   const offsetY = useRef(0);
@@ -40,7 +58,9 @@ const CellScrollerBase: ForwardRefRenderFunction<CellScrollerRef, CellScrollerPr
   }));
 
   const onScroll = (e: UIEvent<HTMLDivElement>) => {
-    if (!verticalScrollRef.current) {return;}
+    if (!verticalScrollRef.current) {
+      return;
+    }
 
     const el = e.target as HTMLElement;
     const { scrollTop: newScrollTop } = el;
@@ -50,7 +70,9 @@ const CellScrollerBase: ForwardRefRenderFunction<CellScrollerRef, CellScrollerPr
 
     if (
       scrollableHeight > 0 &&
-      (Math.abs(delta) > 2000 || newScrollTop === 0 || newScrollTop === scrollableHeight) &&
+      (Math.abs(delta) > 2000 ||
+        newScrollTop === 0 ||
+        newScrollTop === scrollableHeight) &&
       scrollHeight > el.scrollHeight + 5
     ) {
       const prog = newScrollTop / scrollableHeight;
@@ -65,20 +87,23 @@ const CellScrollerBase: ForwardRefRenderFunction<CellScrollerRef, CellScrollerPr
   const scrollHandler = useCallback((deltaY: number) => {
     if (verticalScrollRef.current) {
       const realDeltaY = deltaY;
-      verticalScrollRef.current.scrollTop = verticalScrollRef.current.scrollTop + realDeltaY;
+      verticalScrollRef.current.scrollTop =
+        verticalScrollRef.current.scrollTop + realDeltaY;
     }
   }, []);
 
   const onWheel = useCallback(
     (event: Event) => {
-      if (!scrollEnable) {return;}
+      if (!scrollEnable) {
+        return;
+      }
       event.preventDefault();
       const [, fixedDeltaY] = getWheelDelta({
         event: event as WheelEvent,
       });
       scrollHandler(fixedDeltaY);
     },
-    [scrollEnable, scrollHandler]
+    [scrollEnable, scrollHandler],
   );
 
   const placeholderElements: ReactNode[] = useMemo(() => {
@@ -94,7 +119,7 @@ const CellScrollerBase: ForwardRefRenderFunction<CellScrollerRef, CellScrollerPr
     return res;
   }, [scrollHeight]);
 
-  useEventListener('wheel', onWheel, containerRef.current, false);
+  useEventListener("wheel", onWheel, containerRef.current, false);
 
   return (
     <div

@@ -19,7 +19,7 @@ export type {
   ICellPosition,
   IActiveCellBound,
   ICollaborator,
-} from './types/grid';
+} from "./types/grid";
 
 export {
   RegionType,
@@ -27,9 +27,9 @@ export {
   DragRegionType,
   LinearRowType,
   RowControlType,
-} from './types/grid';
+} from "./types/grid";
 
-import type { LinearRowType } from './types/grid';
+import type { LinearRowType } from "./types/grid";
 
 // 保留 interface.ts 中独特的接口定义
 export interface ILayoutDrawerProps {

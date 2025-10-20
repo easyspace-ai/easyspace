@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import type { CombinedSelection } from '../managers';
+import { create } from "zustand";
+import type { CombinedSelection } from "../managers";
 
 export interface IHeaderMenu {
   x: number;

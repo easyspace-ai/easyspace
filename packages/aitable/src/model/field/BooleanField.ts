@@ -3,10 +3,13 @@
  * Handles checkbox fields with strict typing
  */
 
-import { Field, type StrictFieldConfig } from './Field';
-import { FIELD_TYPES } from '../../types/core/field-types';
-import type { CheckboxFieldOptions } from '../../types/core/field-options';
-import type { GetCellValue, GetDisplayValue } from '../../types/core/cell-values';
+import { Field, type StrictFieldConfig } from "./Field";
+import { FIELD_TYPES } from "../../types/core/field-types";
+import type { CheckboxFieldOptions } from "../../types/core/field-options";
+import type {
+  GetCellValue,
+  GetDisplayValue,
+} from "../../types/core/cell-values";
 
 /**
  * Boolean field type
@@ -38,15 +41,17 @@ export class BooleanField extends Field<BooleanFieldType> {
       return true;
     }
 
-    return typeof value === 'boolean';
+    return typeof value === "boolean";
   }
 
-  format(value: GetCellValue<BooleanFieldType>): GetDisplayValue<BooleanFieldType> {
+  format(
+    value: GetCellValue<BooleanFieldType>,
+  ): GetDisplayValue<BooleanFieldType> {
     if (value === null || value === undefined) {
-      return '';
+      return "";
     }
 
-    return value ? '✓' : '';
+    return value ? "✓" : "";
   }
 
   toCellValue(value: unknown): GetCellValue<BooleanFieldType> {
@@ -55,21 +60,26 @@ export class BooleanField extends Field<BooleanFieldType> {
     }
 
     // Convert truthy/falsy values
-    if (typeof value === 'boolean') {
+    if (typeof value === "boolean") {
       return value;
     }
 
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       const lower = value.toLowerCase();
-      if (lower === 'true' || lower === 'yes' || lower === '1') {
+      if (lower === "true" || lower === "yes" || lower === "1") {
         return true;
       }
-      if (lower === 'false' || lower === 'no' || lower === '0' || lower === '') {
+      if (
+        lower === "false" ||
+        lower === "no" ||
+        lower === "0" ||
+        lower === ""
+      ) {
         return false;
       }
     }
 
-    if (typeof value === 'number') {
+    if (typeof value === "number") {
       return value !== 0;
     }
 
@@ -92,4 +102,3 @@ export class BooleanField extends Field<BooleanFieldType> {
     return value === null || value === undefined;
   }
 }
-

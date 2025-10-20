@@ -2,25 +2,25 @@
  * Field types that need persistent editing
  */
 export enum FieldType {
-  SingleLineText = 'singleLineText',
-  LongText = 'longText',
-  Number = 'number',
-  SingleSelect = 'singleSelect',
-  MultipleSelect = 'multipleSelect',
-  Date = 'date',
-  Checkbox = 'checkbox',
-  User = 'user',
-  Attachment = 'attachment',
-  Link = 'link',
-  Rating = 'rating',
-  Formula = 'formula',
-  Rollup = 'rollup',
-  Count = 'count',
-  CreatedTime = 'createdTime',
-  LastModifiedTime = 'lastModifiedTime',
-  CreatedBy = 'createdBy',
-  LastModifiedBy = 'lastModifiedBy',
-  AutoNumber = 'autoNumber',
+  SingleLineText = "singleLineText",
+  LongText = "longText",
+  Number = "number",
+  SingleSelect = "singleSelect",
+  MultipleSelect = "multipleSelect",
+  Date = "date",
+  Checkbox = "checkbox",
+  User = "user",
+  Attachment = "attachment",
+  Link = "link",
+  Rating = "rating",
+  Formula = "formula",
+  Rollup = "rollup",
+  Count = "count",
+  CreatedTime = "createdTime",
+  LastModifiedTime = "lastModifiedTime",
+  CreatedBy = "createdBy",
+  LastModifiedBy = "lastModifiedBy",
+  AutoNumber = "autoNumber",
 }
 
 /**
@@ -47,10 +47,10 @@ export interface IFieldInstance {
  */
 export const isNeedPersistEditing = (
   fields: IFieldInstance[],
-  fieldId: string
+  fieldId: string,
 ): boolean => {
   const field = fields.find((f) => f.id === fieldId);
-  
+
   if (!field) {
     return false;
   }
@@ -71,7 +71,7 @@ export interface IEditingState {
 /**
  * Local storage key for editing state
  */
-const EDITING_STATE_KEY = 'grid-editing-state';
+const EDITING_STATE_KEY = "grid-editing-state";
 
 /**
  * Save editing state to local storage
@@ -81,10 +81,10 @@ export const saveEditingState = (state: IEditingState): void => {
     const states = getEditingStates();
     const key = `${state.recordId}-${state.fieldId}`;
     states[key] = state;
-    
+
     localStorage.setItem(EDITING_STATE_KEY, JSON.stringify(states));
   } catch (error) {
-    console.error('Failed to save editing state:', error);
+    console.error("Failed to save editing state:", error);
   }
 };
 
@@ -96,7 +96,7 @@ export const getEditingStates = (): Record<string, IEditingState> => {
     const data = localStorage.getItem(EDITING_STATE_KEY);
     return data ? JSON.parse(data) : {};
   } catch (error) {
-    console.error('Failed to get editing states:', error);
+    console.error("Failed to get editing states:", error);
     return {};
   }
 };
@@ -106,7 +106,7 @@ export const getEditingStates = (): Record<string, IEditingState> => {
  */
 export const getEditingState = (
   recordId: string,
-  fieldId: string
+  fieldId: string,
 ): IEditingState | null => {
   const states = getEditingStates();
   const key = `${recordId}-${fieldId}`;
@@ -121,10 +121,10 @@ export const clearEditingState = (recordId: string, fieldId: string): void => {
     const states = getEditingStates();
     const key = `${recordId}-${fieldId}`;
     delete states[key];
-    
+
     localStorage.setItem(EDITING_STATE_KEY, JSON.stringify(states));
   } catch (error) {
-    console.error('Failed to clear editing state:', error);
+    console.error("Failed to clear editing state:", error);
   }
 };
 
@@ -135,7 +135,7 @@ export const clearAllEditingStates = (): void => {
   try {
     localStorage.removeItem(EDITING_STATE_KEY);
   } catch (error) {
-    console.error('Failed to clear all editing states:', error);
+    console.error("Failed to clear all editing states:", error);
   }
 };
 
@@ -145,20 +145,19 @@ export const clearAllEditingStates = (): void => {
 export const clearExpiredEditingStates = (): void => {
   const MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
   const now = Date.now();
-  
+
   try {
     const states = getEditingStates();
     const validStates: Record<string, IEditingState> = {};
-    
+
     Object.entries(states).forEach(([key, state]) => {
       if (now - state.timestamp < MAX_AGE) {
         validStates[key] = state;
       }
     });
-    
+
     localStorage.setItem(EDITING_STATE_KEY, JSON.stringify(validStates));
   } catch (error) {
-    console.error('Failed to clear expired editing states:', error);
+    console.error("Failed to clear expired editing states:", error);
   }
 };
-

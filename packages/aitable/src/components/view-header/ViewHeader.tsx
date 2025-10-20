@@ -1,22 +1,23 @@
 /**
  * ViewHeader - 视图头部组件（重构版）
- * 
+ *
  * 设计原则：
  * 1. 现代化标签设计（底部指示条，非浮起效果）
  * 2. 流畅的动画和交互反馈
  * 3. 真实图标系统
  * 4. 8px 网格对齐
  * 5. 纯 Tailwind，无内联样式
- * 
+ *
  * 灵感来源: Linear, Notion, Airtable
  */
 
-import React, { useState, useCallback } from 'react';
-import { cn, tokens } from '../../grid/design-system';
-import { Plus } from 'lucide-react';
-import { CreateViewMenu } from './CreateViewMenu';
-import { ViewTab } from './ViewTab';
-import { IconButton } from '../../ui/Button';
+import React, { useState, useCallback, useMemo } from "react";
+import { cn, tokens } from "../../grid/design-system";
+import { Plus } from "lucide-react";
+import { CreateViewMenu } from "./CreateViewMenu";
+import { ViewTab } from "./ViewTab";
+import { IconButton } from "../../ui/Button";
+import { useTableHeaderSync } from "../../hooks/useTableHeaderSync";
 
 // ==================== 类型定义 ====================
 
@@ -36,7 +37,7 @@ export interface ViewHeaderProps {
   tabs?: Tab[];
   activeTabKey?: string;
   onTabChange?: (tabKey: string) => void;
-  
+
   // 动态视图模式
   views?: View[];
   activeViewId?: string;
@@ -44,15 +45,26 @@ export interface ViewHeaderProps {
   onCreateView?: (viewType: string) => void;
   onRenameView?: (viewId: string, newName: string) => void;
   onDeleteView?: (viewId: string) => void;
-  
+
   // 右侧操作按钮
   onAdd?: () => void;
-  
+
   // 响应式
   isMobile?: boolean;
   isTouch?: boolean;
-  
+
   className?: string;
+
+  // 可选：启用 Yjs 表头同步配置（对齐 teable 流程）
+  syncHeader?: {
+    tableId: string;
+    userId: string;
+    token?: string;
+    endpoint?: string;
+    debug?: boolean;
+    onColumnOrder?: (order: string[]) => void;
+    onColumnWidth?: (widths: Record<string, number>) => void;
+  };
 }
 
 // ==================== 主组件 ====================
@@ -74,24 +86,65 @@ export function ViewHeader({
   isMobile = false,
   isTouch = false,
   className,
+  syncHeader,
 }: ViewHeaderProps) {
   const [showCreateViewMenu, setShowCreateViewMenu] = useState(false);
 
+  // 启用（可选）表头同步：
+  const syncEnabled = !!syncHeader;
+  const tableId = syncHeader?.tableId;
+  const userId = syncHeader?.userId;
+  const token = syncHeader?.token;
+  const endpoint = syncHeader?.endpoint;
+  const debug = syncHeader?.debug;
+
+  const { sendColumnOrder, sendColumnWidth } = useTableHeaderSync(
+    useMemo(
+      () => ({
+        tableId: tableId || "",
+        userId: userId || "",
+        token,
+        endpoint,
+        debug,
+        onColumnOrder: syncHeader?.onColumnOrder,
+        onColumnWidth: syncHeader?.onColumnWidth,
+      }),
+      [
+        tableId,
+        userId,
+        token,
+        endpoint,
+        debug,
+        syncHeader?.onColumnOrder,
+        syncHeader?.onColumnWidth,
+      ],
+    ),
+  );
+
   // 处理标签切换
-  const handleTabChange = useCallback((key: string) => {
-    onTabChange?.(key);
-  }, [onTabChange]);
+  const handleTabChange = useCallback(
+    (key: string) => {
+      onTabChange?.(key);
+    },
+    [onTabChange],
+  );
 
   // 处理视图切换
-  const handleViewChange = useCallback((viewId: string) => {
-    onViewChange?.(viewId);
-  }, [onViewChange]);
+  const handleViewChange = useCallback(
+    (viewId: string) => {
+      onViewChange?.(viewId);
+    },
+    [onViewChange],
+  );
 
   // 处理创建视图
-  const handleCreateView = useCallback((viewType: string) => {
-    onCreateView?.(viewType);
-    setShowCreateViewMenu(false);
-  }, [onCreateView]);
+  const handleCreateView = useCallback(
+    (viewType: string) => {
+      onCreateView?.(viewType);
+      setShowCreateViewMenu(false);
+    },
+    [onCreateView],
+  );
 
   // 使用动态视图或静态标签
   const useViews = !!(views && views.length > 0);
@@ -100,17 +153,17 @@ export function ViewHeader({
     <div
       className={cn(
         // 布局
-        'flex items-center justify-between',
-        'relative',
-        
+        "flex items-center justify-between",
+        "relative",
+
         // 尺寸 - 8px 网格
-        isMobile ? 'h-12 px-3' : 'h-14 px-4',
-        
+        isMobile ? "h-12 px-3" : "h-14 px-4",
+
         // 底部边框
-        'border-b',
-        
+        "border-b",
+
         // 自定义类
-        className
+        className,
       )}
       style={{
         backgroundColor: tokens.colors.surface.base,
@@ -119,12 +172,12 @@ export function ViewHeader({
       role="banner"
     >
       {/* 左侧标签栏 */}
-      <div 
-        role="tablist" 
+      <div
+        role="tablist"
         className={cn(
-          'flex items-center',
+          "flex items-center",
           // 标签间距 4px
-          'gap-1',
+          "gap-1",
         )}
       >
         {useViews ? (
@@ -138,13 +191,21 @@ export function ViewHeader({
                 type={view.type}
                 active={activeViewId === view.id}
                 onClick={() => handleViewChange(view.id)}
-                onRename={onRenameView ? (id) => {
-                  // 触发重命名回调
-                  onRenameView(id, view.name);
-                } : undefined}
-                onDelete={onDeleteView ? (id) => {
-                  onDeleteView(id);
-                } : undefined}
+                onRename={
+                  onRenameView
+                    ? (id) => {
+                        // 触发重命名回调
+                        onRenameView(id, view.name);
+                      }
+                    : undefined
+                }
+                onDelete={
+                  onDeleteView
+                    ? (id) => {
+                        onDeleteView(id);
+                      }
+                    : undefined
+                }
                 isMobile={isMobile}
                 isTouch={isTouch}
               />
@@ -173,16 +234,16 @@ export function ViewHeader({
             <IconButton
               icon={Plus}
               variant="ghost"
-              size={isMobile ? 'sm' : 'sm'}
+              size={isMobile ? "sm" : "sm"}
               onClick={() => setShowCreateViewMenu(!showCreateViewMenu)}
               className={cn(
-                'transition-all duration-200',
-                showCreateViewMenu && 'bg-gray-100 rotate-45',
+                "transition-all duration-200",
+                showCreateViewMenu && "bg-gray-100 rotate-45",
               )}
               aria-label="添加视图"
               title="添加视图"
             />
-            
+
             {/* 创建视图下拉菜单 */}
             {showCreateViewMenu && (
               <CreateViewMenu
@@ -200,12 +261,12 @@ export function ViewHeader({
           <IconButton
             icon={Plus}
             variant="primary"
-            size={isMobile ? 'sm' : 'md'}
+            size={isMobile ? "sm" : "md"}
             onClick={onAdd}
             className={cn(
-              'rounded-lg shadow-sm',
-              'hover:shadow-md',
-              'transition-all duration-200',
+              "rounded-lg shadow-sm",
+              "hover:shadow-md",
+              "transition-all duration-200",
             )}
             aria-label="添加新项"
             title="添加新项"

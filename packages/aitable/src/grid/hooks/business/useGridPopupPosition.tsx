@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
 /**
  * Editor rect interface
@@ -15,8 +15,8 @@ export interface IEditorRect {
  * Popup position result
  */
 export interface IPopupPosition {
-  top: number | 'unset';
-  bottom: number | 'unset';
+  top: number | "unset";
+  bottom: number | "unset";
   maxHeight: number;
   isAbove: boolean;
 }
@@ -29,7 +29,7 @@ const SAFE_SPACING = 32;
 /**
  * Grid container attribute
  */
-const GRID_CONTAINER_ATTR = 'data-t-grid-container';
+const GRID_CONTAINER_ATTR = "data-t-grid-container";
 
 /**
  * Hook for calculating popup position within grid
@@ -37,7 +37,7 @@ const GRID_CONTAINER_ATTR = 'data-t-grid-container';
  */
 export const useGridPopupPosition = (
   rect: IEditorRect,
-  maxHeight?: number
+  maxHeight?: number,
 ): IPopupPosition | undefined => {
   const { y, height, editorId } = rect;
 
@@ -56,17 +56,20 @@ export const useGridPopupPosition = (
     const { y: gridY } = gridBound;
     const spaceAbove = Math.max(y, gridY);
     const spaceBelow = screenH - gridY - y - height;
-    
+
     // Determine if popup should open above or below
     const isAbove = spaceAbove > spaceBelow;
-    
+
     // Calculate final height with safe spacing
     const availableSpace = isAbove ? y : spaceBelow;
-    const finalHeight = Math.min(availableSpace - SAFE_SPACING, maxHeight ?? Infinity);
+    const finalHeight = Math.min(
+      availableSpace - SAFE_SPACING,
+      maxHeight ?? Infinity,
+    );
 
     return {
-      top: isAbove ? 'unset' : height + 1,
-      bottom: isAbove ? height : 'unset',
+      top: isAbove ? "unset" : height + 1,
+      bottom: isAbove ? height : "unset",
       maxHeight: finalHeight,
       isAbove,
     };
@@ -79,11 +82,11 @@ export const useGridPopupPosition = (
 export const calculatePopupPosition = (
   elementRect: DOMRect,
   popupHeight: number,
-  containerRect?: DOMRect
+  containerRect?: DOMRect,
 ): { top?: number; bottom?: number; left?: number; right?: number } => {
   const screenH = window.innerHeight;
   const screenW = window.innerWidth;
-  
+
   const containerTop = containerRect?.top || 0;
   const containerLeft = containerRect?.left || 0;
   const containerRight = containerRect?.right || screenW;
@@ -95,7 +98,12 @@ export const calculatePopupPosition = (
   const spaceLeft = elementRect.left - containerLeft;
   const spaceRight = containerRight - elementRect.right;
 
-  const position: { top?: number; bottom?: number; left?: number; right?: number } = {};
+  const position: {
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
+  } = {};
 
   // Vertical positioning
   if (spaceBelow >= popupHeight + SAFE_SPACING) {
@@ -119,4 +127,3 @@ export const calculatePopupPosition = (
 
   return position;
 };
-

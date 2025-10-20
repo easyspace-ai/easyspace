@@ -2,6 +2,4 @@
  * View Models Export
  */
 
-export * from './View';
-
-
+export * from "./View";

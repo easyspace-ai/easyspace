@@ -2,8 +2,16 @@
  * Record Type Mappers - 记录类型转换器
  */
 
-import type { RecordDTO, CreateRecordDTO, UpdateRecordDTO } from '../infrastructure';
-import type { RecordModel, CreateRecordCommand, UpdateRecordCommand } from '../domain';
+import type {
+  RecordDTO,
+  CreateRecordDTO,
+  UpdateRecordDTO,
+} from "../infrastructure";
+import type {
+  RecordModel,
+  CreateRecordCommand,
+  UpdateRecordCommand,
+} from "../domain";
 
 /**
  * Record Mapper
@@ -17,7 +25,9 @@ export class RecordMapper {
       id: dto.id,
       fields: new Map(Object.entries(dto.fields)),
       createdTime: dto.createdTime ? new Date(dto.createdTime) : undefined,
-      lastModifiedTime: dto.lastModifiedTime ? new Date(dto.lastModifiedTime) : undefined,
+      lastModifiedTime: dto.lastModifiedTime
+        ? new Date(dto.lastModifiedTime)
+        : undefined,
       createdBy: dto.createdBy,
       lastModifiedBy: dto.lastModifiedBy,
     };
@@ -41,10 +51,11 @@ export class RecordMapper {
    * Create Command → DTO
    */
   static createCommandToDTO(command: CreateRecordCommand): CreateRecordDTO {
-    const fields = command.fields instanceof Map 
-      ? Object.fromEntries(command.fields) 
-      : command.fields;
-    
+    const fields =
+      command.fields instanceof Map
+        ? Object.fromEntries(command.fields)
+        : command.fields;
+
     return {
       fields,
       order: command.order,
@@ -62,4 +73,3 @@ export class RecordMapper {
     };
   }
 }
-

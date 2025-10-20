@@ -2,10 +2,10 @@
  * 单选编辑器（下拉选择）
  */
 
-import React, { useEffect, useRef } from 'react';
-import { cn, tokens } from '../../../grid/design-system';
-import type { FieldEditorProps } from '../types';
-import { ChevronDown } from 'lucide-react';
+import React, { useEffect, useRef } from "react";
+import { cn, tokens } from "../../../grid/design-system";
+import type { FieldEditorProps } from "../types";
+import { ChevronDown } from "lucide-react";
 
 export function SelectEditor({
   field,
@@ -25,7 +25,7 @@ export function SelectEditor({
   }, [autoFocus]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && onEnter) {
+    if (e.key === "Enter" && onEnter) {
       e.preventDefault();
       onEnter();
     }
@@ -44,22 +44,24 @@ export function SelectEditor({
     <div className="w-full relative">
       <select
         ref={selectRef}
-        value={value || ''}
+        value={value || ""}
         onChange={(e) => onChange(e.target.value || null)}
         onKeyDown={handleKeyDown}
         disabled={field.locked}
         className={cn(
-          'w-full h-9 pl-3 pr-8 rounded-md text-sm appearance-none',
-          'border transition-all',
-          'focus:outline-none focus:ring-2',
+          "w-full h-9 pl-3 pr-8 rounded-md text-sm appearance-none",
+          "border transition-all",
+          "focus:outline-none focus:ring-2",
           error
-            ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-            : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200',
-          field.locked && 'bg-gray-50 cursor-not-allowed'
+            ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+            : "border-gray-300 focus:border-blue-500 focus:ring-blue-200",
+          field.locked && "bg-gray-50 cursor-not-allowed",
         )}
         style={{
-          backgroundColor: field.locked ? tokens.colors.surface.disabled : tokens.colors.surface.base,
-          borderColor: error ? '#fca5a5' : tokens.colors.border.default,
+          backgroundColor: field.locked
+            ? tokens.colors.surface.disabled
+            : tokens.colors.surface.base,
+          borderColor: error ? "#fca5a5" : tokens.colors.border.default,
         }}
       >
         <option value="">-- 请选择 --</option>
@@ -76,4 +78,3 @@ export function SelectEditor({
     </div>
   );
 }
-

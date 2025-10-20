@@ -4,29 +4,34 @@
  */
 
 // Core Grid System
-export * from './grid';
+export * from "./grid";
 
 // Context System (Application & Data layers)
-export { AppProvider } from './context/app';
-export { BaseProvider } from './context/base';
-export { FieldProvider } from './context/field';
-export { PermissionProvider } from './context/permission';
-export { SessionProvider } from './context/session';
-export { TableProvider } from './context/table';
-export { ViewProvider } from './context/view';
-export { AppProviders } from './context/AppProviders';
+export { AppProvider } from "./context/app";
+export { BaseProvider } from "./context/base";
+export { FieldProvider } from "./context/field";
+export { PermissionProvider } from "./context/permission";
+export { SessionProvider } from "./context/session";
+export { TableProvider } from "./context/table";
+export { ViewProvider } from "./context/view";
+export { AppProviders } from "./context/AppProviders";
 
 // API Client
-export * from './api';
+export * from "./api";
 
 // Data Models
-export * from './model';
+export * from "./model";
 
 // Utilities
-export * from './utils';
+export * from "./utils";
 
 // UI (shadcn components)
-export * from './ui';
+export * from "./ui";
+
+// Yjs Connection Hook
+export * from "./hooks/useYjsConnection";
+export * from "./hooks/useTableHeaderSync";
+export * from "./hooks/useTableData";
 
 // Composite Components - 使用明确的导出避免冲突
 export {
@@ -40,7 +45,7 @@ export {
   FieldManagementProvider,
   useFieldManagement,
   StandardDataView,
-} from './components';
+} from "./components";
 
 // 导出类型
 export type {
@@ -50,4 +55,4 @@ export type {
   ViewType as ComponentViewType,
   View as ComponentView,
   FieldConfig,
-} from './components';
+} from "./components";

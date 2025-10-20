@@ -1,7 +1,7 @@
 /**
  * Number Field Model
  * Handles numeric fields with precision, formatting, and validation
- * 
+ *
  * @example
  * ```typescript
  * const field = new NumberField({
@@ -26,11 +26,14 @@
  * ```
  */
 
-import { Field, type StrictFieldConfig } from './Field';
-import { FIELD_TYPES } from '../../types/core/field-types';
-import type { FieldType } from '../../types/core/field-types';
-import type { NumberFieldOptions } from '../../types/core/field-options';
-import type { GetCellValue, GetDisplayValue } from '../../types/core/cell-values';
+import { Field, type StrictFieldConfig } from "./Field";
+import { FIELD_TYPES } from "../../types/core/field-types";
+import type { FieldType } from "../../types/core/field-types";
+import type { NumberFieldOptions } from "../../types/core/field-options";
+import type {
+  GetCellValue,
+  GetDisplayValue,
+} from "../../types/core/cell-values";
 
 /**
  * Number field type
@@ -62,7 +65,7 @@ export class NumberField extends Field<NumberFieldType> {
 
   /**
    * Validate number value
-   * 
+   *
    * @param value - Value to validate
    * @returns true if valid, false otherwise
    */
@@ -76,7 +79,7 @@ export class NumberField extends Field<NumberFieldType> {
     }
 
     // Must be a valid number
-    if (typeof value !== 'number') {
+    if (typeof value !== "number") {
       return false;
     }
 
@@ -103,13 +106,15 @@ export class NumberField extends Field<NumberFieldType> {
 
   /**
    * Format number value for display
-   * 
+   *
    * @param value - Cell value
    * @returns Formatted string for display
    */
-  format(value: GetCellValue<NumberFieldType>): GetDisplayValue<NumberFieldType> {
+  format(
+    value: GetCellValue<NumberFieldType>,
+  ): GetDisplayValue<NumberFieldType> {
     if (value === null || value === undefined) {
-      return '';
+      return "";
     }
 
     const num = value;
@@ -121,16 +126,16 @@ export class NumberField extends Field<NumberFieldType> {
 
     // Apply thousands separator
     if (formatting.showThousandsSeparator) {
-      const parts = formatted.split('.');
-      parts[0] = (parts[0] ?? '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-      formatted = parts.join('.');
+      const parts = formatted.split(".");
+      parts[0] = (parts[0] ?? "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      formatted = parts.join(".");
     }
 
     // Apply formatting type
     switch (formatting.type) {
-      case 'currency':
-        return `${formatting.symbol || '$'}${formatted}`;
-      case 'percent':
+      case "currency":
+        return `${formatting.symbol || "$"}${formatted}`;
+      case "percent":
         return `${formatted}%`;
       default:
         return formatted;
@@ -139,7 +144,7 @@ export class NumberField extends Field<NumberFieldType> {
 
   /**
    * Convert input value to cell value format
-   * 
+   *
    * @param value - Input value
    * @returns Typed cell value
    */
@@ -150,14 +155,14 @@ export class NumberField extends Field<NumberFieldType> {
 
     let num: number;
 
-    if (typeof value === 'number') {
+    if (typeof value === "number") {
       num = value;
-    } else if (typeof value === 'string') {
+    } else if (typeof value === "string") {
       // Remove common formatting characters
       const cleaned = value
-        .replace(/,/g, '') // Remove thousands separators
-        .replace(/[^0-9.-]/g, ''); // Remove non-numeric characters except . and -
-      
+        .replace(/,/g, "") // Remove thousands separators
+        .replace(/[^0-9.-]/g, ""); // Remove non-numeric characters except . and -
+
       num = parseFloat(cleaned);
     } else {
       return null;
@@ -186,7 +191,7 @@ export class NumberField extends Field<NumberFieldType> {
 
   /**
    * Convert cell value to editable format
-   * 
+   *
    * @param cellValue - Stored cell value
    * @returns Editable value
    */
@@ -200,7 +205,7 @@ export class NumberField extends Field<NumberFieldType> {
 
   /**
    * Get default value
-   * 
+   *
    * @returns Default number value
    */
   getDefaultValue(): number | null {
@@ -209,31 +214,31 @@ export class NumberField extends Field<NumberFieldType> {
 
   /**
    * Check if value is empty
-   * 
+   *
    * @param value - Value to check
    * @returns true if empty
    */
   protected isEmpty(value: unknown): boolean {
-    return value === null || value === undefined || value === '';
+    return value === null || value === undefined || value === "";
   }
 
   /**
    * Parse a formatted number string back to number
    * Useful for handling user input with formatting
-   * 
+   *
    * @param formatted - Formatted string
    * @returns Parsed number or null
    */
   parseFormatted(formatted: string): number | null {
-    if (!formatted || formatted.trim() === '') {
+    if (!formatted || formatted.trim() === "") {
       return null;
     }
 
     // Remove formatting
     const cleaned = formatted
-      .replace(/,/g, '') // Remove thousands separators
-      .replace(/[$%€£¥]/g, '') // Remove currency symbols
-      .replace(/\s/g, '') // Remove spaces
+      .replace(/,/g, "") // Remove thousands separators
+      .replace(/[$%€£¥]/g, "") // Remove currency symbols
+      .replace(/\s/g, "") // Remove spaces
       .trim();
 
     const num = parseFloat(cleaned);
@@ -245,4 +250,3 @@ export class NumberField extends Field<NumberFieldType> {
     return num;
   }
 }
-

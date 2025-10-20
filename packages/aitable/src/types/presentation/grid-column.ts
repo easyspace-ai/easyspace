@@ -1,11 +1,11 @@
 /**
  * Grid Column - 表现层 Grid 列定义
- * 
+ *
  * 这是 UI 层使用的列配置
  * 从 FieldModel 转换而来，增加了 UI 相关属性
  */
 
-import type { FieldType } from '../core';
+import type { FieldType } from "../core";
 
 /**
  * Grid 列定义
@@ -27,4 +27,3 @@ export interface GridColumn {
   };
   customTheme?: any; // Grid 主题定制
 }
-

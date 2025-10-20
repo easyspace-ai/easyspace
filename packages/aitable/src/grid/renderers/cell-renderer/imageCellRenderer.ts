@@ -1,9 +1,9 @@
-import { LRUCache } from 'lru-cache';
-import { GRID_DEFAULT } from '../../configs';
-import type { IRectangle } from '../../interface';
-import { GridInnerIcon } from '../../managers';
-import { isPointInsideRectangle } from '../../utils';
-import { drawRect } from '../base-renderer';
+import { LRUCache } from "lru-cache";
+import { GRID_DEFAULT } from "../../configs";
+import type { IRectangle } from "../../interface";
+import { GridInnerIcon } from "../../managers";
+import { isPointInsideRectangle } from "../../utils";
+import { drawRect } from "../base-renderer";
 import type {
   ICellClickCallback,
   ICellClickProps,
@@ -11,12 +11,13 @@ import type {
   IImageCell,
   IImageData,
   IInternalCellRenderer,
-} from './interface';
-import { CellRegionType, CellType } from './interface';
+} from "./interface";
+import { CellRegionType, CellType } from "./interface";
 
-const imagePositionCache: LRUCache<string, (IRectangle & { id: string })[]> = new LRUCache({
-  max: 100,
-});
+const imagePositionCache: LRUCache<string, (IRectangle & { id: string })[]> =
+  new LRUCache({
+    max: 100,
+  });
 
 const INNER_PADDING = 4;
 
@@ -24,7 +25,7 @@ const { cellHorizontalPadding, cellVerticalPaddingXS } = GRID_DEFAULT;
 
 const getImageCollection = (
   data: IImageData[],
-  loadImg: (url: string) => HTMLImageElement | ImageBitmap | undefined
+  loadImg: (url: string) => HTMLImageElement | ImageBitmap | undefined,
 ) => {
   const collection: { id: string; img: HTMLImageElement | ImageBitmap }[] = [];
 
@@ -41,7 +42,7 @@ const getImageCollection = (
 };
 
 const generateCacheKey = (data: IImageData[], width: number) => {
-  return `${String(width)}-${data.map(({ id }) => id).join(',')}`;
+  return `${String(width)}-${data.map(({ id }) => id).join(",")}`;
 };
 
 export const imageCellRenderer: IInternalCellRenderer<IImageCell> = {
@@ -49,10 +50,18 @@ export const imageCellRenderer: IInternalCellRenderer<IImageCell> = {
   needsHoverWhenActive: true,
   needsHoverPositionWhenActive: true,
   draw: (cell: IImageCell, props: ICellRenderProps) => {
-    const { rect, columnIndex, rowIndex, theme, ctx, imageManager, isActive, spriteManager } =
-      props;
+    const {
+      rect,
+      columnIndex,
+      rowIndex,
+      theme,
+      ctx,
+      imageManager,
+      isActive,
+      spriteManager,
+    } = props;
     if (!rect || !theme || !ctx) return;
-    
+
     const { iconSizeSM, cellLineColor } = theme;
     const { data, readonly } = cell;
     const { x, y, width, height } = rect;
@@ -61,7 +70,7 @@ export const imageCellRenderer: IInternalCellRenderer<IImageCell> = {
     const imgHeight = height - cellVerticalPaddingXS * 2;
 
     const imageCollection = getImageCollection(data, (url) =>
-      imageManager.loadOrGetImage(url, columnIndex, rowIndex)
+      imageManager.loadOrGetImage(url, columnIndex, rowIndex),
     );
 
     if (editable) {
@@ -74,7 +83,9 @@ export const imageCellRenderer: IInternalCellRenderer<IImageCell> = {
       });
     }
 
-    if (!imageCollection.length) {return;}
+    if (!imageCollection.length) {
+      return;
+    }
 
     ctx.save();
     ctx.beginPath();
@@ -87,7 +98,9 @@ export const imageCellRenderer: IInternalCellRenderer<IImageCell> = {
     let drawX = x + cellHorizontalPadding + initPadding;
 
     for (const imgItem of imageCollection) {
-      if (drawX > x + width) {break;}
+      if (drawX > x + width) {
+        break;
+      }
       const { id, img } = imgItem;
       const imgWidth = img.width * (imgHeight / img.height);
       drawRect(ctx, {
@@ -125,7 +138,11 @@ export const imageCellRenderer: IInternalCellRenderer<IImageCell> = {
 
     ctx.restore();
   },
-  checkRegion: (cell: IImageCell, props: ICellClickProps, _shouldCalculate?: boolean) => {
+  checkRegion: (
+    cell: IImageCell,
+    props: ICellClickProps,
+    _shouldCalculate?: boolean,
+  ) => {
     const { data, readonly } = cell;
     const { width, height, theme, isActive, hoverCellPosition } = props;
     const editable = !readonly && isActive;
@@ -140,7 +157,7 @@ export const imageCellRenderer: IInternalCellRenderer<IImageCell> = {
       isPointInsideRectangle(
         [hoverX, hoverY],
         [startX, startY],
-        [startX + iconSizeSM, startY + iconSizeSM]
+        [startX + iconSizeSM, startY + iconSizeSM],
       )
     ) {
       return { type: CellRegionType.ToggleEditing, data: null };
@@ -149,12 +166,20 @@ export const imageCellRenderer: IInternalCellRenderer<IImageCell> = {
     const cacheKey = generateCacheKey(data, width);
     const imagePositions = imagePositionCache.get(cacheKey);
 
-    if (imagePositions == null) {return { type: CellRegionType.Blank };}
+    if (imagePositions == null) {
+      return { type: CellRegionType.Blank };
+    }
 
     for (let i = 0; i < imagePositions.length; i++) {
       const { id, x, y, width, height } = imagePositions[i];
 
-      if (isPointInsideRectangle([hoverX, hoverY], [x, y], [x + width, y + height])) {
+      if (
+        isPointInsideRectangle(
+          [hoverX, hoverY],
+          [x, y],
+          [x + width, y + height],
+        )
+      ) {
         return {
           type: CellRegionType.Preview,
           data: id,
@@ -164,9 +189,15 @@ export const imageCellRenderer: IInternalCellRenderer<IImageCell> = {
 
     return { type: CellRegionType.Blank };
   },
-  onClick: (cell: IImageCell, props: ICellClickProps, callback: ICellClickCallback) => {
+  onClick: (
+    cell: IImageCell,
+    props: ICellClickProps,
+    callback: ICellClickCallback,
+  ) => {
     const cellRegion = imageCellRenderer.checkRegion?.(cell, props, true);
-    if (!cellRegion || cellRegion.type === CellRegionType.Blank) {return;}
+    if (!cellRegion || cellRegion.type === CellRegionType.Blank) {
+      return;
+    }
     if (cellRegion.type === CellRegionType.Preview) {
       cell?.onPreview?.(cellRegion.data as string);
       return callback(cellRegion);

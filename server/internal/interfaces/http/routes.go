@@ -290,12 +290,7 @@ func setupViewRoutes(rg *gin.RouterGroup, cont *container.Container) {
 }
 
 // setupWebSocketRoutes 设置WebSocket路由 ✨
-func setupWebSocketRoutes(router *gin.Engine, cont *container.Container) {
-	handler := NewWebSocketHandler(cont.WebSocketManager(), cont.AuthService())
-
-	// WebSocket 路由
-	router.GET("/ws", handler.HandleWebSocket) // WebSocket 连接入口
-}
+// 旧 WebSocket 路由已移除
 
 // setupMonitoringRoutes 设置监控路由
 func setupMonitoringRoutes(rg *gin.RouterGroup, cont *container.Container) {
@@ -367,16 +362,15 @@ func setupRealtimeRoutes(router *gin.Engine, cont *container.Container) {
 		return
 	}
 
-	// 实时通信 WebSocket 路由（使用不同路径避免冲突）
-	router.GET("/realtime/ws", cont.RealtimeManager().HandleWebSocket)
+	// 已移除基础 WebSocket 路由，仅保留 Yjs WebSocket 与 SSE
 
-	// Yjs 协作 WebSocket 路由
-	router.GET("/yjs/ws", cont.RealtimeManager().HandleYjsWebSocket)
-	router.GET("/yjs/ws/*path", cont.RealtimeManager().HandleYjsWebSocket)
+	// Yjs 协作 WebSocket 路由（需要认证）
+	router.GET("/yjs/ws", JWTAuthMiddleware(cont.AuthService()), cont.RealtimeManager().HandleYjsWebSocket)
+	router.GET("/yjs/ws/*path", JWTAuthMiddleware(cont.AuthService()), cont.RealtimeManager().HandleYjsWebSocket)
 
-	// SSE 路由
-	router.GET("/api/realtime", cont.RealtimeManager().HandleSSE)
-	router.POST("/api/realtime", cont.RealtimeManager().HandleSSESubscription)
+	// SSE 路由（需要认证）
+	router.GET("/api/realtime", JWTAuthMiddleware(cont.AuthService()), cont.RealtimeManager().HandleSSE)
+	router.POST("/api/realtime", JWTAuthMiddleware(cont.AuthService()), cont.RealtimeManager().HandleSSESubscription)
 }
 
 // setupStaticFiles 设置静态文件服务

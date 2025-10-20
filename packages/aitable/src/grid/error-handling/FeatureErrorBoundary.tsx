@@ -1,5 +1,5 @@
-import React, { Component, ReactNode, ErrorInfo } from 'react';
-import { AlertCircle, X } from 'lucide-react';
+import React, { Component, ReactNode, ErrorInfo } from "react";
+import { AlertCircle, X } from "lucide-react";
 
 interface Props {
   children: ReactNode;
@@ -15,7 +15,7 @@ interface State {
 
 /**
  * 功能级错误边界
- * 
+ *
  * 用于包装特定的功能模块（如编辑器、工具栏等），
  * 当某个功能出错时，不影响整个 Grid 的使用。
  */
@@ -40,7 +40,7 @@ export class FeatureErrorBoundary extends Component<Props, State> {
     this.props.onError?.(this.props.feature, error, errorInfo);
 
     // 开发环境记录错误
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.warn(`🚨 ${this.props.feature} feature error:`, error);
     }
   }
@@ -66,7 +66,7 @@ export class FeatureErrorBoundary extends Component<Props, State> {
               {this.props.feature} 功能暂时不可用
             </span>
           </div>
-          
+
           <button
             onClick={this.handleDismiss}
             className="text-red-400 hover:text-red-600 focus:outline-none"

@@ -1,13 +1,13 @@
 /**
  * Field DTO - API 层字段数据传输对象
- * 
+ *
  * 设计原则：
  * 1. 仅用于 API 通信
  * 2. 与后端 API 契约严格一致
  * 3. 不包含业务逻辑
  */
 
-import type { FieldType } from '../core';
+import type { FieldType } from "../core";
 
 /**
  * 字段 DTO (从 API 返回)
@@ -53,4 +53,3 @@ export interface ConvertFieldDTO {
   type: FieldType;
   options?: any;
 }
-

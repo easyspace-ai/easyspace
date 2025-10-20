@@ -1,7 +1,11 @@
-import { GRID_DEFAULT } from '../../configs';
-import { drawChartBar, drawChartLine } from '../base-renderer';
-import { CellType, ChartType } from './interface';
-import type { IInternalCellRenderer, ICellRenderProps, IChartCell } from './interface';
+import { GRID_DEFAULT } from "../../configs";
+import { drawChartBar, drawChartLine } from "../base-renderer";
+import { CellType, ChartType } from "./interface";
+import type {
+  IInternalCellRenderer,
+  ICellRenderProps,
+  IChartCell,
+} from "./interface";
 
 const { cellHorizontalPadding, cellVerticalPaddingXS } = GRID_DEFAULT;
 
@@ -12,12 +16,19 @@ export const chartCellRenderer: IInternalCellRenderer<IChartCell> = {
   draw: (cell: IChartCell, props: ICellRenderProps) => {
     const { ctx, rect, theme, hoverCellPosition } = props;
     if (!ctx || !rect || !theme) return;
-    
+
     const { rowHeaderTextColor: lineColor, fontFamily } = theme;
     const { x, y, width, height } = rect;
-    const { data, displayData, chartType = ChartType.Line, color = lineColor } = cell;
+    const {
+      data,
+      displayData,
+      chartType = ChartType.Line,
+      color = lineColor,
+    } = cell;
 
-    if (!data?.length || !displayData?.length) {return;}
+    if (!data?.length || !displayData?.length) {
+      return;
+    }
 
     const hoverX = hoverCellPosition?.x ?? 0;
     const hoverAmount = hoverCellPosition ? 1 : 0;

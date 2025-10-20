@@ -2,6 +2,4 @@
  * Group Module Exports
  */
 
-export * from './GroupManager';
-
-
+export * from "./GroupManager";

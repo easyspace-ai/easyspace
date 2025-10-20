@@ -1,13 +1,13 @@
-import { Colors, ColorUtils } from '../../../utils/color';
-import { LRUCache } from 'lru-cache';
-import colors from 'tailwindcss/colors';
+import { Colors, ColorUtils } from "../../../utils/color";
+import { LRUCache } from "lru-cache";
+import colors from "tailwindcss/colors";
 
-import type { IGridTheme } from '../../configs';
-import { GRID_DEFAULT } from '../../configs';
-import type { IRectangle } from '../../interface';
-import { inRange } from '../../utils';
-import { drawRect, drawSingleLineText } from '../base-renderer';
-import { CellRegionType, CellType } from './interface';
+import type { IGridTheme } from "../../configs";
+import { GRID_DEFAULT } from "../../configs";
+import type { IRectangle } from "../../interface";
+import { inRange } from "../../utils";
+import { drawRect, drawSingleLineText } from "../base-renderer";
+import { CellRegionType, CellType } from "./interface";
 import type {
   IInternalCellRenderer,
   ICellRenderProps,
@@ -15,7 +15,7 @@ import type {
   ICellClickCallback,
   IButtonCell,
   ICellMeasureProps,
-} from './interface';
+} from "./interface";
 
 const { cellHorizontalPadding } = GRID_DEFAULT;
 
@@ -29,14 +29,20 @@ const positionCache: LRUCache<string, IRectangle> = new LRUCache({
 });
 
 const clickHandler = (cell: IButtonCell) => {
-  const { id = '', data, readonly } = cell;
-  if (readonly) {return;}
+  const { id = "", data, readonly } = cell;
+  if (readonly) {
+    return;
+  }
 
   const { tableId, statusHook, fieldOptions } = data;
-  const [recordId = '', fieldId = ''] = id.split('-');
-  if (!statusHook) {return;}
+  const [recordId = "", fieldId = ""] = id.split("-");
+  if (!statusHook) {
+    return;
+  }
   const isLoading = statusHook.checkLoading?.(fieldId, recordId) ?? false;
-  if (isLoading) {return;}
+  if (isLoading) {
+    return;
+  }
   statusHook.buttonClick({
     tableId,
     recordId,
@@ -58,9 +64,20 @@ const drawButton = (
     bgColor: string;
     theme: IGridTheme;
     opacity?: number;
-  }
+  },
 ) => {
-  const { x, y, width, height, text, maxTextWidth, textColor, bgColor, theme, opacity = 1 } = props;
+  const {
+    x,
+    y,
+    width,
+    height,
+    text,
+    maxTextWidth,
+    textColor,
+    bgColor,
+    theme,
+    opacity = 1,
+  } = props;
   const { fontSizeXS, fontFamily } = theme;
 
   ctx.save();
@@ -83,7 +100,7 @@ const drawButton = (
     fill: textColor,
     maxWidth: maxTextWidth,
     fontSize: fontSizeXS,
-    textAlign: 'center',
+    textAlign: "center",
   });
 
   ctx.restore();
@@ -91,8 +108,13 @@ const drawButton = (
 
 const calcPosition = (
   cell: IButtonCell,
-  props: { width: number; ctx: CanvasRenderingContext2D; theme: IGridTheme; height: number },
-  flush = false
+  props: {
+    width: number;
+    ctx: CanvasRenderingContext2D;
+    theme: IGridTheme;
+    height: number;
+  },
+  flush = false,
 ) => {
   const { data } = cell;
   const { fieldOptions } = data;
@@ -101,7 +123,9 @@ const calcPosition = (
   const cacheKey = `${fieldOptions.label}-${width}`;
   if (!flush) {
     const cachedRect = positionCache.get(cacheKey);
-    if (cachedRect) {return cachedRect;}
+    if (cachedRect) {
+      return cachedRect;
+    }
   }
 
   ctx.save();
@@ -114,7 +138,10 @@ const calcPosition = (
   });
   ctx.restore();
 
-  const finnalTextWidth = Math.max(textWidth, BUTTON_MIN_WIDTH - 2 * cellHorizontalPadding);
+  const finnalTextWidth = Math.max(
+    textWidth,
+    BUTTON_MIN_WIDTH - 2 * cellHorizontalPadding,
+  );
   const rectWidth = finnalTextWidth + 2 * cellHorizontalPadding;
 
   const position: IRectangle = {
@@ -135,8 +162,13 @@ export const buttonCellRenderer: IInternalCellRenderer<IButtonCell> = {
   needsHoverPositionWhenActive: true,
   measure: (cell: IButtonCell, props: ICellMeasureProps) => {
     const { width, height, ctx, theme } = props;
-    if (!ctx || !theme) return { width: width ?? 0, height: height ?? 0, totalHeight: height ?? 0 };
-    
+    if (!ctx || !theme)
+      return {
+        width: width ?? 0,
+        height: height ?? 0,
+        totalHeight: height ?? 0,
+      };
+
     const position = calcPosition(
       cell,
       {
@@ -145,24 +177,28 @@ export const buttonCellRenderer: IInternalCellRenderer<IButtonCell> = {
         theme,
         height,
       },
-      true
+      true,
     );
     return {
       width: width ?? 0,
       height: Math.max(height ?? 0, position?.height ?? 0),
-      totalHeight: position?.height ?? (height ?? 0),
+      totalHeight: position?.height ?? height ?? 0,
     };
   },
   draw: (cell: IButtonCell, props: ICellRenderProps) => {
-    const { data, id = '', readonly } = cell;
+    const { data, id = "", readonly } = cell;
     const { fieldOptions, statusHook } = data;
     const { ctx, rect, theme } = props;
     if (!ctx || !rect || !theme) return;
-    
+
     const { x, y, width, height } = rect;
-    const rectColor = readonly ? Colors.Gray : (fieldOptions.color ?? Colors.Gray);
+    const rectColor = readonly
+      ? Colors.Gray
+      : fieldOptions.color ?? Colors.Gray;
     const bgColor = ColorUtils.getHexForColor(rectColor);
-    const textColor = ColorUtils.shouldUseLightTextOnColor(rectColor) ? colors.white : colors.black;
+    const textColor = ColorUtils.shouldUseLightTextOnColor(rectColor)
+      ? colors.white
+      : colors.black;
     const position = calcPosition(cell, {
       width,
       ctx,
@@ -170,7 +206,7 @@ export const buttonCellRenderer: IInternalCellRenderer<IButtonCell> = {
       height,
     });
 
-    const [recordId = '', fieldId = ''] = id.split('-');
+    const [recordId = "", fieldId = ""] = id.split("-");
     const isLoading = statusHook?.checkLoading?.(fieldId, recordId) ?? false;
 
     return drawButton(ctx, {
@@ -178,7 +214,7 @@ export const buttonCellRenderer: IInternalCellRenderer<IButtonCell> = {
       y: y + position.y,
       width: position.width,
       height: position.height,
-      text: fieldOptions.label ?? '',
+      text: fieldOptions.label ?? "",
       maxTextWidth: position.width - 2 * cellHorizontalPadding,
       textColor,
       bgColor,
@@ -186,7 +222,11 @@ export const buttonCellRenderer: IInternalCellRenderer<IButtonCell> = {
       opacity: isLoading ? 0.8 : 1,
     });
   },
-  checkRegion: (cell: IButtonCell, props: ICellClickProps, _shouldCalculate?: boolean) => {
+  checkRegion: (
+    cell: IButtonCell,
+    props: ICellClickProps,
+    _shouldCalculate?: boolean,
+  ) => {
     const { data } = cell;
     const { fieldOptions } = data;
     const { hoverCellPosition, width } = props;
@@ -211,9 +251,15 @@ export const buttonCellRenderer: IInternalCellRenderer<IButtonCell> = {
     }
     return { type: CellRegionType.Blank };
   },
-  onClick: (cell: IButtonCell, props: ICellClickProps, _callback: ICellClickCallback) => {
+  onClick: (
+    cell: IButtonCell,
+    props: ICellClickProps,
+    _callback: ICellClickCallback,
+  ) => {
     const cellRegion = buttonCellRenderer.checkRegion?.(cell, props, true);
-    if (!cellRegion || cellRegion.type === CellRegionType.Blank) {return;}
+    if (!cellRegion || cellRegion.type === CellRegionType.Blank) {
+      return;
+    }
 
     clickHandler(cell);
     // callback(cellRegion);

@@ -5,6 +5,7 @@
 ## 设计特点
 
 ### 视觉风格
+
 - ✅ **底部指示条** - 替代传统的浮起效果
 - ✅ **真实图标** - 使用 Lucide Icons，直观易懂
 - ✅ **流畅动画** - 200ms cubic-bezier，60fps 体验
@@ -12,6 +13,7 @@
 - ✅ **现代配色** - 蓝色主题，清晰的视觉层次
 
 ### 交互细节
+
 - **Hover**: 背景淡入 + 文字加深 + 轻微放大（1.02）
 - **Active**: 轻微缩小（0.98）+ 更深背景
 - **Selected**: 蓝色背景 + 底部 2px 指示条 + 图标高亮
@@ -19,45 +21,48 @@
 ## 使用示例
 
 ### 静态标签模式
+
 ```tsx
-import { ViewHeader } from '@luckdb/aitable';
+import { ViewHeader } from "@luckdb/aitable";
 
 <ViewHeader
   tabs={[
-    { key: 'table', label: '表格' },
-    { key: 'chart', label: '图表' },
+    { key: "table", label: "表格" },
+    { key: "chart", label: "图表" },
   ]}
   activeTabKey="table"
   onTabChange={(key) => console.log(key)}
-/>
+/>;
 ```
 
 ### 动态视图模式
+
 ```tsx
-import { ViewHeader } from '@luckdb/aitable';
+import { ViewHeader } from "@luckdb/aitable";
 
 <ViewHeader
   views={[
-    { id: '1', name: '所有任务', type: 'grid' },
-    { id: '2', name: '看板', type: 'kanban' },
-    { id: '3', name: '日历', type: 'calendar' },
+    { id: "1", name: "所有任务", type: "grid" },
+    { id: "2", name: "看板", type: "kanban" },
+    { id: "3", name: "日历", type: "calendar" },
   ]}
   activeViewId="1"
   onViewChange={(viewId) => console.log(viewId)}
-  onCreateView={(viewType) => console.log('Create:', viewType)}
-  onRenameView={(viewId, newName) => console.log('Rename:', viewId, newName)}
-  onDeleteView={(viewId) => console.log('Delete:', viewId)}
-/>
+  onCreateView={(viewType) => console.log("Create:", viewType)}
+  onRenameView={(viewId, newName) => console.log("Rename:", viewId, newName)}
+  onDeleteView={(viewId) => console.log("Delete:", viewId)}
+/>;
 ```
 
 ### 带操作按钮
+
 ```tsx
 <ViewHeader
   views={views}
   activeViewId={activeViewId}
   onViewChange={handleViewChange}
   onCreateView={handleCreateView}
-  onAdd={() => console.log('Add new item')}
+  onAdd={() => console.log("Add new item")}
 />
 ```
 
@@ -77,36 +82,38 @@ view-header/
 
 ### ViewHeader Props
 
-| Prop | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `tabs` | `Tab[]` | - | 静态标签列表 |
-| `activeTabKey` | `string` | - | 当前激活的标签 key |
-| `onTabChange` | `(key: string) => void` | - | 标签切换回调 |
-| `views` | `View[]` | - | 动态视图列表 |
-| `activeViewId` | `string` | - | 当前激活的视图 ID |
-| `onViewChange` | `(viewId: string) => void` | - | 视图切换回调 |
-| `onCreateView` | `(viewType: string) => void` | - | 创建视图回调 |
-| `onRenameView` | `(viewId: string, newName: string) => void` | - | 重命名视图回调 |
-| `onDeleteView` | `(viewId: string) => void` | - | 删除视图回调 |
-| `onAdd` | `() => void` | - | 右侧添加按钮回调 |
-| `isMobile` | `boolean` | `false` | 是否为移动端 |
-| `isTouch` | `boolean` | `false` | 是否为触摸设备 |
-| `className` | `string` | - | 自定义类名 |
+| Prop           | 类型                                        | 默认值  | 说明               |
+| -------------- | ------------------------------------------- | ------- | ------------------ |
+| `tabs`         | `Tab[]`                                     | -       | 静态标签列表       |
+| `activeTabKey` | `string`                                    | -       | 当前激活的标签 key |
+| `onTabChange`  | `(key: string) => void`                     | -       | 标签切换回调       |
+| `views`        | `View[]`                                    | -       | 动态视图列表       |
+| `activeViewId` | `string`                                    | -       | 当前激活的视图 ID  |
+| `onViewChange` | `(viewId: string) => void`                  | -       | 视图切换回调       |
+| `onCreateView` | `(viewType: string) => void`                | -       | 创建视图回调       |
+| `onRenameView` | `(viewId: string, newName: string) => void` | -       | 重命名视图回调     |
+| `onDeleteView` | `(viewId: string) => void`                  | -       | 删除视图回调       |
+| `onAdd`        | `() => void`                                | -       | 右侧添加按钮回调   |
+| `isMobile`     | `boolean`                                   | `false` | 是否为移动端       |
+| `isTouch`      | `boolean`                                   | `false` | 是否为触摸设备     |
+| `className`    | `string`                                    | -       | 自定义类名         |
 
 ### Tab 类型
+
 ```typescript
 interface Tab {
-  key: string;      // 唯一标识
-  label: string;    // 显示文本
+  key: string; // 唯一标识
+  label: string; // 显示文本
 }
 ```
 
 ### View 类型
+
 ```typescript
 interface View {
-  id: string;       // 唯一标识
-  name: string;     // 显示名称
-  type?: string;    // 视图类型（用于图标映射）
+  id: string; // 唯一标识
+  name: string; // 显示名称
+  type?: string; // 视图类型（用于图标映射）
 }
 ```
 
@@ -114,19 +121,20 @@ interface View {
 
 支持的视图类型及其图标：
 
-| 类型 | 名称 | 图标 | 颜色 |
-|------|------|------|------|
-| `grid` | 表格视图 | Table | 蓝色 |
-| `kanban` | 看板视图 | LayoutGrid | 绿色 |
-| `calendar` | 日历视图 | Calendar | 青色 |
-| `gantt` | 甘特视图 | BarChart3 | 粉色 |
-| `gallery` | 画册视图 | Image | 紫色 |
-| `form` | 表单视图 | FileText | 琥珀色 |
-| `list` | 列表视图 | List | 靛蓝色 |
+| 类型       | 名称     | 图标       | 颜色   |
+| ---------- | -------- | ---------- | ------ |
+| `grid`     | 表格视图 | Table      | 蓝色   |
+| `kanban`   | 看板视图 | LayoutGrid | 绿色   |
+| `calendar` | 日历视图 | Calendar   | 青色   |
+| `gantt`    | 甘特视图 | BarChart3  | 粉色   |
+| `gallery`  | 画册视图 | Image      | 紫色   |
+| `form`     | 表单视图 | FileText   | 琥珀色 |
+| `list`     | 列表视图 | List       | 靛蓝色 |
 
 ## 设计规范
 
 ### 颜色
+
 ```css
 /* 未选中 */
 text: #64748b (gray-600)
@@ -146,6 +154,7 @@ indicator: #3b82f6 (blue-500)
 ```
 
 ### 尺寸
+
 ```css
 /* Desktop */
 height: 56px (container) / 36px (tab)
@@ -163,6 +172,7 @@ text: 12px
 ```
 
 ### 动画
+
 ```css
 transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1)
 hover-scale: 1.02
@@ -197,6 +207,7 @@ indicator-transition: all 300ms ease-out
 ## 更新日志
 
 ### v2.0.0 (2025-10-17)
+
 - 🎨 完整重构 UI/UE 设计
 - ✨ 新增底部指示条
 - ✨ 真实图标系统
@@ -207,6 +218,7 @@ indicator-transition: all 300ms ease-out
 - 📝 完善的 TypeScript 类型
 
 ### v1.0.0 (2024-10-11)
+
 - 🎉 初始版本
 - ✨ 基础标签功能
 - ✨ 浮起效果设计
@@ -218,4 +230,3 @@ indicator-transition: all 300ms ease-out
 ## 许可证
 
 MIT
-

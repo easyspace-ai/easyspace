@@ -9,7 +9,7 @@ class PerformanceTracker {
   public endTrack(key: string) {
     if (this.startTimes[key] == null) {
       console.error(
-        `PerformanceTracker: endTrack called with key "${key}" without calling startTrack first`
+        `PerformanceTracker: endTrack called with key "${key}" without calling startTrack first`,
       );
       return;
     }

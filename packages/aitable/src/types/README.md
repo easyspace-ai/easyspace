@@ -60,26 +60,28 @@ types/
 ### 1. 单一真相来源 (Single Source of Truth)
 
 **问题**：之前 `FieldType` 被定义了两次
+
 - `src/types/field.ts` - `enum FieldType`
 - `src/api/types.ts` - `type FieldType (union)`
 
 **解决**：所有类型从 `core/` 导出
+
 ```typescript
 // ✅ 正确 - 所有地方都从这里导入
-import { FieldType } from '../types/core';
+import { FieldType } from "../types/core";
 ```
 
 ### 2. 明确的层次边界
 
 每一层有明确的职责：
 
-| 层级 | 职责 | 特点 |
-|-----|------|------|
-| **Core** | 基础类型和常量 | 无依赖，可被所有层使用 |
-| **Infrastructure** | API 通信 | 与后端契约一致，DTO 对象 |
-| **Domain** | 业务逻辑 | 领域模型，包含业务规则 |
-| **Presentation** | UI 展示 | Grid 组件配置，UI 状态 |
-| **Mappers** | 类型转换 | 连接各层，保证类型安全 |
+| 层级               | 职责           | 特点                     |
+| ------------------ | -------------- | ------------------------ |
+| **Core**           | 基础类型和常量 | 无依赖，可被所有层使用   |
+| **Infrastructure** | API 通信       | 与后端契约一致，DTO 对象 |
+| **Domain**         | 业务逻辑       | 领域模型，包含业务规则   |
+| **Presentation**   | UI 展示        | Grid 组件配置，UI 状态   |
+| **Mappers**        | 类型转换       | 连接各层，保证类型安全   |
 
 ### 3. 单向数据流
 
@@ -96,13 +98,13 @@ User Action (Command) ────────┘
 ### 基础用法
 
 ```typescript
-import { 
-  FieldType,           // 从 core 导入基础类型
-  FieldDTO,            // 从 infrastructure 导入 DTO
-  FieldModel,          // 从 domain 导入领域模型
-  GridColumn,          // 从 presentation 导入 UI 类型
-  FieldMapper          // 从 mappers 导入转换器
-} from '@luckdb/aitable';
+import {
+  FieldType, // 从 core 导入基础类型
+  FieldDTO, // 从 infrastructure 导入 DTO
+  FieldModel, // 从 domain 导入领域模型
+  GridColumn, // 从 presentation 导入 UI 类型
+  FieldMapper, // 从 mappers 导入转换器
+} from "@luckdb/aitable";
 
 // API 响应 → 领域模型
 const fieldModel = FieldMapper.toDomain(apiResponse);
@@ -112,7 +114,7 @@ const gridColumn = FieldMapper.toGridColumn(fieldModel);
 
 // 创建命令 → API 请求
 const createDTO = FieldMapper.createCommandToDTO({
-  name: '新字段',
+  name: "新字段",
   type: FieldType.SingleLineText,
 });
 ```
@@ -120,18 +122,18 @@ const createDTO = FieldMapper.createCommandToDTO({
 ### 类型安全的字段选项
 
 ```typescript
-import { FieldModel, FieldOptions, FieldType } from '@luckdb/aitable';
+import { FieldModel, FieldOptions, FieldType } from "@luckdb/aitable";
 
 // 类型安全的字段定义
 const numberField: FieldModel<typeof FieldType.Number> = {
-  id: 'field-1',
-  name: '数量',
+  id: "field-1",
+  name: "数量",
   type: FieldType.Number,
   options: {
     precision: 2,
     showAs: {
-      type: 'bar',
-      color: '#3b82f6',
+      type: "bar",
+      color: "#3b82f6",
       maxValue: 100,
       showValue: true,
     },
@@ -143,16 +145,19 @@ const numberField: FieldModel<typeof FieldType.Number> = {
 ### 在 API 客户端中使用
 
 ```typescript
-import { FieldDTO, CreateFieldDTO, FieldMapper } from '@luckdb/aitable';
+import { FieldDTO, CreateFieldDTO, FieldMapper } from "@luckdb/aitable";
 
 class FieldService {
-  async createField(tableId: string, command: CreateFieldCommand): Promise<FieldModel> {
+  async createField(
+    tableId: string,
+    command: CreateFieldCommand,
+  ): Promise<FieldModel> {
     // 命令 → DTO
     const dto = FieldMapper.createCommandToDTO(command);
-    
+
     // 调用 API
     const response = await api.post<FieldDTO>(`/tables/${tableId}/fields`, dto);
-    
+
     // DTO → 领域模型
     return FieldMapper.toDomain(response.data);
   }
@@ -166,12 +171,12 @@ import { GridColumn, FieldModel, FieldMapper } from '@luckdb/aitable';
 
 function MyGrid() {
   const [fields, setFields] = useState<FieldModel[]>([]);
-  
+
   // 转换为 Grid 列
-  const columns: GridColumn[] = fields.map(field => 
+  const columns: GridColumn[] = fields.map(field =>
     FieldMapper.toGridColumn(field)
   );
-  
+
   return <Grid columns={columns} />;
 }
 ```
@@ -211,6 +216,7 @@ function MyGrid() {
 ### 从旧类型迁移
 
 **之前：**
+
 ```typescript
 import { IField, FieldType } from '@luckdb/aitable';
 
@@ -219,8 +225,9 @@ const field: IField = { ... };
 ```
 
 **之后（推荐）：**
+
 ```typescript
-import { FieldDTO, FieldModel, FieldMapper } from '@luckdb/aitable';
+import { FieldDTO, FieldModel, FieldMapper } from "@luckdb/aitable";
 
 // API 层使用 FieldDTO
 const fieldDTO: FieldDTO = apiResponse;
@@ -230,6 +237,7 @@ const fieldModel: FieldModel = FieldMapper.toDomain(fieldDTO);
 ```
 
 **之后（兼容模式）：**
+
 ```typescript
 // 旧的类型别名仍然可用
 import { IField } from '@luckdb/aitable';
@@ -240,13 +248,15 @@ const field: IField = { ... }; // IField = FieldDTO
 ### 字段类型定义迁移
 
 **之前：**
+
 ```typescript
 // 两个地方都有定义，容易冲突
-import { FieldType } from '@/types/field';      // enum
-import { FieldType } from '@/api/types';        // union type
+import { FieldType } from "@/types/field"; // enum
+import { FieldType } from "@/api/types"; // union type
 ```
 
 **之后：**
+
 ```typescript
 // 只有一个定义
 import { FieldType, FIELD_TYPES } from '@luckdb/aitable';
@@ -264,7 +274,7 @@ function processField(type: FieldType) { ... }
 
 ```typescript
 // ✅ 从 core 导入基础类型
-import { FieldType } from '../types/core';
+import { FieldType } from "../types/core";
 
 // ✅ 使用 Mapper 进行转换
 const model = FieldMapper.toDomain(dto);
@@ -298,10 +308,10 @@ const column = fieldDTO as GridColumn; // 类型不兼容
 ### FieldTypeUtils
 
 ```typescript
-import { FieldTypeUtils, FIELD_TYPES } from '@luckdb/aitable';
+import { FieldTypeUtils, FIELD_TYPES } from "@luckdb/aitable";
 
 // 检查字段类型
-FieldTypeUtils.isComputed(FIELD_TYPES.Formula);     // true
+FieldTypeUtils.isComputed(FIELD_TYPES.Formula); // true
 FieldTypeUtils.isReadOnly(FIELD_TYPES.CreatedTime); // true
 FieldTypeUtils.isTextType(FIELD_TYPES.SingleLineText); // true
 
@@ -328,7 +338,7 @@ interface RecordDTO {
 
 // Mapper 自动转换
 RecordMapper.toDomain(dto); // Record → Map
-RecordMapper.toDTO(model);  // Map → Record
+RecordMapper.toDTO(model); // Map → Record
 ```
 
 ### Date vs string
@@ -352,7 +362,8 @@ FieldMapper.toDomain(dto); // string → Date
 
 ### Q: 为什么要这么复杂的分层？
 
-**A:** 
+**A:**
+
 1. **类型安全**：每层的类型明确，避免混淆
 2. **易于维护**：职责清晰，修改不会影响其他层
 3. **可测试性**：领域层可以独立测试
@@ -361,8 +372,9 @@ FieldMapper.toDomain(dto); // string → Date
 ### Q: 旧代码会被破坏吗？
 
 **A:** 不会。我们提供了向后兼容的类型别名：
+
 ```typescript
-export type { FieldDTO as IField } from './infrastructure';
+export type { FieldDTO as IField } from "./infrastructure";
 ```
 
 ### Q: 性能开销大吗？
@@ -380,4 +392,3 @@ export type { FieldDTO as IField } from './infrastructure';
 **维护者**: @luckdb/aitable Team  
 **更新时间**: 2025-10-15  
 **版本**: 1.0.0
-

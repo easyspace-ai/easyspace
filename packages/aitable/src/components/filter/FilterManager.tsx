@@ -8,10 +8,14 @@
  * 4. 性能优化
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
-import { FilterDialog } from './FilterDialog';
-import { FilterButton } from './FilterButton';
-import type { FilterField, FilterCondition, FilterOperator } from './FilterDialog';
+import React, { useState, useCallback, useMemo } from "react";
+import { FilterDialog } from "./FilterDialog";
+import { FilterButton } from "./FilterButton";
+import type {
+  FilterField,
+  FilterCondition,
+  FilterOperator,
+} from "./FilterDialog";
 
 // 导出类型供外部使用
 export type { FilterField, FilterCondition, FilterOperator };
@@ -29,15 +33,19 @@ export interface FilterManagerComponentProps {
   onFilteredDataChange?: (filteredData: any[]) => void;
 
   // 按钮配置
-  buttonVariant?: 'default' | 'compact';
-  buttonSize?: 'sm' | 'md' | 'lg';
+  buttonVariant?: "default" | "compact";
+  buttonSize?: "sm" | "md" | "lg";
   className?: string;
 }
 
 /**
  * 过滤数据
  */
-function filterData(data: any[], conditions: FilterCondition[], fields: FilterField[]): any[] {
+function filterData(
+  data: any[],
+  conditions: FilterCondition[],
+  fields: FilterField[],
+): any[] {
   if (conditions.length === 0) {
     return data;
   }
@@ -51,33 +59,45 @@ function filterData(data: any[], conditions: FilterCondition[], fields: FilterFi
       const filterValue = condition.value;
 
       switch (condition.operator) {
-        case 'equals':
+        case "equals":
           return itemValue === filterValue;
-        case 'not_equals':
+        case "not_equals":
           return itemValue !== filterValue;
-        case 'contains':
-          return String(itemValue).toLowerCase().includes(String(filterValue).toLowerCase());
-        case 'not_contains':
-          return !String(itemValue).toLowerCase().includes(String(filterValue).toLowerCase());
-        case 'starts_with':
-          return String(itemValue).toLowerCase().startsWith(String(filterValue).toLowerCase());
-        case 'ends_with':
-          return String(itemValue).toLowerCase().endsWith(String(filterValue).toLowerCase());
-        case 'greater_than':
+        case "contains":
+          return String(itemValue)
+            .toLowerCase()
+            .includes(String(filterValue).toLowerCase());
+        case "not_contains":
+          return !String(itemValue)
+            .toLowerCase()
+            .includes(String(filterValue).toLowerCase());
+        case "starts_with":
+          return String(itemValue)
+            .toLowerCase()
+            .startsWith(String(filterValue).toLowerCase());
+        case "ends_with":
+          return String(itemValue)
+            .toLowerCase()
+            .endsWith(String(filterValue).toLowerCase());
+        case "greater_than":
           return Number(itemValue) > Number(filterValue);
-        case 'less_than':
+        case "less_than":
           return Number(itemValue) < Number(filterValue);
-        case 'greater_equal':
+        case "greater_equal":
           return Number(itemValue) >= Number(filterValue);
-        case 'less_equal':
+        case "less_equal":
           return Number(itemValue) <= Number(filterValue);
-        case 'is_empty':
-          return itemValue === null || itemValue === undefined || itemValue === '';
-        case 'is_not_empty':
-          return itemValue !== null && itemValue !== undefined && itemValue !== '';
-        case 'in':
+        case "is_empty":
+          return (
+            itemValue === null || itemValue === undefined || itemValue === ""
+          );
+        case "is_not_empty":
+          return (
+            itemValue !== null && itemValue !== undefined && itemValue !== ""
+          );
+        case "in":
           return Array.isArray(filterValue) && filterValue.includes(itemValue);
-        case 'not_in':
+        case "not_in":
           return Array.isArray(filterValue) && !filterValue.includes(itemValue);
         default:
           return true;
@@ -95,8 +115,8 @@ export function FilterManagerComponent({
   conditions,
   onConditionsChange,
   onFilteredDataChange,
-  buttonVariant = 'default',
-  buttonSize = 'md',
+  buttonVariant = "default",
+  buttonSize = "md",
   className,
 }: FilterManagerComponentProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -136,7 +156,7 @@ export function FilterManagerComponent({
     (newConditions: FilterCondition[]) => {
       onConditionsChange(newConditions);
     },
-    [onConditionsChange]
+    [onConditionsChange],
   );
 
   return (

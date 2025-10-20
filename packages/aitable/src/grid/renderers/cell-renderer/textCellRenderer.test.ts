@@ -2,12 +2,12 @@
  * TextCellRenderer 单元测试
  * 示例测试文件,展示如何测试单元格渲染器
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { textCellRenderer } from './textCellRenderer';
-import { CellType } from './interface';
-import type { ITextCell, ICellRenderProps } from './interface';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { textCellRenderer } from "./textCellRenderer";
+import { CellType } from "./interface";
+import type { ITextCell, ICellRenderProps } from "./interface";
 
-describe('TextCellRenderer', () => {
+describe("TextCellRenderer", () => {
   let mockCtx: CanvasRenderingContext2D;
   let mockProps: ICellRenderProps;
 
@@ -28,24 +28,24 @@ describe('TextCellRenderer', () => {
       rect: vi.fn(),
       moveTo: vi.fn(),
       lineTo: vi.fn(),
-      fillStyle: '',
-      strokeStyle: '',
+      fillStyle: "",
+      strokeStyle: "",
       lineWidth: 1,
-      font: '',
-      textAlign: 'left',
-      textBaseline: 'middle',
+      font: "",
+      textAlign: "left",
+      textBaseline: "middle",
       globalAlpha: 1,
-      direction: 'ltr',
+      direction: "ltr",
     } as any;
 
     // 创建渲染属性 mock
     mockProps = {
       ctx: mockCtx,
       theme: {
-        fontFamily: 'Arial',
+        fontFamily: "Arial",
         fontSize: 14,
-        cellTextColor: '#000',
-        cellBg: '#fff',
+        cellTextColor: "#000",
+        cellBg: "#fff",
       } as any,
       rect: { x: 0, y: 0, width: 200, height: 40 },
       rowIndex: 0,
@@ -55,12 +55,12 @@ describe('TextCellRenderer', () => {
     };
   });
 
-  describe('基础渲染', () => {
-    it('应该正确渲染文本单元格', () => {
+  describe("基础渲染", () => {
+    it("应该正确渲染文本单元格", () => {
       const cell: ITextCell = {
         type: CellType.Text,
-        data: 'Hello World',
-        displayData: 'Hello World',
+        data: "Hello World",
+        displayData: "Hello World",
       };
 
       textCellRenderer.draw(cell, mockProps);
@@ -69,11 +69,11 @@ describe('TextCellRenderer', () => {
       expect(mockCtx.fillText).toHaveBeenCalled();
     });
 
-    it('应该处理空文本', () => {
+    it("应该处理空文本", () => {
       const cell: ITextCell = {
         type: CellType.Text,
-        data: '',
-        displayData: '',
+        data: "",
+        displayData: "",
       };
 
       textCellRenderer.draw(cell, mockProps);
@@ -82,11 +82,11 @@ describe('TextCellRenderer', () => {
       expect(mockCtx.fillText).not.toHaveBeenCalled();
     });
 
-    it('应该处理 null/undefined 数据', () => {
+    it("应该处理 null/undefined 数据", () => {
       const cell: ITextCell = {
         type: CellType.Text,
-        data: '',
-        displayData: '',
+        data: "",
+        displayData: "",
       };
 
       expect(() => {
@@ -95,12 +95,12 @@ describe('TextCellRenderer', () => {
     });
   });
 
-  describe('文本换行', () => {
-    it('应该支持多行文本渲染', () => {
+  describe("文本换行", () => {
+    it("应该支持多行文本渲染", () => {
       const cell: ITextCell = {
         type: CellType.Text,
-        data: 'Line 1\nLine 2\nLine 3',
-        displayData: 'Line 1\nLine 2\nLine 3',
+        data: "Line 1\nLine 2\nLine 3",
+        displayData: "Line 1\nLine 2\nLine 3",
         isWrap: true,
       };
 
@@ -112,12 +112,12 @@ describe('TextCellRenderer', () => {
     });
   });
 
-  describe('只读状态', () => {
-    it('应该正确显示只读单元格', () => {
+  describe("只读状态", () => {
+    it("应该正确显示只读单元格", () => {
       const cell: ITextCell = {
         type: CellType.Text,
-        data: 'Read Only',
-        displayData: 'Read Only',
+        data: "Read Only",
+        displayData: "Read Only",
         readonly: true,
       };
 
@@ -127,21 +127,21 @@ describe('TextCellRenderer', () => {
     });
   });
 
-  describe('性能测试', () => {
-    it('应该在合理时间内完成渲染', () => {
+  describe("性能测试", () => {
+    it("应该在合理时间内完成渲染", () => {
       const cell: ITextCell = {
         type: CellType.Text,
-        data: 'Performance Test',
-        displayData: 'Performance Test',
+        data: "Performance Test",
+        displayData: "Performance Test",
       };
 
       const startTime = performance.now();
-      
+
       // 渲染 1000 次
       for (let i = 0; i < 1000; i++) {
         textCellRenderer.draw(cell, mockProps);
       }
-      
+
       const endTime = performance.now();
       const duration = endTime - startTime;
 
@@ -150,16 +150,16 @@ describe('TextCellRenderer', () => {
     });
   });
 
-  describe('测量功能', () => {
-    it('应该正确测量文本尺寸', () => {
+  describe("测量功能", () => {
+    it("应该正确测量文本尺寸", () => {
       if (!textCellRenderer.measure) {
         return; // 如果没有 measure 方法,跳过测试
       }
 
       const cell: ITextCell = {
         type: CellType.Text,
-        data: 'Measure Test',
-        displayData: 'Measure Test',
+        data: "Measure Test",
+        displayData: "Measure Test",
       };
 
       const result = textCellRenderer.measure(cell, {
@@ -175,4 +175,3 @@ describe('TextCellRenderer', () => {
     });
   });
 });
-

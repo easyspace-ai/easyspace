@@ -1,31 +1,34 @@
 /**
  * ViewToolbar - 视图工具栏组件
- * 
+ *
  * 设计原则：
  * 1. 统一的按钮样式
  * 2. 清晰的视觉分组
  * 3. 响应式布局（移动端折叠）
  */
 
-import React from 'react';
-import { cn, tokens } from '../../grid/design-system';
-import { Button } from '../../ui/Button';
+import React from "react";
+import { cn, tokens } from "../../grid/design-system";
+import { Button } from "../../ui/Button";
 
 // 稳定的空数组引用，避免无限渲染
 const EMPTY_ARRAY: any[] = [];
-import { 
-  Plus, 
-  Settings, 
-  Undo2, 
+import {
+  Plus,
+  Settings,
+  Undo2,
   Redo2,
   Filter,
   ArrowUpDown,
-  Group
-} from 'lucide-react';
-import { FieldConfigCombobox, type FieldConfig } from '../field-config';
-import { RowHeightCombobox, type RowHeight } from '../row-height';
-import { FilterManager } from '../filter/FilterManager';
-import type { FilterField, FilterCondition as FilterConditionType } from '../filter/FilterDialog';
+  Group,
+} from "lucide-react";
+import { FieldConfigCombobox, type FieldConfig } from "../field-config";
+import { RowHeightCombobox, type RowHeight } from "../row-height";
+import { FilterManager } from "../filter/FilterManager";
+import type {
+  FilterField,
+  FilterCondition as FilterConditionType,
+} from "../filter/FilterDialog";
 
 export interface ToolbarConfig {
   showUndoRedo?: boolean;
@@ -40,10 +43,10 @@ export interface ToolbarConfig {
 
 export interface ViewToolbarProps {
   config?: ToolbarConfig;
-  
+
   // 字段配置
   fields?: FieldConfig[];
-  fieldConfigMode?: 'panel' | 'combobox';
+  fieldConfigMode?: "panel" | "combobox";
   onFieldToggle?: (fieldId: string, visible: boolean) => void;
   onFieldReorder?: (fromIndex: number, toIndex: number) => void;
   onFieldEdit?: (fieldId: string) => void;
@@ -55,17 +58,17 @@ export interface ViewToolbarProps {
   onFieldFilter?: (fieldId: string) => void;
   onFieldSort?: (fieldId: string) => void;
   onFieldFreeze?: (fieldId: string) => void;
-  
+
   // 行高配置
   rowHeight?: RowHeight;
   onRowHeightChange?: (rowHeight: RowHeight) => void;
-  
+
   // 过滤配置
   filterFields?: FilterField[];
   filterConditions?: FilterConditionType[];
   onFilterConditionsChange?: (conditions: FilterConditionType[]) => void;
   onFilteredDataChange?: (filteredData: any[]) => void;
-  
+
   // 操作回调
   onAddRecord?: () => void;
   onUndo?: () => void;
@@ -74,10 +77,10 @@ export interface ViewToolbarProps {
   onSort?: () => void;
   onGroup?: () => void;
   onSearch?: () => void;
-  
+
   // 响应式
   isMobile?: boolean;
-  
+
   className?: string;
 }
 
@@ -95,7 +98,7 @@ const DEFAULT_CONFIG: Required<ToolbarConfig> = {
 export function ViewToolbar({
   config,
   fields,
-  fieldConfigMode = 'combobox',
+  fieldConfigMode = "combobox",
   onFieldToggle,
   onFieldReorder,
   onFieldEdit,
@@ -107,7 +110,7 @@ export function ViewToolbar({
   onFieldFilter,
   onFieldSort,
   onFieldFreeze,
-  rowHeight = 'medium',
+  rowHeight = "medium",
   onRowHeightChange,
   filterFields,
   filterConditions = [],
@@ -127,11 +130,7 @@ export function ViewToolbar({
 
   return (
     <div
-      className={cn(
-        'flex items-center gap-2',
-        'px-4 py-2 border-b',
-        className
-      )}
+      className={cn("flex items-center gap-2", "px-4 py-2 border-b", className)}
       style={{
         borderColor: tokens.colors.border.subtle,
         backgroundColor: tokens.colors.surface.base,
@@ -145,7 +144,7 @@ export function ViewToolbar({
         {mergedConfig.showAddNew && onAddRecord && (
           <Button
             variant="primary"
-            size={'sm'}
+            size={"sm"}
             icon={Plus}
             onClick={onAddRecord}
           >
@@ -154,34 +153,35 @@ export function ViewToolbar({
         )}
 
         {/* 字段配置 */}
-        {mergedConfig.showFieldConfig && fields && fieldConfigMode === 'combobox' && (
-          <FieldConfigCombobox
-            fields={fields}
-            onFieldToggle={onFieldToggle!}
-            onFieldReorder={onFieldReorder!}
-            onFieldEdit={onFieldEdit!}
-            onFieldDelete={onFieldDelete!}
-            onFieldGroup={onFieldGroup!}
-            onFieldCopy={onFieldCopy}
-            onFieldInsertLeft={onFieldInsertLeft}
-            onFieldInsertRight={onFieldInsertRight}
-            onFieldFilter={onFieldFilter}
-            onFieldSort={onFieldSort}
-            onFieldFreeze={onFieldFreeze}
-          />
-        )}
+        {mergedConfig.showFieldConfig &&
+          fields &&
+          fieldConfigMode === "combobox" && (
+            <FieldConfigCombobox
+              fields={fields}
+              onFieldToggle={onFieldToggle!}
+              onFieldReorder={onFieldReorder!}
+              onFieldEdit={onFieldEdit!}
+              onFieldDelete={onFieldDelete!}
+              onFieldGroup={onFieldGroup!}
+              onFieldCopy={onFieldCopy}
+              onFieldInsertLeft={onFieldInsertLeft}
+              onFieldInsertRight={onFieldInsertRight}
+              onFieldFilter={onFieldFilter}
+              onFieldSort={onFieldSort}
+              onFieldFreeze={onFieldFreeze}
+            />
+          )}
 
         {/* 行高配置 */}
         {mergedConfig.showRowHeight && (
-          <RowHeightCombobox
-            value={rowHeight}
-            onChange={onRowHeightChange}
-          />
+          <RowHeightCombobox value={rowHeight} onChange={onRowHeightChange} />
         )}
       </div>
 
       {/* 分隔线 */}
-      {(mergedConfig.showFilter || mergedConfig.showSort || mergedConfig.showGroup) && (
+      {(mergedConfig.showFilter ||
+        mergedConfig.showSort ||
+        mergedConfig.showGroup) && (
         <div
           className="w-px h-6 bg-gray-300"
           style={{ backgroundColor: tokens.colors.border.default }}
@@ -205,22 +205,22 @@ export function ViewToolbar({
         {mergedConfig.showSort && onSort && (
           <Button
             variant="secondary"
-            size={'sm'}
+            size={"sm"}
             icon={ArrowUpDown}
             onClick={onSort}
           >
-            {!isMobile && '排序'}
+            {!isMobile && "排序"}
           </Button>
         )}
 
         {mergedConfig.showGroup && onGroup && (
           <Button
             variant="secondary"
-            size={'sm'}
+            size={"sm"}
             icon={Group}
             onClick={onGroup}
           >
-            {!isMobile && '分组'}
+            {!isMobile && "分组"}
           </Button>
         )}
       </div>
@@ -238,7 +238,7 @@ export function ViewToolbar({
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
-            size={'sm'}
+            size={"sm"}
             icon={Undo2}
             onClick={onUndo}
             aria-label="撤销"
@@ -246,7 +246,7 @@ export function ViewToolbar({
           />
           <Button
             variant="ghost"
-            size={'sm'}
+            size={"sm"}
             icon={Redo2}
             onClick={onRedo}
             aria-label="重做"
@@ -257,4 +257,3 @@ export function ViewToolbar({
     </div>
   );
 }
-

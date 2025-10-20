@@ -1,10 +1,10 @@
 /**
  * 协作客户端
  * 处理实时协作、在线状态、光标位置等功能
+ * 使用 SSE 和 YJS 进行实时通信
  */
 
 import { HttpClient } from '../core/http-client';
-import { WebSocketClient } from '../core/websocket-client';
 import type { 
   CollaborationSession,
   CollaborationParticipant,
@@ -16,11 +16,11 @@ import type {
 
 export class CollaborationClient {
   private httpClient: HttpClient;
-  private wsClient: WebSocketClient | undefined;
+  private sseEventSource: EventSource | undefined;
+  private eventListeners: Map<string, Function[]> = new Map();
 
-  constructor(httpClient: HttpClient, wsClient?: WebSocketClient) {
+  constructor(httpClient: HttpClient) {
     this.httpClient = httpClient;
-    this.wsClient = wsClient;
   }
 
   // ==================== 协作会话管理 ====================
@@ -197,138 +197,186 @@ export class CollaborationClient {
     });
   }
 
-  // ==================== WebSocket 事件处理 ====================
+  // ==================== SSE 事件处理 ====================
 
   /**
-   * 设置 WebSocket 客户端
+   * 初始化 SSE 连接
    */
-  public setWebSocketClient(wsClient: WebSocketClient): void {
-    this.wsClient = wsClient;
-    this.setupWebSocketEventHandlers();
+  public initializeSSE(): void {
+    if (this.sseEventSource) {
+      this.sseEventSource.close();
+    }
+
+    // 检查环境是否支持 EventSource
+    if (typeof EventSource === 'undefined') {
+      console.warn('EventSource is not available in this environment. SSE features will be disabled.');
+      return;
+    }
+
+    // 构建 SSE URL
+    const baseUrl = this.httpClient.getBaseUrl();
+    const sseUrl = `${baseUrl}/api/realtime?client_id=${Date.now()}`;
+    
+    this.sseEventSource = new EventSource(sseUrl);
+    this.setupSSEEventHandlers();
   }
 
-  private setupWebSocketEventHandlers(): void {
-    if (!this.wsClient) return;
+  private setupSSEEventHandlers(): void {
+    if (!this.sseEventSource) return;
 
-    // WebSocket 事件会通过下面的公开方法暴露给用户
+    this.sseEventSource.onopen = () => {
+      this.emit('connected');
+    };
+
+    this.sseEventSource.onerror = (error) => {
+      this.emit('error', error);
+    };
+
+    this.sseEventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        this.emit('message', data);
+        
+        // 根据消息类型分发到具体的事件处理器
+        if (data.type) {
+          this.emit(data.type, data);
+        }
+      } catch (error) {
+        console.error('Failed to parse SSE message:', error);
+      }
+    };
   }
-
-  // ==================== WebSocket 事件监听方法 ====================
 
   /**
-   * 监听 WebSocket 连接成功事件
+   * 关闭 SSE 连接
    */
-  public onWebSocketConnected(callback: () => void): void {
-    if (this.wsClient) {
-      this.wsClient.on('connected', callback);
+  public closeSSE(): void {
+    if (this.sseEventSource) {
+      this.sseEventSource.close();
+      this.sseEventSource = undefined;
     }
   }
 
+  // ==================== 事件监听方法 ====================
+
   /**
-   * 监听 WebSocket 断开连接事件
+   * 监听 SSE 连接成功事件
    */
-  public onWebSocketDisconnected(callback: (data: { code: number; reason: string }) => void): void {
-    if (this.wsClient) {
-      this.wsClient.on('disconnected', callback);
-    }
+  public onSSEConnected(callback: () => void): void {
+    this.on('connected', callback);
   }
 
   /**
-   * 监听 WebSocket 错误事件
+   * 监听 SSE 断开连接事件
    */
-  public onWebSocketError(callback: (error: Error) => void): void {
-    if (this.wsClient) {
-      this.wsClient.on('error', callback);
-    }
+  public onSSEDisconnected(callback: (data: any) => void): void {
+    this.on('disconnected', callback);
   }
 
   /**
-   * 监听所有 WebSocket 消息
+   * 监听 SSE 错误事件
+   */
+  public onSSEError(callback: (error: Error) => void): void {
+    this.on('error', callback);
+  }
+
+  /**
+   * 监听所有消息
    */
   public onMessage(callback: (message: any) => void): void {
-    if (this.wsClient) {
-      this.wsClient.on('message', callback);
-    }
-  }
-
-  /**
-   * 监听操作消息
-   */
-  public onOperation(callback: (message: any) => void): void {
-    if (this.wsClient) {
-      this.wsClient.on('operation', callback);
-    }
+    this.on('message', callback);
   }
 
   /**
    * 监听表格更新事件
    */
   public onTableUpdate(callback: (message: any) => void): void {
-    if (this.wsClient) {
-      this.wsClient.on('table_update', callback);
-    }
+    this.on('table_update', callback);
   }
 
   /**
    * 监听记录更新事件
    */
   public onRecordUpdate(callback: (message: any) => void): void {
-    if (this.wsClient) {
-      this.wsClient.on('record_update', callback);
-    }
+    this.on('record_update', callback);
   }
 
   /**
    * 监听视图更新事件
    */
   public onViewUpdate(callback: (message: any) => void): void {
-    if (this.wsClient) {
-      this.wsClient.on('view_update', callback);
-    }
+    this.on('view_update', callback);
   }
 
   /**
    * 监听记录变更事件（兼容旧版本API）
    */
   public onRecordChange(callback: (message: RecordChangeMessage) => void): void {
-    if (this.wsClient) {
-      this.wsClient.on('record_change', callback);
-    }
+    this.on('record_change', callback);
   }
 
   /**
    * 监听协作消息
    */
   public onCollaboration(callback: (message: CollaborationMessage) => void): void {
-    if (this.wsClient) {
-      this.wsClient.on('collaboration', callback);
-    }
+    this.on('collaboration', callback);
   }
 
   /**
    * 监听在线状态更新
    */
   public onPresenceUpdate(callback: (message: any) => void): void {
-    if (this.wsClient) {
-      this.wsClient.on('presence_update', callback);
-    }
+    this.on('presence_update', callback);
   }
 
   /**
    * 监听光标更新
    */
   public onCursorUpdate(callback: (message: any) => void): void {
-    if (this.wsClient) {
-      this.wsClient.on('cursor_update', callback);
-    }
+    this.on('cursor_update', callback);
   }
 
   /**
    * 监听通知消息
    */
   public onNotification(callback: (message: any) => void): void {
-    if (this.wsClient) {
-      this.wsClient.on('notification', callback);
+    this.on('notification', callback);
+  }
+
+  /**
+   * 添加事件监听器
+   */
+  private on(event: string, callback: Function): void {
+    if (!this.eventListeners.has(event)) {
+      this.eventListeners.set(event, []);
+    }
+    this.eventListeners.get(event)!.push(callback);
+  }
+
+  /**
+   * 触发事件
+   */
+  private emit(event: string, data?: any): void {
+    const listeners = this.eventListeners.get(event);
+    if (listeners) {
+      listeners.forEach(callback => callback(data));
+    }
+  }
+
+  /**
+   * 移除事件监听器
+   */
+  public off(event: string, callback?: Function): void {
+    if (!this.eventListeners.has(event)) return;
+    
+    if (callback) {
+      const listeners = this.eventListeners.get(event)!;
+      const index = listeners.indexOf(callback);
+      if (index > -1) {
+        listeners.splice(index, 1);
+      }
+    } else {
+      this.eventListeners.delete(event);
     }
   }
 
@@ -336,11 +384,10 @@ export class CollaborationClient {
    * 移除所有事件监听器
    */
   public removeAllListeners(event?: string): void {
-    if (this.wsClient) {
-      if (event) {
-        this.wsClient.off(event, () => {});
-      }
-      // Note: WebSocketClient 的 EventEmitter 实现需要支持 removeAllListeners
+    if (event) {
+      this.eventListeners.delete(event);
+    } else {
+      this.eventListeners.clear();
     }
   }
 
@@ -350,54 +397,75 @@ export class CollaborationClient {
    * 订阅表格的实时更新
    */
   public subscribeToTable(tableId: string): void {
-    if (this.wsClient) {
-      this.wsClient.subscribeToTable(tableId);
-    }
+    // 通过 HTTP API 订阅表格更新
+    this.httpClient.post('/api/realtime/subscribe', {
+      type: 'table',
+      resourceId: tableId
+    }).catch(error => {
+      console.error('Failed to subscribe to table:', error);
+    });
   }
 
   /**
    * 取消订阅表格
    */
   public unsubscribeFromTable(tableId: string): void {
-    if (this.wsClient) {
-      this.wsClient.unsubscribeFromTable(tableId);
-    }
+    this.httpClient.post('/api/realtime/unsubscribe', {
+      type: 'table',
+      resourceId: tableId
+    }).catch(error => {
+      console.error('Failed to unsubscribe from table:', error);
+    });
   }
 
   /**
    * 订阅记录的实时更新
    */
   public subscribeToRecord(tableId: string, recordId: string): void {
-    if (this.wsClient) {
-      this.wsClient.subscribeToRecord(tableId, recordId);
-    }
+    this.httpClient.post('/api/realtime/subscribe', {
+      type: 'record',
+      resourceId: recordId,
+      tableId: tableId
+    }).catch(error => {
+      console.error('Failed to subscribe to record:', error);
+    });
   }
 
   /**
    * 取消订阅记录
    */
   public unsubscribeFromRecord(tableId: string, recordId: string): void {
-    if (this.wsClient) {
-      this.wsClient.unsubscribeFromRecord(tableId, recordId);
-    }
+    this.httpClient.post('/api/realtime/unsubscribe', {
+      type: 'record',
+      resourceId: recordId,
+      tableId: tableId
+    }).catch(error => {
+      console.error('Failed to unsubscribe from record:', error);
+    });
   }
 
   /**
    * 订阅视图的实时更新
    */
   public subscribeToView(viewId: string): void {
-    if (this.wsClient) {
-      this.wsClient.subscribeToView(viewId);
-    }
+    this.httpClient.post('/api/realtime/subscribe', {
+      type: 'view',
+      resourceId: viewId
+    }).catch(error => {
+      console.error('Failed to subscribe to view:', error);
+    });
   }
 
   /**
    * 取消订阅视图
    */
   public unsubscribeFromView(viewId: string): void {
-    if (this.wsClient) {
-      this.wsClient.unsubscribeFromView(viewId);
-    }
+    this.httpClient.post('/api/realtime/unsubscribe', {
+      type: 'view',
+      resourceId: viewId
+    }).catch(error => {
+      console.error('Failed to unsubscribe from view:', error);
+    });
   }
 
   // ==================== 协作统计 ====================

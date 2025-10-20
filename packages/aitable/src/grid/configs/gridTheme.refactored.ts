@@ -1,8 +1,8 @@
 /**
  * Grid Theme - 重构版本
- * 
+ *
  * 基于 Design Tokens 系统重新构建
- * 
+ *
  * 变更：
  * 1. ✅ 所有颜色来自 design tokens
  * 2. ✅ 语义化命名
@@ -10,8 +10,8 @@
  * 4. ✅ 移除硬编码值
  */
 
-import { tokens } from '../design-system';
-import type { IGridTheme } from './gridTheme';
+import { tokens } from "../design-system";
+import type { IGridTheme } from "./gridTheme";
 
 const { colors, iconSizes, typography } = tokens;
 
@@ -20,12 +20,12 @@ const { colors, iconSizes, typography } = tokens;
  */
 export const lightTheme: IGridTheme = {
   // ========== Common ==========
-  staticWhite: '#FFFFFF',
-  staticBlack: '#000000',
-  
+  staticWhite: "#FFFFFF",
+  staticBlack: "#000000",
+
   // Icon
   iconFgCommon: colors.text.secondary,
-  iconBgCommon: 'transparent',
+  iconBgCommon: "transparent",
   iconFgHighlight: colors.primary[500],
   iconBgHighlight: colors.primary[50],
   iconFgSelected: colors.primary[700],
@@ -34,7 +34,7 @@ export const lightTheme: IGridTheme = {
   iconSizeSM: iconSizes.sm,
   iconSizeMD: iconSizes.base,
   iconSizeLG: iconSizes.lg,
-  
+
   // Font
   fontSizeXXS: 10,
   fontSizeXS: 12,
@@ -43,7 +43,7 @@ export const lightTheme: IGridTheme = {
   fontSizeLG: 16,
   fontFamily: typography.fontFamily.sans,
   fontSize: 13,
-  
+
   // Text
   textColor: colors.text.primary,
   textColorSecondary: colors.text.secondary,
@@ -53,13 +53,13 @@ export const lightTheme: IGridTheme = {
   cellBgHovered: colors.cell.backgroundHover,
   cellBgSelected: colors.cell.backgroundSelected,
   cellBgLoading: colors.cell.backgroundLoading,
-  
+
   cellLineColor: colors.cell.border,
   cellLineColorActived: colors.cell.borderActive,
-  
+
   cellTextColor: colors.cell.text,
   cellTextColorHighlight: colors.cell.textHighlight,
-  
+
   // Cell Options (Select/MultiSelect)
   cellOptionBg: colors.surface.active,
   cellOptionBgHighlight: colors.surface.hover,
@@ -76,7 +76,7 @@ export const lightTheme: IGridTheme = {
   columnHeaderBgSelected: colors.column.backgroundSelected,
   columnHeaderNameColor: colors.column.text,
   columnResizeHandlerBg: colors.column.resizeHandle,
-  columnDraggingPlaceholderBg: 'rgba(0, 0, 0, 0.1)',
+  columnDraggingPlaceholderBg: "rgba(0, 0, 0, 0.1)",
 
   // ========== Column Statistic ==========
   columnStatisticBgHovered: colors.surface.active,
@@ -103,15 +103,15 @@ export const lightTheme: IGridTheme = {
   interactionLineColorHighlight: colors.primary[500],
 
   // ========== Search ==========
-  searchCursorBg: '#fbbf24', // amber-400
-  searchTargetIndexBg: '#fef3c7', // yellow-100
+  searchCursorBg: "#fbbf24", // amber-400
+  searchTargetIndexBg: "#fef3c7", // yellow-100
 
   // ========== Comment ==========
-  commentCountBg: '#f97316', // orange-500
-  commentCountTextColor: '#ffffff',
+  commentCountBg: "#f97316", // orange-500
+  commentCountTextColor: "#ffffff",
 
   // ========== Theme Key ==========
-  themeKey: 'light',
+  themeKey: "light",
 };
 
 /**
@@ -120,21 +120,23 @@ export const lightTheme: IGridTheme = {
 export const darkTheme: Partial<IGridTheme> = {
   // TODO: 实现完整的暗色模式配色
   // 参考: https://www.radix-ui.com/themes/docs/theme/dark-mode
-  
-  themeKey: 'dark',
-  
+
+  themeKey: "dark",
+
   // 示例（未完成）:
-  cellBg: '#1a1a1a',
-  cellTextColor: '#e5e7eb',
-  columnHeaderBg: '#262626',
+  cellBg: "#1a1a1a",
+  cellTextColor: "#e5e7eb",
+  columnHeaderBg: "#262626",
   // ... 其他暗色配置
 };
 
 /**
  * 获取主题配置
  */
-export function getTheme(themeKey: 'light' | 'dark' = 'light'): IGridTheme {
-  return themeKey === 'light' ? lightTheme : { ...lightTheme, ...darkTheme } as IGridTheme;
+export function getTheme(themeKey: "light" | "dark" = "light"): IGridTheme {
+  return themeKey === "light"
+    ? lightTheme
+    : ({ ...lightTheme, ...darkTheme } as IGridTheme);
 }
 
 /**
@@ -146,4 +148,3 @@ export const gridTheme = lightTheme;
  * 导出类型
  */
 export type { IGridTheme };
-

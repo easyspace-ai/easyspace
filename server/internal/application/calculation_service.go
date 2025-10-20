@@ -47,7 +47,6 @@ type CalculationService struct {
 	recordRepo       recordRepo.RecordRepository
 	rollupCalculator *rollup.RollupCalculator
 	lookupCalculator *lookup.LookupCalculator
-	wsService        WebSocketService              // ✅ 新增：WebSocket 服务
 	businessEvents   events.BusinessEventPublisher // ✨ 业务事件发布器
 }
 
@@ -55,7 +54,6 @@ type CalculationService struct {
 func NewCalculationService(
 	fieldRepo repository.FieldRepository,
 	recordRepo recordRepo.RecordRepository,
-	wsService WebSocketService, // ✅ 新增参数
 	businessEvents events.BusinessEventPublisher, // ✨ 业务事件发布器
 ) *CalculationService {
 	return &CalculationService{
@@ -63,7 +61,6 @@ func NewCalculationService(
 		recordRepo:       recordRepo,
 		rollupCalculator: rollup.NewRollupCalculator("UTC"), // 默认UTC时区
 		lookupCalculator: lookup.NewLookupCalculator(),
-		wsService:        wsService,      // ✅ 注入 WebSocket 服务
 		businessEvents:   businessEvents, // ✨ 注入业务事件发布器
 	}
 }
@@ -276,15 +273,6 @@ func (s *CalculationService) CalculateRecordFields(ctx context.Context, record *
 			logger.String("record_id", record.ID().String()),
 		)
 
-		// ✅ 新增：推送 WebSocket 更新
-		if s.wsService != nil {
-			if err := s.publishRecordUpdate(record, &updatedData); err != nil {
-				logger.Warn("WebSocket 推送失败",
-					logger.String("record_id", record.ID().String()),
-					logger.ErrorField(err),
-				)
-			}
-		}
 	}
 
 	return nil
@@ -435,23 +423,6 @@ func (s *CalculationService) CalculateAffectedFields(ctx context.Context, record
 		// 保存操作由调用方（RecordService）的事务负责
 		// 这样可以确保所有操作在同一个事务中，避免事务嵌套问题
 
-		// ✅ 新增：推送 WebSocket 更新
-		logger.Info("📤 准备推送记录更新",
-			logger.String("record_id", record.ID().String()),
-			logger.Bool("ws_service_available", s.wsService != nil))
-
-		if s.wsService != nil {
-			logger.Info("调用 publishRecordUpdate",
-				logger.String("record_id", record.ID().String()))
-			if err := s.publishRecordUpdate(record, &updatedData); err != nil {
-				logger.Warn("WebSocket 推送失败",
-					logger.String("record_id", record.ID().String()),
-					logger.ErrorField(err),
-				)
-			}
-		} else {
-			logger.Warn("❌ wsService 为 nil，无法推送 WebSocket 更新")
-		}
 	}
 
 	return nil
@@ -1079,64 +1050,6 @@ func (s *CalculationService) contains(arr []string, target string) bool {
 		}
 	}
 	return false
-}
-
-// ==================== WebSocket 推送方法 ====================
-
-// publishRecordUpdate 推送记录更新到 WebSocket
-func (s *CalculationService) publishRecordUpdate(record *entity.Record, updatedData *valueobject.RecordData) error {
-	// 1. 发布到传统WebSocket广播器（保持向后兼容）
-	if s.wsService != nil {
-		// 构建操作列表（参考 ShareDB 的操作格式）
-		operations := []interface{}{
-			map[string]interface{}{
-				"p":        []string{"fields"},   // path: 字段路径
-				"oi":       updatedData.ToMap(),  // object insert: 新的字段值
-				"recordId": record.ID().String(), // ✅ 添加 recordId 供前端识别
-			},
-		}
-
-		// 推送到 WebSocket
-		if err := s.wsService.PublishRecordOp(
-			record.TableID(),
-			record.ID().String(),
-			operations,
-		); err != nil {
-			logger.Error("WebSocket 记录更新推送失败",
-				logger.String("record_id", record.ID().String()),
-				logger.ErrorField(err))
-		} else {
-			logger.Info("WebSocket 记录更新已推送",
-				logger.String("record_id", record.ID().String()),
-				logger.String("table_id", record.TableID()),
-				logger.Int("operations_count", len(operations)))
-		}
-	}
-
-	// 2. 发布到统一业务事件系统（支持SSE、WebSocket、Yjs）
-	if s.businessEvents != nil {
-		ctx := context.Background()
-		err := s.businessEvents.PublishCalculationEvent(
-			ctx,
-			record.TableID(),
-			record.ID().String(),
-			updatedData.ToMap(),
-			"", // 计算更新通常没有特定用户ID
-		)
-
-		if err != nil {
-			logger.Error("发布计算更新业务事件失败",
-				logger.String("record_id", record.ID().String()),
-				logger.String("table_id", record.TableID()),
-				logger.ErrorField(err))
-		} else {
-			logger.Info("计算更新业务事件已发布",
-				logger.String("record_id", record.ID().String()),
-				logger.String("table_id", record.TableID()))
-		}
-	}
-
-	return nil
 }
 
 // mapFieldIDsToNames 辅助方法：将recordData的字段ID映射为字段名称

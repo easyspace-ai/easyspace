@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
-import { MagicAi, Square } from '../../../utils/icons';
-import type { ICellItem, IScrollState } from '../../types/grid';
-import type { CoordinateManager } from '../../managers';
+import { MagicAi, Square } from "../../../utils/icons";
+import type { ICellItem, IScrollState } from "../../types/grid";
+import type { CoordinateManager } from "../../managers";
 
 export interface IColumnLoading {
   columnId: string;
@@ -21,24 +21,37 @@ export interface ILoadingIndicatorProps {
 export const LoadingIndicator = (props: ILoadingIndicatorProps) => {
   const { cellLoadings, columnLoadings, coordInstance, scrollState } = props;
 
-  if (!cellLoadings.length && !columnLoadings.length) {return null;}
+  if (!cellLoadings.length && !columnLoadings.length) {
+    return null;
+  }
 
   const { scrollLeft, scrollTop } = scrollState;
-  const { rowInitSize, freezeColumnCount, freezeRegionWidth, containerWidth, containerHeight } =
-    coordInstance;
+  const {
+    rowInitSize,
+    freezeColumnCount,
+    freezeRegionWidth,
+    containerWidth,
+    containerHeight,
+  } = coordInstance;
 
   return (
     <div className="pointer-events-none absolute left-0 top-0 z-10">
       {columnLoadings.map(({ index, progress, onCancel }) => {
         const columnWidth = coordInstance.getColumnWidth(index);
-        const columnOffset = coordInstance.getColumnRelativeOffset(index, scrollLeft);
+        const columnOffset = coordInstance.getColumnRelativeOffset(
+          index,
+          scrollLeft,
+        );
         const isFreeze = index < freezeColumnCount;
 
         const isColumnVisible =
           isFreeze ||
-          (columnOffset + columnWidth - 24 >= freezeRegionWidth && columnOffset <= containerWidth);
+          (columnOffset + columnWidth - 24 >= freezeRegionWidth &&
+            columnOffset <= containerWidth);
 
-        if (!isColumnVisible) {return null;}
+        if (!isColumnVisible) {
+          return null;
+        }
 
         return (
           <div
@@ -75,16 +88,23 @@ export const LoadingIndicator = (props: ILoadingIndicatorProps) => {
         const rowHeight = coordInstance.getRowHeight(rowIndex);
         const rowOffset = coordInstance.getRowOffset(rowIndex);
         const columnWidth = coordInstance.getColumnWidth(columnIndex);
-        const columnOffset = coordInstance.getColumnRelativeOffset(columnIndex, scrollLeft);
+        const columnOffset = coordInstance.getColumnRelativeOffset(
+          columnIndex,
+          scrollLeft,
+        );
 
         const y = rowOffset - scrollTop;
         const isFreeze = columnIndex < freezeColumnCount;
         const isColumnVisible =
           isFreeze ||
-          (columnOffset + columnWidth - 24 >= freezeRegionWidth && columnOffset <= containerWidth);
-        const isRowVisible = y >= rowInitSize - 4 && y <= containerHeight - rowInitSize + 4;
+          (columnOffset + columnWidth - 24 >= freezeRegionWidth &&
+            columnOffset <= containerWidth);
+        const isRowVisible =
+          y >= rowInitSize - 4 && y <= containerHeight - rowInitSize + 4;
 
-        if (!isColumnVisible || !isRowVisible) {return null;}
+        if (!isColumnVisible || !isRowVisible) {
+          return null;
+        }
 
         return (
           <div

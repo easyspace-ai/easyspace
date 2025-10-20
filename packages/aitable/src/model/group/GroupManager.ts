@@ -3,10 +3,10 @@
  * 管理记录分组功能，支持嵌套分组和折叠展开
  */
 
-import type { Field } from '../field/Field';
-import type { RecordModel } from '../record/Record';
-import { FieldType } from '../../types/field';
-import type { SortDirection } from '../sort/SortManager';
+import type { Field } from "../field/Field";
+import type { RecordModel } from "../record/Record";
+import { FieldType } from "../../types/field";
+import type { SortDirection } from "../sort/SortManager";
 
 export interface IGroupConfig {
   fieldId: string;
@@ -38,7 +38,7 @@ export class GroupManager {
 
   constructor(groupConfigs: IGroupConfig[], fields: Field[]) {
     this.groupConfigs = groupConfigs;
-    this.fields = new Map(fields.map(f => [f.id, f]));
+    this.fields = new Map(fields.map((f) => [f.id, f]));
     this.collapsedGroups = new Set();
   }
 
@@ -63,7 +63,7 @@ export class GroupManager {
     const flatten = (nodes: IGroupNode[], path: string[] = []) => {
       for (const node of nodes) {
         const currentPath = [...path, node.displayValue];
-        
+
         // 添加当前组的所有记录
         for (const record of node.records) {
           flattened.push({
@@ -117,7 +117,7 @@ export class GroupManager {
    * 移除分组配置
    */
   removeGroup(fieldId: string): void {
-    this.groupConfigs = this.groupConfigs.filter(c => c.fieldId !== fieldId);
+    this.groupConfigs = this.groupConfigs.filter((c) => c.fieldId !== fieldId);
   }
 
   /**
@@ -208,11 +208,11 @@ export class GroupManager {
 
     // 按字段值分组
     const groups = new Map<string, RecordModel[]>();
-    
+
     for (const record of records) {
       const value = record.getCellValue(config.fieldId);
       const key = this.getGroupKey(value);
-      
+
       if (!groups.has(key)) {
         groups.set(key, []);
       }
@@ -221,7 +221,7 @@ export class GroupManager {
 
     // 创建分组节点
     const nodes: IGroupNode[] = [];
-    
+
     for (const [key, groupRecords] of groups) {
       const value = groupRecords[0]?.getCellValue(config.fieldId);
       const displayValue = this.getDisplayValue(value, field);
@@ -243,7 +243,7 @@ export class GroupManager {
     }
 
     // 排序分组
-    this.sortGroups(nodes, config.direction || 'asc');
+    this.sortGroups(nodes, config.direction || "asc");
 
     return nodes;
   }
@@ -253,12 +253,12 @@ export class GroupManager {
    */
   private getGroupKey(value: unknown): string {
     if (value === null || value === undefined) {
-      return '__empty__';
+      return "__empty__";
     }
 
     if (Array.isArray(value)) {
       // 多选字段：按第一个值分组
-      return value.length > 0 ? String(value[0]) : '__empty__';
+      return value.length > 0 ? String(value[0]) : "__empty__";
     }
 
     return String(value);
@@ -268,19 +268,21 @@ export class GroupManager {
    * 获取显示值
    */
   private getDisplayValue(value: unknown, field: Field): string {
-    if (value === null || value === undefined || value === '') {
-      return '(空)';
+    if (value === null || value === undefined || value === "") {
+      return "(空)";
     }
 
     if (Array.isArray(value)) {
-      if (value.length === 0) {return '(空)';}
-      
+      if (value.length === 0) {
+        return "(空)";
+      }
+
       // 多选字段：显示所有选项
-      return value.join(', ');
+      return value.join(", ");
     }
 
     // 对于选择字段，可以从选项中获取显示名称
-    if (field.type === 'singleSelect' || field.type === 'multipleSelect') {
+    if (field.type === "singleSelect" || field.type === "multipleSelect") {
       const options = (field.options as any)?.choices || [];
       const option = options.find((opt: any) => (opt.id || opt.name) === value);
       if (option) {
@@ -290,7 +292,7 @@ export class GroupManager {
 
     // 对于布尔字段
     if (field.type === FieldType.Checkbox) {
-      return value ? '是' : '否';
+      return value ? "是" : "否";
     }
 
     return String(value);
@@ -309,24 +311,28 @@ export class GroupManager {
   private sortGroups(nodes: IGroupNode[], direction: SortDirection): void {
     nodes.sort((a, b) => {
       // 空值始终排在最后
-      if (a.value == null && b.value == null) {return 0;}
-      if (a.value == null) {return 1;}
-      if (b.value == null) {return -1;}
+      if (a.value == null && b.value == null) {
+        return 0;
+      }
+      if (a.value == null) {
+        return 1;
+      }
+      if (b.value == null) {
+        return -1;
+      }
 
       // 比较值
       let comparison = 0;
 
-      if (typeof a.value === 'number' && typeof b.value === 'number') {
+      if (typeof a.value === "number" && typeof b.value === "number") {
         comparison = a.value - b.value;
-      } else if (typeof a.value === 'boolean' && typeof b.value === 'boolean') {
-        comparison = a.value === b.value ? 0 : (a.value ? -1 : 1);
+      } else if (typeof a.value === "boolean" && typeof b.value === "boolean") {
+        comparison = a.value === b.value ? 0 : a.value ? -1 : 1;
       } else {
-        comparison = String(a.value).localeCompare(String(b.value), 'zh-CN');
+        comparison = String(a.value).localeCompare(String(b.value), "zh-CN");
       }
 
-      return direction === 'asc' ? comparison : -comparison;
+      return direction === "asc" ? comparison : -comparison;
     });
   }
 }
-
-

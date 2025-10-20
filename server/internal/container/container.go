@@ -24,7 +24,6 @@ import (
 	tableRepo "github.com/easyspace-ai/luckdb/server/internal/domain/table/repository"
 	userRepo "github.com/easyspace-ai/luckdb/server/internal/domain/user/repository"
 	viewRepo "github.com/easyspace-ai/luckdb/server/internal/domain/view/repository"
-	"github.com/easyspace-ai/luckdb/server/internal/domain/websocket" // ✨ WebSocket 服务
 
 	// 计算服务相关包
 	"github.com/easyspace-ai/luckdb/server/internal/domain/calculation/lookup"
@@ -92,10 +91,6 @@ type Container struct {
 
 	// 业务事件管理器 ✨
 	businessEventManager *events.BusinessEventManager
-
-	// WebSocket 服务 ✨
-	wsManager *websocket.Manager
-	wsService websocket.Service
 
 	// JSVM 和实时通信服务 ✨
 	jsvmManager     *jsvm.RuntimeManager
@@ -258,13 +253,14 @@ func (c *Container) initServices() {
 	c.baseService = application.NewBaseService(c.baseRepository, c.spaceRepository, c.dbProvider) // ✅ 注入DBProvider + SpaceRepository
 
 	// ✅ 先初始化 ViewService（独立服务，不依赖其他服务）
-	c.viewService = application.NewViewService(c.viewRepository, c.tableRepository)
+	// 注意：这里先传 nil，稍后在 initInfrastructureServices 后重新设置
+	c.viewService = application.NewViewService(c.viewRepository, c.tableRepository, nil)
 
 	// ✅ 初始化 FieldService (暂时传nil，待实现broadcaster)
 	c.fieldService = application.NewFieldService(
 		c.fieldRepository,
 		nil,               // depGraphRepo（待实现）
-		nil,               // broadcaster（待实现，稍后在 initWebSocketService 后设置）
+		nil,               // broadcaster（已移除 WebSocket 服务）
 		c.tableRepository, // ✅ 注入TableRepository
 		c.dbProvider,      // ✅ 注入DBProvider
 	)
@@ -280,11 +276,18 @@ func (c *Container) initServices() {
 		c.dbProvider,  // ✅ 注入DBProvider
 	)
 
-	// ✨ 业务事件管理器初始化
-	c.businessEventManager = events.NewBusinessEventManager(logger.Logger)
-
-	// ✨ WebSocket 服务初始化（在 CalculationService 之前）
-	c.initWebSocketService()
+	// ✨ 业务事件管理器初始化（带Redis分布式广播）
+	if c.cacheClient != nil {
+		c.businessEventManager = events.NewBusinessEventManagerWithRedis(
+			logger.Logger,
+			c.cacheClient.GetClient(),
+			"luckdb:events",
+		)
+		logger.Info("✅ 业务事件管理器已初始化（Redis分布式广播）")
+	} else {
+		c.businessEventManager = events.NewBusinessEventManager(logger.Logger)
+		logger.Info("✅ 业务事件管理器已初始化（本地模式）")
+	}
 
 	// ✨ 初始化模块化计算服务（重构后的架构）
 	c.initCalculationServices()
@@ -292,59 +295,30 @@ func (c *Container) initServices() {
 	// ✨ 初始化基础设施服务
 	c.initInfrastructureServices()
 
+	// ✅ 重新设置 ViewService 的 businessEventManager（现在 businessEventManager 已经初始化）
+	c.viewService = application.NewViewService(c.viewRepository, c.tableRepository, c.businessEventManager)
+
 	// ✨ 计算引擎服务（在RecordService之前初始化）
-	// 集成 WebSocket 推送
-	wsAdapter := application.NewWebSocketServiceAdapter(c.wsService)
+	// 仅使用业务事件/YJS+SSE，不再注入旧 WebSocket
 	c.calculationService = application.NewCalculationService(
 		c.fieldRepository,
 		c.recordRepository,
-		wsAdapter,              // ✅ WebSocket 服务已集成
 		c.businessEventManager, // ✨ 业务事件管理器
 	)
 
 	// ✅ Phase 2: 类型转换服务
 	typecastService := application.NewTypecastService(c.fieldRepository)
 
-	// 记录服务（集成计算引擎+验证） (暂时传nil broadcaster，待实现)
+	// 记录服务（集成计算引擎+验证） ✨ 移除旧 WebSocket 广播，改由业务事件+YJS/SSE
 	c.recordService = application.NewRecordService(
 		c.recordRepository,
 		c.fieldRepository,
 		c.tableRepository,      // ✅ 注入表仓储，用于检查表存在性
 		c.calculationService,   // 注入计算服务 ✨
-		nil,                    // broadcaster (待实现)
+		nil,                    // 🔥 不再使用旧 WS 广播器
 		c.businessEventManager, // ✨ 业务事件管理器
 		typecastService,        // ✅ 注入验证服务
 	)
-}
-
-// initWebSocketService 初始化 WebSocket 服务
-func (c *Container) initWebSocketService() {
-	logger.Info("正在初始化 WebSocket 服务...")
-
-	// 创建 WebSocket Manager
-	c.wsManager = websocket.NewManager(logger.Logger, c.businessEventManager)
-
-	// 创建 WebSocket Service
-	c.wsService = websocket.NewService(c.wsManager, logger.Logger)
-
-	// 在后台启动 Manager
-	go c.wsManager.Run(context.Background())
-
-	// ✅ 设置字段服务的广播器
-	if c.fieldService != nil {
-		fieldBroadcaster := application.NewFieldBroadcaster(c.wsService, c.businessEventManager)
-		c.fieldService.SetBroadcaster(fieldBroadcaster)
-		logger.Info("✅ 字段广播器已设置")
-	}
-
-	// ✅ 设置记录服务的广播器
-	if c.recordService != nil {
-		recordBroadcaster := application.NewRecordBroadcaster(c.wsService)
-		c.recordService.SetBroadcaster(recordBroadcaster)
-		logger.Info("✅ 记录广播器已设置")
-	}
-
-	logger.Info("✅ WebSocket 服务已初始化")
 }
 
 // initCalculationServices 初始化模块化计算服务
@@ -590,16 +564,6 @@ func (c *Container) CountService() *application.CountService {
 	return c.countService
 }
 
-// WebSocketManager 获取 WebSocket 管理器 ✨
-func (c *Container) WebSocketManager() *websocket.Manager {
-	return c.wsManager
-}
-
-// WebSocketService 获取 WebSocket 服务 ✨
-func (c *Container) WebSocketService() websocket.Service {
-	return c.wsService
-}
-
 // JSVMManager 获取 JSVM 运行时管理器 ✨
 func (c *Container) JSVMManager() *jsvm.RuntimeManager {
 	return c.jsvmManager
@@ -710,6 +674,13 @@ func (c *Container) initJSVMServices() error {
 
 	// 创建实时通信管理器
 	c.realtimeManager = realtime.NewManager(logger.Logger)
+	logger.Info("✅ 实时通信管理器已创建")
+
+	// 设置正确的业务事件管理器（确保 YJS 和 SSE 使用同一个实例）
+	if c.businessEventManager != nil {
+		c.realtimeManager.SetBusinessEventManager(c.businessEventManager)
+		logger.Info("✅ 实时管理器已使用容器中的业务事件管理器")
+	}
 
 	// 创建 JSVM 运行时管理器
 	jsvmConfig := &jsvm.Config{

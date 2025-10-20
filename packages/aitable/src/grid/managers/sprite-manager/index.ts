@@ -1,2 +1,2 @@
-export * from './SpriteManager';
-export * from './sprites';
+export * from "./SpriteManager";
+export * from "./sprites";

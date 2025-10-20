@@ -1,3 +1,1 @@
-export { BaseProvider, useBase } from './BaseContext';
-
-
+export { BaseProvider, useBase } from "./BaseContext";

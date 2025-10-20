@@ -1,5 +1,5 @@
-import type { MutableRefObject } from 'react';
-import { useRef, useState, useLayoutEffect } from 'react';
+import type { MutableRefObject } from "react";
+import { useRef, useState, useLayoutEffect } from "react";
 
 interface IResizeDetectorDimensions {
   width: number;
@@ -11,7 +11,7 @@ export interface IUseResizeDetectorReturn<T> extends IResizeDetectorDimensions {
 }
 
 export function useResizeObserver<T extends HTMLElement = HTMLElement>(
-  initialSize?: readonly [width: number, height: number]
+  initialSize?: readonly [width: number, height: number],
 ): IUseResizeDetectorReturn<T> {
   const ref = useRef<T>(null);
 
@@ -29,7 +29,7 @@ export function useResizeObserver<T extends HTMLElement = HTMLElement>(
         setSize((cv) =>
           cv.width === width && cv.height === height
             ? cv
-            : { width: Math.floor(width), height: height - diffHeight }
+            : { width: Math.floor(width), height: height - diffHeight },
         );
       }
     };

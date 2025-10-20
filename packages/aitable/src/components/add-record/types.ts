@@ -2,7 +2,7 @@
  * AddRecordDialog 类型定义
  */
 
-import type { FieldType } from '../../api/types';
+import type { FieldType } from "../../api/types";
 
 /**
  * 字段配置（基于 StandardDataView 的 FieldConfig）
@@ -56,34 +56,34 @@ export interface FieldEditorProps {
 export interface AddRecordDialogProps {
   /** 是否打开 */
   isOpen: boolean;
-  
+
   /** 关闭回调 */
   onClose: () => void;
-  
+
   /** 字段列表（必填） */
   fields: FieldConfig[];
-  
+
   /** 表格 ID（必填，用于调用 API） */
   tableId: string;
-  
+
   /** SDK/ApiClient 实例（用于提交数据） */
   adapter?: any; // ISDKAdapter
-  
+
   /** 保存成功回调（可用于刷新 Grid） */
   onSuccess?: (record: any) => void;
-  
+
   /** 保存失败回调 */
   onError?: (error: Error) => void;
-  
+
   /** 默认值 */
   defaultValues?: FormValues;
-  
+
   /** 自定义编辑器映射（可选） */
   customEditors?: Record<string, React.ComponentType<FieldEditorProps>>;
-  
+
   /** 提交前数据转换（可选） */
   transformBeforeSubmit?: (values: FormValues) => FormValues;
-  
+
   /** 国际化文案（可选） */
   locale?: {
     title?: string;
@@ -110,4 +110,3 @@ export interface ValidationRule {
  * 校验器配置
  */
 export type ValidatorMap = Record<FieldType | string, ValidationRule>;
-

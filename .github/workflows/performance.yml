@@ -1,0 +1,45 @@
+name: Performance Monitoring
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  performance:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+          
+      - name: Install dependencies
+        run: bun install
+        
+      - name: Build packages
+        run: bun run build
+        
+      - name: Bundle size analysis
+        run: |
+          echo "📊 Bundle Size Analysis"
+          find . -name "dist" -type d -exec du -sh {} \; | sort -hr
+          
+      - name: Dependency analysis
+        run: |
+          echo "📦 Dependency Analysis"
+          bun pm ls --depth=0
+          
+      - name: Type check performance
+        run: |
+          echo "⚡ TypeScript Performance"
+          time bun run typecheck
+          
+      - name: Lint performance
+        run: |
+          echo "⚡ ESLint Performance"
+          time bun run lint

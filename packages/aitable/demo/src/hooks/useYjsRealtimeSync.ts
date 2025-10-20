@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { LuckDB } from '@luckdb/sdk';
+import { LuckDB } from '@easyspace/sdk';
 
 interface YjsRealtimeSyncState {
   fields: any[];
@@ -178,6 +178,30 @@ export function useYjsRealtimeSync({
       } else if (data.documentId.includes('records')) {
         console.log('🔄 [YJS] 记录文档更新，刷新记录列表');
         fetchRecords();
+      } else {
+        // 如果是表ID，同时刷新字段和记录
+        console.log('🔄 [YJS] 表文档更新，刷新字段和记录列表');
+        fetchFields();
+        fetchRecords();
+      }
+    });
+
+    // 监听业务事件
+    yjsClient.on('business_event', (data: any) => {
+      console.log('🎯 [YJS] 收到业务事件:', data);
+      
+      // 根据事件类型刷新相应数据
+      if (data.event_type && data.event_type.includes('record')) {
+        console.log('🔄 [YJS] 记录业务事件，刷新记录列表');
+        fetchRecords();
+      } else if (data.event_type && data.event_type.includes('field')) {
+        console.log('🔄 [YJS] 字段业务事件，刷新字段列表');
+        fetchFields();
+      } else {
+        // 默认同时刷新
+        console.log('🔄 [YJS] 通用业务事件，刷新所有数据');
+        fetchFields();
+        fetchRecords();
       }
     });
 
@@ -188,7 +212,9 @@ export function useYjsRealtimeSync({
     // 如果未连接，尝试连接
     if (currentState === 'disconnected') {
       console.log('🔄 [YJS] 尝试连接 YJS...');
-      yjsClient.connect().catch((error: any) => {
+      // 使用表 ID 作为 document ID，但添加后缀避免与 useTableHeaderSync 冲突
+      const uniqueDocId = `${tableId}_realtime`;
+      yjsClient.connect(uniqueDocId).catch((error: any) => {
         console.error('❌ [YJS] YJS 连接失败:', error);
         setState((prev) => ({ ...prev, error: `YJS 连接失败: ${error.message}` }));
       });
@@ -196,27 +222,29 @@ export function useYjsRealtimeSync({
 
     // 获取或创建 YJS 文档
     try {
-      const fieldsDocId = `table_${tableId}_fields`;
-      const recordsDocId = `table_${tableId}_records`;
+      // 使用唯一的文档 ID 避免冲突
+      const uniqueDocId = `${tableId}_realtime`;
+      const tableDoc = yjsClient.getDocument(uniqueDocId);
       
-      const fieldsDoc = yjsClient.getDocument(fieldsDocId);
-      const recordsDoc = yjsClient.getDocument(recordsDocId);
+      yjsDocumentRef.current = { tableDoc };
       
-      yjsDocumentRef.current = { fieldsDoc, recordsDoc };
+      // 获取表的字段和记录数据
+      const fieldsMap = yjsClient.getMap(uniqueDocId, 'fields');
+      const recordsArray = yjsClient.getArray(uniqueDocId, 'records');
       
-      // 订阅字段文档
-      fieldsDoc.subscribe((update: Uint8Array) => {
-        console.log('📄 [YJS] 字段文档更新:', update);
+      // 监听字段变化
+      fieldsMap.observe((event: any) => {
+        console.log('📄 [YJS] 字段数据更新:', event);
         fetchFields();
       });
       
-      // 订阅记录文档
-      recordsDoc.subscribe((update: Uint8Array) => {
-        console.log('📄 [YJS] 记录文档更新:', update);
+      // 监听记录变化
+      recordsArray.observe((event: any) => {
+        console.log('📄 [YJS] 记录数据更新:', event);
         fetchRecords();
       });
       
-      console.log('✅ [YJS] 已订阅文档:', { fieldsDocId, recordsDocId });
+      console.log('✅ [YJS] 已订阅表文档:', uniqueDocId);
     } catch (error) {
       console.error('❌ [YJS] 订阅文档失败:', error);
     }

@@ -2,6 +2,4 @@
  * Record Models Export
  */
 
-export * from './Record';
-
-
+export * from "./Record";

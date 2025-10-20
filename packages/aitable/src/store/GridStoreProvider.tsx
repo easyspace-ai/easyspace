@@ -3,10 +3,10 @@
  * 简化的Provider实现，配合新的Store
  */
 
-import React, { useEffect } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useGridStore } from './grid-store';
-import type { ApiClient } from '../api/client';
+import React, { useEffect } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useGridStore } from "./grid-store";
+import type { ApiClient } from "../api/client";
 
 /**
  * Provider Props
@@ -36,7 +36,7 @@ const queryClient = new QueryClient({
 
 /**
  * Grid Store Provider
- * 
+ *
  * @example
  * ```tsx
  * <GridStoreProvider
@@ -82,20 +82,20 @@ export function GridStoreProvider({
         // 2. 如果指定了 tableId，加载 table 和相关数据
         if (tableId) {
           await store.loadTable(tableId);
-          
+
           // 并行加载 fields 和 records
           await Promise.all([
             store.loadFields(tableId),
             store.loadRecords(tableId, viewId),
           ]);
         }
-        
+
         // 3. 如果指定了 viewId，加载 view
         if (viewId && tableId) {
           await store.loadView(viewId);
         }
       } catch (error) {
-        console.error('[GridStoreProvider] Failed to load data:', error);
+        console.error("[GridStoreProvider] Failed to load data:", error);
       }
     };
 
@@ -103,11 +103,8 @@ export function GridStoreProvider({
   }, [autoLoad, baseId, tableId, viewId]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }
 
 export default GridStoreProvider;
-

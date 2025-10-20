@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useState, useEffect } from 'react';
-import { useGridCollapsedGroupStore } from '../../store';
+import { useCallback, useMemo, useState, useEffect } from "react";
+import { useGridCollapsedGroupStore } from "../../store";
 
 /**
  * Query parameters
@@ -17,14 +17,17 @@ export const useGridCollapsedGroup = (
   cacheKey: string,
   groupFields?: string[],
   initialQuery?: IQueryParams,
-  searchValue?: string
+  searchValue?: string,
 ) => {
-  const { collapsedGroupMap, setCollapsedGroupMap } = useGridCollapsedGroupStore();
+  const { collapsedGroupMap, setCollapsedGroupMap } =
+    useGridCollapsedGroupStore();
 
   // Get collapsed group IDs from store
   const collapsedGroupIds = useMemo(() => {
     const collapsedGroups = collapsedGroupMap?.[cacheKey];
-    return collapsedGroups?.length ? new Set(collapsedGroups) : new Set<string>();
+    return collapsedGroups?.length
+      ? new Set(collapsedGroups)
+      : new Set<string>();
   }, [cacheKey, collapsedGroupMap]);
 
   // Handle collapsed group changes
@@ -32,7 +35,7 @@ export const useGridCollapsedGroup = (
     (groupIds: Set<string>) => {
       setCollapsedGroupMap(cacheKey, [...groupIds]);
     },
-    [cacheKey, setCollapsedGroupMap]
+    [cacheKey, setCollapsedGroupMap],
   );
 
   // Toggle group collapse state
@@ -49,7 +52,7 @@ export const useGridCollapsedGroup = (
 
       onCollapsedGroupChanged(newCollapsed);
     },
-    [collapsedGroupIds, onCollapsedGroupChanged]
+    [collapsedGroupIds, onCollapsedGroupChanged],
   );
 
   // Expand all groups
@@ -62,7 +65,7 @@ export const useGridCollapsedGroup = (
     (allGroupIds: string[]) => {
       onCollapsedGroupChanged(new Set(allGroupIds));
     },
-    [onCollapsedGroupChanged]
+    [onCollapsedGroupChanged],
   );
 
   // Check if a group is collapsed
@@ -70,7 +73,7 @@ export const useGridCollapsedGroup = (
     (groupId: string): boolean => {
       return collapsedGroupIds?.has(groupId) || false;
     },
-    [collapsedGroupIds]
+    [collapsedGroupIds],
   );
 
   // Build query with collapsed groups
@@ -90,7 +93,9 @@ export const useGridCollapsedGroup = (
       ? {
           ...initialQuery,
           groupBy: groupFields,
-          collapsedGroupIds: collapsedGroupIds ? Array.from(collapsedGroupIds) : undefined,
+          collapsedGroupIds: collapsedGroupIds
+            ? Array.from(collapsedGroupIds)
+            : undefined,
         }
       : initialQuery || {};
   }, [searchValue, groupFields, collapsedGroupIds, initialQuery]);
@@ -106,4 +111,3 @@ export const useGridCollapsedGroup = (
     hasCollapsedGroups: (collapsedGroupIds?.size || 0) > 0,
   };
 };
-

@@ -1,6 +1,6 @@
 /**
  * Button 组件 - 统一的按钮设计系统
- * 
+ *
  * 设计原则：
  * 1. 清晰的视觉层级（primary > secondary > ghost）
  * 2. 60fps 流畅动画
@@ -8,12 +8,12 @@
  * 4. 响应式和触摸友好
  */
 
-import React, { forwardRef, type ButtonHTMLAttributes } from 'react';
-import { cn, tokens, transitions } from '../grid/design-system';
-import type { LucideIcon } from 'lucide-react';
+import React, { forwardRef, type ButtonHTMLAttributes } from "react";
+import { cn, tokens, transitions } from "../grid/design-system";
+import type { LucideIcon } from "lucide-react";
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+export type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /**
@@ -24,39 +24,39 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
    * - danger: 危险操作（红色）
    */
   variant?: ButtonVariant;
-  
+
   /**
    * 按钮尺寸
    */
   size?: ButtonSize;
-  
+
   /**
    * 图标 - 支持：
    * - React 组件类型（例如 Lucide 图标：Plus、Settings）
    * - 已创建的 React 元素（<Plus />）
    */
   icon?: React.ElementType | React.ReactNode;
-  
+
   /**
    * 图标位置
    */
-  iconPosition?: 'left' | 'right';
-  
+  iconPosition?: "left" | "right";
+
   /**
    * 加载状态
    */
   loading?: boolean;
-  
+
   /**
    * 全宽按钮
    */
   fullWidth?: boolean;
-  
+
   /**
    * 自定义类名
    */
   className?: string;
-  
+
   /**
    * 子元素
    */
@@ -66,35 +66,41 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 /**
  * 按钮变体样式配置
  */
-const variantStyles: Record<ButtonVariant, {
-  base: string;
-  hover: string;
-  active: string;
-  disabled: string;
-}> = {
+const variantStyles: Record<
+  ButtonVariant,
+  {
+    base: string;
+    hover: string;
+    active: string;
+    disabled: string;
+  }
+> = {
   primary: {
-    base: 'bg-blue-600 text-white border-blue-600',
-    hover: 'hover:bg-blue-700 hover:border-blue-700 hover:shadow-md',
-    active: 'active:bg-blue-800 active:scale-[0.98]',
-    disabled: 'disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed',
+    base: "bg-blue-600 text-white border-blue-600",
+    hover: "hover:bg-blue-700 hover:border-blue-700 hover:shadow-md",
+    active: "active:bg-blue-800 active:scale-[0.98]",
+    disabled:
+      "disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed",
   },
   secondary: {
-    base: 'bg-white text-gray-700 border-gray-300',
-    hover: 'hover:bg-gray-50 hover:border-gray-400 hover:text-gray-900',
-    active: 'active:bg-gray-100 active:scale-[0.98]',
-    disabled: 'disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed',
+    base: "bg-white text-gray-700 border-gray-300",
+    hover: "hover:bg-gray-50 hover:border-gray-400 hover:text-gray-900",
+    active: "active:bg-gray-100 active:scale-[0.98]",
+    disabled:
+      "disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed",
   },
   ghost: {
-    base: 'bg-transparent text-gray-700 border-transparent',
-    hover: 'hover:bg-gray-100 hover:text-gray-900',
-    active: 'active:bg-gray-200 active:scale-[0.98]',
-    disabled: 'disabled:text-gray-400 disabled:cursor-not-allowed',
+    base: "bg-transparent text-gray-700 border-transparent",
+    hover: "hover:bg-gray-100 hover:text-gray-900",
+    active: "active:bg-gray-200 active:scale-[0.98]",
+    disabled: "disabled:text-gray-400 disabled:cursor-not-allowed",
   },
   danger: {
-    base: 'bg-red-600 text-white border-red-600',
-    hover: 'hover:bg-red-700 hover:border-red-700 hover:shadow-md',
-    active: 'active:bg-red-800 active:scale-[0.98]',
-    disabled: 'disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed',
+    base: "bg-red-600 text-white border-red-600",
+    hover: "hover:bg-red-700 hover:border-red-700 hover:shadow-md",
+    active: "active:bg-red-800 active:scale-[0.98]",
+    disabled:
+      "disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed",
   },
 };
 
@@ -102,9 +108,9 @@ const variantStyles: Record<ButtonVariant, {
  * 按钮尺寸样式配置
  */
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'h-7 px-2.5 text-xs gap-1.5',
-  md: 'h-8 px-3 text-sm gap-2',
-  lg: 'h-10 px-4 text-base gap-2.5',
+  sm: "h-7 px-2.5 text-xs gap-1.5",
+  md: "h-8 px-3 text-sm gap-2",
+  lg: "h-10 px-4 text-base gap-2.5",
 };
 
 /**
@@ -141,19 +147,19 @@ const Spinner = ({ size = 14 }: { size?: number }) => (
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
-      variant = 'secondary',
-      size = 'md',
+      variant = "secondary",
+      size = "md",
       icon,
-      iconPosition = 'left',
+      iconPosition = "left",
       loading = false,
       fullWidth = false,
       disabled = false,
       className,
       children,
-      type = 'button',
+      type = "button",
       ...props
     },
-    ref
+    ref,
   ) => {
     const variantStyle = variantStyles[variant];
     const sizeStyle = sizeStyles[size];
@@ -182,8 +188,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
       // 如果传入的是组件类型（函数组件、forwardRef、memo 等）
       const isComponentType =
-        typeof icon === 'function' ||
-        (typeof icon === 'object' && icon !== null && ('$$typeof' in (icon as any) || 'render' in (icon as any)));
+        typeof icon === "function" ||
+        (typeof icon === "object" &&
+          icon !== null &&
+          ("$$typeof" in (icon as any) || "render" in (icon as any)));
 
       if (isComponentType) {
         const IconComponent = icon as React.ElementType;
@@ -203,46 +211,42 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         className={cn(
           // 基础样式
-          'inline-flex items-center justify-center',
-          'font-medium rounded-md border',
-          'transition-all duration-200 ease-out',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
-          
+          "inline-flex items-center justify-center",
+          "font-medium rounded-md border",
+          "transition-all duration-200 ease-out",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+
           // 变体样式
           variantStyle.base,
           variantStyle.hover,
           variantStyle.active,
           variantStyle.disabled,
-          
+
           // 尺寸样式
           sizeStyle,
-          
+
           // 全宽
-          fullWidth && 'w-full',
-          
+          fullWidth && "w-full",
+
           // 只有图标时的样式
-          !children && iconElement && 'aspect-square p-0',
-          
+          !children && iconElement && "aspect-square p-0",
+
           // 自定义类名
-          className
+          className,
         )}
         {...props}
       >
         {/* 左侧图标 */}
-        {iconPosition === 'left' && iconElement}
-        
+        {iconPosition === "left" && iconElement}
+
         {/* 文本内容 */}
         {children && (
-          <span className={cn(
-            loading && 'opacity-0'
-          )}>
-            {children}
-          </span>
+          <span className={cn(loading && "opacity-0")}>{children}</span>
         )}
-        
+
         {/* 右侧图标 */}
-        {iconPosition === 'right' && iconElement}
-        
+        {iconPosition === "right" && iconElement}
+
         {/* Loading 状态的 Spinner（居中覆盖） */}
         {loading && children && (
           <span className="absolute inset-0 flex items-center justify-center">
@@ -251,23 +255,22 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
       </button>
     );
-  }
+  },
 );
 
-Button.displayName = 'Button';
+Button.displayName = "Button";
 
 /**
  * IconButton - 只有图标的按钮变体
  */
-export const IconButton = forwardRef<HTMLButtonElement, Omit<ButtonProps, 'children'>>(
-  ({ icon, size = 'md', ...props }, ref) => {
-    return (
-      <Button ref={ref} icon={icon} size={size} {...props} />
-    );
-  }
-);
+export const IconButton = forwardRef<
+  HTMLButtonElement,
+  Omit<ButtonProps, "children">
+>(({ icon, size = "md", ...props }, ref) => {
+  return <Button ref={ref} icon={icon} size={size} {...props} />;
+});
 
-IconButton.displayName = 'IconButton';
+IconButton.displayName = "IconButton";
 
 /**
  * ButtonGroup - 按钮组容器
@@ -281,12 +284,12 @@ export const ButtonGroup = ({ children, className }: ButtonGroupProps) => {
   return (
     <div
       className={cn(
-        'inline-flex items-center rounded-md',
-        '[&>button]:rounded-none',
-        '[&>button:first-child]:rounded-l-md',
-        '[&>button:last-child]:rounded-r-md',
-        '[&>button:not(:first-child)]:border-l-0',
-        className
+        "inline-flex items-center rounded-md",
+        "[&>button]:rounded-none",
+        "[&>button:first-child]:rounded-l-md",
+        "[&>button:last-child]:rounded-r-md",
+        "[&>button:not(:first-child)]:border-l-0",
+        className,
       )}
       role="group"
     >
@@ -295,5 +298,4 @@ export const ButtonGroup = ({ children, className }: ButtonGroupProps) => {
   );
 };
 
-ButtonGroup.displayName = 'ButtonGroup';
-
+ButtonGroup.displayName = "ButtonGroup";

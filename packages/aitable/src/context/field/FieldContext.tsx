@@ -1,9 +1,9 @@
-import { createContext, useContext, useMemo, ReactNode } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ApiClient } from '../../api/client';
-import { createFieldInstance } from '../../model/field/factory';
-import type { IField, ICreateFieldRo, IUpdateFieldRo } from '../../api/types';
-import type { Field } from '../../model/field/Field';
+import { createContext, useContext, useMemo, ReactNode } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ApiClient } from "../../api/client";
+import { createFieldInstance } from "../../model/field/factory";
+import type { IField, ICreateFieldRo, IUpdateFieldRo } from "../../api/types";
+import type { Field } from "../../model/field/Field";
 
 interface IFieldContext {
   fields: Field[];
@@ -17,11 +17,11 @@ interface IFieldContext {
 
 const FieldContext = createContext<IFieldContext | null>(null);
 
-export function FieldProvider({ 
+export function FieldProvider({
   tableId,
   apiClient,
-  children 
-}: { 
+  children,
+}: {
   tableId: string;
   apiClient: ApiClient;
   children: ReactNode;
@@ -30,24 +30,24 @@ export function FieldProvider({
 
   // 获取字段列表
   const { data: rawFields = [], isLoading } = useQuery({
-    queryKey: ['fields', tableId],
+    queryKey: ["fields", tableId],
     queryFn: () => apiClient.getFields(tableId),
     enabled: !!tableId,
   });
 
   // 转换为字段实例
-  const fields = useMemo(() => 
-    rawFields.map(field => createFieldInstance(field)),
-    [rawFields]
+  const fields = useMemo(
+    () => rawFields.map((field) => createFieldInstance(field)),
+    [rawFields],
   );
 
-  const getField = (id: string) => fields.find(f => f.id === id);
+  const getField = (id: string) => fields.find((f) => f.id === id);
 
   // 创建字段
   const createMutation = useMutation({
     mutationFn: (data: ICreateFieldRo) => apiClient.createField(tableId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fields', tableId] });
+      queryClient.invalidateQueries({ queryKey: ["fields", tableId] });
     },
   });
 
@@ -56,7 +56,7 @@ export function FieldProvider({
     mutationFn: ({ id, data }: { id: string; data: IUpdateFieldRo }) =>
       apiClient.updateField(tableId, id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fields', tableId] });
+      queryClient.invalidateQueries({ queryKey: ["fields", tableId] });
     },
   });
 
@@ -64,7 +64,7 @@ export function FieldProvider({
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.deleteField(tableId, id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fields', tableId] });
+      queryClient.invalidateQueries({ queryKey: ["fields", tableId] });
     },
   });
 
@@ -73,29 +73,31 @@ export function FieldProvider({
     mutationFn: ({ id, newType }: { id: string; newType: string }) =>
       apiClient.convertField(tableId, id, newType),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fields', tableId] });
+      queryClient.invalidateQueries({ queryKey: ["fields", tableId] });
     },
   });
 
   return (
-    <FieldContext.Provider value={{
-      fields,
-      getField,
-      isLoading,
-      createField: async (data) => {
-        const result = await createMutation.mutateAsync(data);
-        return createFieldInstance(result);
-      },
-      updateField: async (id, data) => {
-        const result = await updateMutation.mutateAsync({ id, data });
-        return createFieldInstance(result);
-      },
-      deleteField: deleteMutation.mutateAsync,
-      convertField: async (id, newType) => {
-        const result = await convertMutation.mutateAsync({ id, newType });
-        return createFieldInstance(result);
-      },
-    }}>
+    <FieldContext.Provider
+      value={{
+        fields,
+        getField,
+        isLoading,
+        createField: async (data) => {
+          const result = await createMutation.mutateAsync(data);
+          return createFieldInstance(result);
+        },
+        updateField: async (id, data) => {
+          const result = await updateMutation.mutateAsync({ id, data });
+          return createFieldInstance(result);
+        },
+        deleteField: deleteMutation.mutateAsync,
+        convertField: async (id, newType) => {
+          const result = await convertMutation.mutateAsync({ id, newType });
+          return createFieldInstance(result);
+        },
+      }}
+    >
       {children}
     </FieldContext.Provider>
   );
@@ -104,9 +106,7 @@ export function FieldProvider({
 export function useField() {
   const context = useContext(FieldContext);
   if (!context) {
-    throw new Error('useField must be used within FieldProvider');
+    throw new Error("useField must be used within FieldProvider");
   }
   return context;
 }
-
-

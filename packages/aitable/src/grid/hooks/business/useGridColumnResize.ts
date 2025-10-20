@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
 export interface IUseGridColumnResizeProps<T> {
   columns: T[];
@@ -10,7 +10,7 @@ export function useGridColumnResize<T extends { id: string }>(_columns: T[]) {
     (column: T, newSize: number, colIndex: number) => {
       // 这里可以添加列大小调整的逻辑
     },
-    []
+    [],
   );
 
   return {

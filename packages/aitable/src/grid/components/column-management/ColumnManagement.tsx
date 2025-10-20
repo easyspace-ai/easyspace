@@ -1,43 +1,55 @@
-import { useRef, useState, useImperativeHandle } from 'react';
-import type { ForwardRefRenderFunction } from 'react';
-import { forwardRef } from 'react';
-import type { IGridColumn } from '../../types/grid';
-import type { IFieldType } from '../field/FieldTypeSelector';
-import { FieldTypeSelector, type IFieldTypeSelectorRef } from '../field/FieldTypeSelector';
-import { ColumnContextMenu, type IColumnContextMenuRef } from '../context-menu/ColumnContextMenu';
-import { FieldPropertyEditor, type IFieldPropertyEditorRef } from '../field/FieldPropertyEditor';
+import { useRef, useState, useImperativeHandle } from "react";
+import type { ForwardRefRenderFunction } from "react";
+import { forwardRef } from "react";
+import type { IGridColumn } from "../../types/grid";
+import type { IFieldType } from "../field/FieldTypeSelector";
+import {
+  FieldTypeSelector,
+  type IFieldTypeSelectorRef,
+} from "../field/FieldTypeSelector";
+import {
+  ColumnContextMenu,
+  type IColumnContextMenuRef,
+} from "../context-menu/ColumnContextMenu";
+import {
+  FieldPropertyEditor,
+  type IFieldPropertyEditorRef,
+} from "../field/FieldPropertyEditor";
 import {
   FieldTypeSelectModal,
   type IFieldTypeSelectModalRef,
   type IFieldTypeModal,
-} from '../field/FieldTypeSelectModal';
+} from "../field/FieldTypeSelectModal";
 import type {
   IFormulaFieldConfigOptions,
   IRollupFieldConfigOptions,
-} from '../field/VirtualFieldConfig';
+} from "../field/VirtualFieldConfig";
 import {
   DeleteConfirmDialog,
   type IDeleteConfirmDialogRef,
   type DeleteType,
-} from '../dialogs/DeleteConfirmDialog';
-import { useFieldManagement } from '../../../components/field-config/FieldManagementProvider';
+} from "../dialogs/DeleteConfirmDialog";
+import { useFieldManagement } from "../../../components/field-config/FieldManagementProvider";
 
 export interface IColumnManagementRef {
   showFieldTypeSelector: (position: { x: number; y: number }) => void;
-  showColumnContextMenu: (position: { x: number; y: number }, columnIndex: number) => void;
+  showColumnContextMenu: (
+    position: { x: number; y: number },
+    columnIndex: number,
+  ) => void;
   showFieldPropertyEditor: (
     column: IGridColumn,
     columnIndex: number,
-    position?: { x: number; y: number; width?: number }
+    position?: { x: number; y: number; width?: number },
   ) => void;
   showFieldTypeSelectModal: (
     position?: { x: number; y: number },
-    mode?: 'create' | 'edit',
+    mode?: "create" | "edit",
     initialData?: {
       type?: IFieldTypeModal;
       name?: string;
       options?: IFormulaFieldConfigOptions | IRollupFieldConfigOptions;
-    }
+    },
   ) => void;
   hideAll: () => void;
 }
@@ -49,7 +61,7 @@ export interface IColumnManagementProps {
     fieldType: IFieldType,
     insertIndex?: number,
     fieldName?: string,
-    options?: IFormulaFieldConfigOptions | IRollupFieldConfigOptions
+    options?: IFormulaFieldConfigOptions | IRollupFieldConfigOptions,
   ) => void;
   onEditColumn?: (columnIndex: number, updatedColumn: IGridColumn) => void;
   onDuplicateColumn?: (columnIndex: number) => void;
@@ -58,13 +70,13 @@ export interface IColumnManagementProps {
     columnIndex: number,
     fieldType: IFieldType,
     fieldName?: string,
-    options?: IFormulaFieldConfigOptions | IRollupFieldConfigOptions
+    options?: IFormulaFieldConfigOptions | IRollupFieldConfigOptions,
   ) => void;
   onInsertColumnRight?: (
     columnIndex: number,
     fieldType: IFieldType,
     fieldName?: string,
-    options?: IFormulaFieldConfigOptions | IRollupFieldConfigOptions
+    options?: IFormulaFieldConfigOptions | IRollupFieldConfigOptions,
   ) => void;
   // 新增：当用户点击"编辑字段"时优先回调，由上层自行展示编辑弹窗
   onStartEditColumn?: (columnIndex: number, column: IGridColumn) => void;
@@ -103,17 +115,24 @@ const ColumnManagementBase: ForwardRefRenderFunction<
       setPendingColumnIndex(-1); // 添加到末尾
       fieldTypeSelectorRef.current?.show(position);
     },
-    showColumnContextMenu: (position: { x: number; y: number }, columnIndex: number) => {
+    showColumnContextMenu: (
+      position: { x: number; y: number },
+      columnIndex: number,
+    ) => {
       columnContextMenuRef.current?.show(position, columnIndex);
     },
     showFieldPropertyEditor: (
       column: IGridColumn,
       columnIndex: number,
-      position?: { x: number; y: number; width?: number }
+      position?: { x: number; y: number; width?: number },
     ) => {
       fieldPropertyEditorRef.current?.show(column, columnIndex, position);
     },
-    showFieldTypeSelectModal: (position = { x: 100, y: 100 }, mode = 'create', initialData) => {
+    showFieldTypeSelectModal: (
+      position = { x: 100, y: 100 },
+      mode = "create",
+      initialData,
+    ) => {
       fieldTypeSelectModalRef.current?.show(position, mode, initialData);
     },
     hideAll: () => {
@@ -153,8 +172,18 @@ const ColumnManagementBase: ForwardRefRenderFunction<
 
     if (pendingColumnIndex >= 0) {
       // 在指定位置插入
-      onInsertColumnLeft?.(pendingColumnIndex, fieldType, data.name, data.options);
-      onInsertColumnRight?.(pendingColumnIndex, fieldType, data.name, data.options);
+      onInsertColumnLeft?.(
+        pendingColumnIndex,
+        fieldType,
+        data.name,
+        data.options,
+      );
+      onInsertColumnRight?.(
+        pendingColumnIndex,
+        fieldType,
+        data.name,
+        data.options,
+      );
     } else {
       // 添加到末尾
       onAddColumn?.(fieldType, undefined, data.name, data.options);
@@ -179,12 +208,12 @@ const ColumnManagementBase: ForwardRefRenderFunction<
       const fieldConfig = {
         id: column.id || `column-${columnIndex}`,
         name: column.name,
-        type: (column as any).type || 'singleLineText',
-        description: (column as any).description || '',
+        type: (column as any).type || "singleLineText",
+        description: (column as any).description || "",
         required: (column as any).required || false,
         visible: (column as any).visible !== false,
         options: (column as any).options || [],
-        defaultValue: (column as any).defaultValue || '',
+        defaultValue: (column as any).defaultValue || "",
         validation: (column as any).validation || {},
       };
       openEditDialog(fieldConfig);
@@ -198,13 +227,13 @@ const ColumnManagementBase: ForwardRefRenderFunction<
   const handleInsertFieldLeft = (columnIndex: number) => {
     setPendingColumnIndex(columnIndex);
     // 使用新的字段类型选择弹窗
-    fieldTypeSelectModalRef.current?.show({ x: 100, y: 100 }, 'create');
+    fieldTypeSelectModalRef.current?.show({ x: 100, y: 100 }, "create");
   };
 
   const handleInsertFieldRight = (columnIndex: number) => {
     setPendingColumnIndex(columnIndex + 1);
     // 使用新的字段类型选择弹窗
-    fieldTypeSelectModalRef.current?.show({ x: 100, y: 100 }, 'create');
+    fieldTypeSelectModalRef.current?.show({ x: 100, y: 100 }, "create");
   };
 
   const handleFilterByField = (columnIndex: number) => {
@@ -228,34 +257,43 @@ const ColumnManagementBase: ForwardRefRenderFunction<
   };
 
   const handleDeleteField = (columnIndex: number) => {
-    console.log('🗑️ handleDeleteField 被调用:', { columnIndex, column: columns[columnIndex] });
+    console.log("🗑️ handleDeleteField 被调用:", {
+      columnIndex,
+      column: columns[columnIndex],
+    });
     const column = columns[columnIndex];
     if (column) {
-      console.log('🗑️ 准备显示增强删除确认对话框:', { columnIndex, columnName: column.name });
+      console.log("🗑️ 准备显示增强删除确认对话框:", {
+        columnIndex,
+        columnName: column.name,
+      });
       // 使用增强的删除确认对话框
       openDeleteDialog(column.id || `column-${columnIndex}`, column.name);
     } else {
-      console.error('🗑️ 无法找到要删除的列:', columnIndex);
+      console.error("🗑️ 无法找到要删除的列:", columnIndex);
     }
   };
 
   const handleDeleteConfirm = (type: DeleteType, itemIndex: number) => {
-    if (type === 'column') {
+    if (type === "column") {
       onDeleteColumn?.(itemIndex);
     }
     // 行删除由Grid组件处理
   };
 
   // 字段属性编辑器事件处理
-  const handleFieldPropertySave = (columnIndex: number, updatedColumn: IGridColumn) => {
+  const handleFieldPropertySave = (
+    columnIndex: number,
+    updatedColumn: IGridColumn,
+  ) => {
     // 新建字段：当传入的索引等于当前列数，视为插入到末尾
     if (columnIndex >= columns.length) {
       const type = (updatedColumn as any).type;
       const fieldType = {
         type,
-        name: updatedColumn.name || '新字段',
-        description: updatedColumn.description || '',
-        icon: (updatedColumn as any).icon || 'A',
+        name: updatedColumn.name || "新字段",
+        description: updatedColumn.description || "",
+        icon: (updatedColumn as any).icon || "A",
       } as unknown as IFieldType;
       onAddColumn?.(fieldType);
       return;
@@ -302,7 +340,10 @@ const ColumnManagementBase: ForwardRefRenderFunction<
         onCancel={handleFieldTypeSelectModalCancel}
       />
 
-      <DeleteConfirmDialog ref={deleteConfirmDialogRef} onConfirm={handleDeleteConfirm} />
+      <DeleteConfirmDialog
+        ref={deleteConfirmDialogRef}
+        onConfirm={handleDeleteConfirm}
+      />
     </>
   );
 };

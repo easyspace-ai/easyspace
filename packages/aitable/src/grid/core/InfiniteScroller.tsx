@@ -1,6 +1,18 @@
-import { cn } from '../../utils/string';
-import type { ForwardRefRenderFunction, MutableRefObject, ReactNode, UIEvent } from 'react';
-import { useMemo, useRef, useCallback, forwardRef, useImperativeHandle, useEffect } from 'react';
+import { cn } from "../../utils/string";
+import type {
+  ForwardRefRenderFunction,
+  MutableRefObject,
+  ReactNode,
+  UIEvent,
+} from "react";
+import {
+  useMemo,
+  useRef,
+  useCallback,
+  forwardRef,
+  useImperativeHandle,
+  useEffect,
+} from "react";
 // 临时替代 scroller 的简单实现
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -8,70 +20,79 @@ const Scroller = class {
   constructor(options: any) {
     this.options = options;
   }
-  
+
   setDimensions(width: number, height: number) {
     this.width = width;
     this.height = height;
   }
-  
+
   setContentDimensions(width: number, height: number) {
     this.contentWidth = width;
     this.contentHeight = height;
   }
-  
+
   setSnapSize(width: number, height: number) {
     this.snapWidth = width;
     this.snapHeight = height;
   }
-  
+
   setScrollPosition(left: number, top: number) {
     this.left = left;
     this.top = top;
   }
-  
+
   getScrollPosition() {
     return { left: this.left || 0, top: this.top || 0 };
   }
-  
+
   getDimensions() {
     return { width: this.width || 0, height: this.height || 0 };
   }
-  
+
   getContentDimensions() {
     return { width: this.contentWidth || 0, height: this.contentHeight || 0 };
   }
-  
+
   getSnapSize() {
     return { width: this.snapWidth || 0, height: this.snapHeight || 0 };
   }
-  
+
   on(callback: () => void) {
     // 简单的回调处理
   }
-  
+
   off(callback: () => void) {
     // 简单的回调处理
   }
-  
+
   destroy() {
     // 清理资源
   }
 };
-import { useIsTouchDevice } from '../hooks/primitive';
-import type { IGridProps } from './Grid';
-import { getHorizontalRangeInfo, getVerticalRangeInfo, useEventListener } from '../hooks/primitive';
-import type { ILinearRow, IScrollState } from '../types/grid';
-import type { CoordinateManager } from '../managers';
-import { getWheelDelta, cancelTimeout, requestTimeout, type ITimeoutID } from '../utils/business/utils';
+import { useIsTouchDevice } from "../hooks/primitive";
+import type { IGridProps } from "./Grid";
+import {
+  getHorizontalRangeInfo,
+  getVerticalRangeInfo,
+  useEventListener,
+} from "../hooks/primitive";
+import type { ILinearRow, IScrollState } from "../types/grid";
+import type { CoordinateManager } from "../managers";
+import {
+  getWheelDelta,
+  cancelTimeout,
+  requestTimeout,
+  type ITimeoutID,
+} from "../utils/business/utils";
 
 export interface ScrollerProps
   extends Pick<
     IGridProps,
-    | 'smoothScrollX'
-    | 'smoothScrollY'
-    | 'scrollBarVisible'
-    | 'onScrollChanged'
-    | 'onVisibleRegionChanged'
+    | "smoothScrollX"
+    | "smoothScrollY"
+    | "scrollBarVisible"
+    | "onScrollChanged"
+    | "onVisibleRegionChanged"
   > {
   coordInstance: CoordinateManager;
   containerWidth: number;
@@ -92,7 +113,10 @@ export interface ScrollerRef {
   scrollBy: (deltaX: number, deltaY: number) => void;
 }
 
-const InfiniteScrollerBase: ForwardRefRenderFunction<ScrollerRef, ScrollerProps> = (props, ref) => {
+const InfiniteScrollerBase: ForwardRefRenderFunction<
+  ScrollerRef,
+  ScrollerProps
+> = (props, ref) => {
   const {
     coordInstance,
     containerWidth,
@@ -146,7 +170,10 @@ const InfiniteScrollerBase: ForwardRefRenderFunction<ScrollerRef, ScrollerProps>
   const lastScrollTop = useRef(0);
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  const onScroll = (e: UIEvent<HTMLDivElement>, direction: 'horizontal' | 'vertical') => {
+  const onScroll = (
+    e: UIEvent<HTMLDivElement>,
+    direction: "horizontal" | "vertical",
+  ) => {
     if (!verticalScrollRef.current || !horizontalScrollRef.current) {
       return;
     }
@@ -156,14 +183,16 @@ const InfiniteScrollerBase: ForwardRefRenderFunction<ScrollerRef, ScrollerProps>
 
     let scrollProps: { [key: string]: number } = {};
 
-    if (direction === 'vertical') {
+    if (direction === "vertical") {
       const delta = lastScrollTop.current - newScrollTop;
       const scrollableHeight = el.scrollHeight - el.clientHeight;
       lastScrollTop.current = newScrollTop;
 
       if (
         scrollableHeight > 0 &&
-        (Math.abs(delta) > 2000 || newScrollTop === 0 || newScrollTop === scrollableHeight) &&
+        (Math.abs(delta) > 2000 ||
+          newScrollTop === 0 ||
+          newScrollTop === scrollableHeight) &&
         scrollHeight > el.scrollHeight + 5
       ) {
         const prog = newScrollTop / scrollableHeight;
@@ -179,7 +208,7 @@ const InfiniteScrollerBase: ForwardRefRenderFunction<ScrollerRef, ScrollerProps>
       };
     }
 
-    if (direction === 'horizontal') {
+    if (direction === "horizontal") {
       const colIndex = coordInstance.getColumnStartIndex(scrollLeft);
       const colOffset = coordInstance.getColumnOffset(colIndex);
       scrollProps = {
@@ -189,11 +218,11 @@ const InfiniteScrollerBase: ForwardRefRenderFunction<ScrollerRef, ScrollerProps>
 
     const { startRowIndex, stopRowIndex } = getVerticalRangeInfo(
       coordInstance,
-      scrollProps.scrollTop ?? scrollState.scrollTop
+      scrollProps.scrollTop ?? scrollState.scrollTop,
     );
     const { startColumnIndex, stopColumnIndex } = getHorizontalRangeInfo(
       coordInstance,
-      scrollProps.scrollLeft ?? scrollState.scrollLeft
+      scrollProps.scrollLeft ?? scrollState.scrollLeft,
     );
 
     const realStartRowIndex = getLinearRow(startRowIndex).realIndex;
@@ -207,7 +236,7 @@ const InfiniteScrollerBase: ForwardRefRenderFunction<ScrollerRef, ScrollerProps>
     });
     onScrollChanged?.(
       scrollProps.scrollLeft ?? scrollState.scrollLeft,
-      scrollProps.scrollTop ?? scrollState.scrollTop
+      scrollProps.scrollTop ?? scrollState.scrollTop,
     );
 
     setScrollState((prev) => {
@@ -234,37 +263,45 @@ const InfiniteScrollerBase: ForwardRefRenderFunction<ScrollerRef, ScrollerProps>
 
   const scrollHandler = useCallback((deltaX: number, deltaY: number) => {
     if (horizontalScrollRef.current) {
-      horizontalScrollRef.current.scrollLeft = horizontalScrollRef.current.scrollLeft + deltaX;
+      horizontalScrollRef.current.scrollLeft =
+        horizontalScrollRef.current.scrollLeft + deltaX;
     }
     if (verticalScrollRef.current) {
       const realDeltaY = deltaY;
-      verticalScrollRef.current.scrollTop = verticalScrollRef.current.scrollTop + realDeltaY;
+      verticalScrollRef.current.scrollTop =
+        verticalScrollRef.current.scrollTop + realDeltaY;
     }
   }, []);
 
-  const mobileScrollHandler = useCallback((scrollLeft: number, scrollTop: number) => {
-    if (horizontalScrollRef.current) {
-      horizontalScrollRef.current.scrollLeft = scrollLeft;
-    }
-    if (verticalScrollRef.current) {
-      verticalScrollRef.current.scrollTop = scrollTop;
-    }
-  }, []);
+  const mobileScrollHandler = useCallback(
+    (scrollLeft: number, scrollTop: number) => {
+      if (horizontalScrollRef.current) {
+        horizontalScrollRef.current.scrollLeft = scrollLeft;
+      }
+      if (verticalScrollRef.current) {
+        verticalScrollRef.current.scrollTop = scrollTop;
+      }
+    },
+    [],
+  );
 
   const onWheel = useCallback(
     (event: Event) => {
-      if (!scrollEnable) {return;}
+      if (!scrollEnable) {
+        return;
+      }
       // 阻止事件冒泡到页面，防止页面滚动
       event.preventDefault();
       event.stopPropagation();
       const [fixedDeltaX, fixedDeltaY] = getWheelDelta({
         event: event as WheelEvent,
-        pageHeight: coordInstance.containerHeight - coordInstance.rowInitSize - 1,
+        pageHeight:
+          coordInstance.containerHeight - coordInstance.rowInitSize - 1,
         lineHeight: coordInstance.rowHeight,
       });
       scrollHandler(fixedDeltaX, fixedDeltaY);
     },
-    [scrollEnable, scrollHandler, coordInstance]
+    [scrollEnable, scrollHandler, coordInstance],
   );
 
   const onTouchStart = useCallback((e: TouchEvent) => {
@@ -285,7 +322,7 @@ const InfiniteScrollerBase: ForwardRefRenderFunction<ScrollerRef, ScrollerProps>
       if (horizontalScrollRef.current && verticalScrollRef.current) {
         scrollerRef.current?.scrollTo(
           horizontalScrollRef.current.scrollLeft,
-          verticalScrollRef.current.scrollTop
+          verticalScrollRef.current.scrollTop,
         );
       }
       scrollerRef.current.doTouchEnd(e.timeStamp);
@@ -293,7 +330,9 @@ const InfiniteScrollerBase: ForwardRefRenderFunction<ScrollerRef, ScrollerProps>
   }, []);
 
   useEffect(() => {
-    if (!isTouchDevice) {return;}
+    if (!isTouchDevice) {
+      return;
+    }
 
     const options = {
       scrollingX: true,
@@ -307,7 +346,12 @@ const InfiniteScrollerBase: ForwardRefRenderFunction<ScrollerRef, ScrollerProps>
   useEffect(() => {
     if (scrollerRef.current) {
       scrollTo({});
-      scrollerRef.current.setDimensions(containerWidth, containerHeight, scrollWidth, scrollHeight);
+      scrollerRef.current.setDimensions(
+        containerWidth,
+        containerHeight,
+        scrollWidth,
+        scrollHeight,
+      );
     }
   }, [containerHeight, containerWidth, scrollWidth, scrollHeight]);
 
@@ -324,33 +368,33 @@ const InfiniteScrollerBase: ForwardRefRenderFunction<ScrollerRef, ScrollerProps>
     return res;
   }, [scrollHeight]);
 
-  useEventListener('wheel', onWheel, containerRef.current, false);
-  useEventListener('touchstart', onTouchStart, containerRef.current, false);
-  useEventListener('touchmove', onTouchMove, containerRef.current, false);
-  useEventListener('touchend', onTouchEnd, containerRef.current, false);
+  useEventListener("wheel", onWheel, containerRef.current, false);
+  useEventListener("touchstart", onTouchStart, containerRef.current, false);
+  useEventListener("touchmove", onTouchMove, containerRef.current, false);
+  useEventListener("touchend", onTouchEnd, containerRef.current, false);
 
   return (
     <>
       <div
         ref={horizontalScrollRef}
         className={cn(
-          'scrollbar scrollbar-thumb-foreground/40 scrollbar-thumb-rounded-md scrollbar-h-[10px] cursor-pointer will-change-transform',
-          !scrollBarVisible && 'opacity-0 pointer-events-none'
+          "scrollbar scrollbar-thumb-foreground/40 scrollbar-thumb-rounded-md scrollbar-h-[10px] cursor-pointer will-change-transform",
+          !scrollBarVisible && "opacity-0 pointer-events-none",
         )}
         style={{
-          position: 'absolute',
+          position: "absolute",
           bottom: 2,
           left,
           width: containerWidth - left,
           height: 16,
-          overflowX: 'scroll',
-          overflowY: 'hidden',
+          overflowX: "scroll",
+          overflowY: "hidden",
         }}
-        onScroll={(e) => onScroll(e, 'horizontal')}
+        onScroll={(e) => onScroll(e, "horizontal")}
       >
         <div
           style={{
-            position: 'absolute',
+            position: "absolute",
             width: scrollWidth,
             height: 1,
           }}
@@ -359,19 +403,19 @@ const InfiniteScrollerBase: ForwardRefRenderFunction<ScrollerRef, ScrollerProps>
       <div
         ref={verticalScrollRef}
         className={cn(
-          'scrollbar scrollbar-thumb-foreground/40 scrollbar-thumb-rounded-md scrollbar-w-[10px] scrollbar-min-thumb cursor-pointer will-change-transform',
-          !scrollBarVisible && 'opacity-0 pointer-events-none'
+          "scrollbar scrollbar-thumb-foreground/40 scrollbar-thumb-rounded-md scrollbar-w-[10px] scrollbar-min-thumb cursor-pointer will-change-transform",
+          !scrollBarVisible && "opacity-0 pointer-events-none",
         )}
         style={{
-          position: 'absolute',
+          position: "absolute",
           right: 2,
           top,
           width: 16,
           height: containerHeight - top,
-          overflowX: 'hidden',
-          overflowY: 'scroll',
+          overflowX: "hidden",
+          overflowY: "scroll",
         }}
-        onScroll={(e) => onScroll(e, 'vertical')}
+        onScroll={(e) => onScroll(e, "vertical")}
       >
         <div className="flex w-px shrink-0 flex-col">{placeholderElements}</div>
       </div>

@@ -1,14 +1,25 @@
-import { Input } from '../../../../ui';
-import type { ChangeEvent, ForwardRefRenderFunction, KeyboardEvent, RefObject } from 'react';
-import { useState, useRef, useImperativeHandle, forwardRef, useMemo } from 'react';
+import { Input } from "../../../../ui";
+import type {
+  ChangeEvent,
+  ForwardRefRenderFunction,
+  KeyboardEvent,
+  RefObject,
+} from "react";
+import {
+  useState,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+  useMemo,
+} from "react";
 // 使用 ESM 导入并以 any 断言，避免 TS/React 版本差异造成的 JSX 类型不兼容
-import AutoSizeTextareaDefault from 'react-textarea-autosize';
+import AutoSizeTextareaDefault from "react-textarea-autosize";
 const AutoSizeTextarea: any = AutoSizeTextareaDefault as any;
-import { Key } from 'ts-keycode-enum';
-import { GRID_DEFAULT } from '../../../configs';
-import type { ILinkCell, INumberCell, ITextCell } from '../../../renderers';
-import { CellType } from '../../../renderers';
-import type { IEditorRef, IEditorProps } from '../EditorContainer';
+import { Key } from "ts-keycode-enum";
+import { GRID_DEFAULT } from "../../../configs";
+import type { ILinkCell, INumberCell, ITextCell } from "../../../renderers";
+import { CellType } from "../../../renderers";
+import type { IEditorRef, IEditorProps } from "../EditorContainer";
 
 const { rowHeight: defaultRowHeight } = GRID_DEFAULT;
 
@@ -26,20 +37,25 @@ const TextEditorBase: ForwardRefRenderFunction<
 
   useImperativeHandle(ref, () => ({
     focus: () => inputRef.current?.focus(),
-    setValue: (value: string | number | null | undefined) => setValueInner(String(value ?? '')),
+    setValue: (value: string | number | null | undefined) =>
+      setValueInner(String(value ?? "")),
     saveValue,
   }));
 
   const saveValue = () => {
-    if (value === displayData || !isEditing) {return;}
+    if (value === displayData || !isEditing) {
+      return;
+    }
     if (type === CellType.Number) {
       onChange?.(Number(value));
     } else {
-      onChange?.(typeof value === 'string' ? value.trim() : value);
+      onChange?.(typeof value === "string" ? value.trim() : value);
     }
   };
 
-  const onChangeInner = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const onChangeInner = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const value = e.target.value;
     setValueInner(value);
   };
@@ -58,10 +74,10 @@ const TextEditorBase: ForwardRefRenderFunction<
     const style: React.CSSProperties = {
       width: width + 4,
       minHeight: height + 4,
-      height: needWrap ? 'auto' : height + 4,
+      height: needWrap ? "auto" : height + 4,
       marginLeft: -2,
       marginTop: -2,
-      textAlign: type === CellType.Number ? 'right' : 'left',
+      textAlign: type === CellType.Number ? "right" : "left",
     };
     if (height > defaultRowHeight) {
       style.paddingBottom = height - defaultRowHeight;

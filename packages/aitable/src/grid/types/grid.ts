@@ -1,7 +1,7 @@
-import type { IUser } from '../../types';
-import type { IGridTheme } from '../configs/gridTheme';
-import type { ICell } from '../renderers/cell-renderer/interface';
-export * from '../renderers/cell-renderer/interface';
+import type { IUser } from "../../types";
+import type { IGridTheme } from "../configs/gridTheme";
+import type { ICell } from "../renderers/cell-renderer/interface";
+export * from "../renderers/cell-renderer/interface";
 
 export interface IScrollState {
   scrollTop: number;
@@ -27,37 +27,37 @@ export interface IRectangle {
 }
 
 export enum SelectionRegionType {
-  Rows = 'Rows',
-  Columns = 'Columns',
-  Cells = 'Cells',
-  None = 'None',
+  Rows = "Rows",
+  Columns = "Columns",
+  Cells = "Cells",
+  None = "None",
 }
 
 export enum RegionType {
-  Cell = 'Cell',
-  ActiveCell = 'ActiveCell',
-  CellValue = 'CellValue',
-  AppendRow = 'AppendRow',
-  AppendColumn = 'AppendColumn',
-  ColumnHeader = 'ColumnHeader',
-  GroupStatistic = 'GroupStatistic',
-  ColumnStatistic = 'ColumnStatistic',
-  ColumnHeaderMenu = 'ColumnHeaderMenu',
-  ColumnPrimaryIcon = 'ColumnPrimaryIcon',
-  ColumnDescription = 'ColumnDescription',
-  ColumnResizeHandler = 'ColumnResizeHandler',
-  ColumnFreezeHandler = 'ColumnFreezeHandler',
-  RowHeaderDragHandler = 'RowHeaderDragHandler',
-  RowHeaderExpandHandler = 'RowHeaderExpandHandler',
-  RowHeaderCheckbox = 'RowHeaderCheckbox',
-  RowGroupControl = 'RowGroupControl',
-  RowGroupHeader = 'RowGroupHeader',
-  RowCountLabel = 'RowCountLabel',
-  RowHeader = 'RowHeader',
-  AllCheckbox = 'AllCheckbox',
-  FillHandler = 'FillHandler',
-  Blank = 'Blank',
-  None = 'None',
+  Cell = "Cell",
+  ActiveCell = "ActiveCell",
+  CellValue = "CellValue",
+  AppendRow = "AppendRow",
+  AppendColumn = "AppendColumn",
+  ColumnHeader = "ColumnHeader",
+  GroupStatistic = "GroupStatistic",
+  ColumnStatistic = "ColumnStatistic",
+  ColumnHeaderMenu = "ColumnHeaderMenu",
+  ColumnPrimaryIcon = "ColumnPrimaryIcon",
+  ColumnDescription = "ColumnDescription",
+  ColumnResizeHandler = "ColumnResizeHandler",
+  ColumnFreezeHandler = "ColumnFreezeHandler",
+  RowHeaderDragHandler = "RowHeaderDragHandler",
+  RowHeaderExpandHandler = "RowHeaderExpandHandler",
+  RowHeaderCheckbox = "RowHeaderCheckbox",
+  RowGroupControl = "RowGroupControl",
+  RowGroupHeader = "RowGroupHeader",
+  RowCountLabel = "RowCountLabel",
+  RowHeader = "RowHeader",
+  AllCheckbox = "AllCheckbox",
+  FillHandler = "FillHandler",
+  Blank = "Blank",
+  None = "None",
 }
 
 export type ICellRange = [colIndex: number, rowIndex: number]; // The beginning and the end come in pairs
@@ -117,9 +117,9 @@ export interface IDragState {
 }
 
 export enum DragRegionType {
-  Rows = 'Rows',
-  Columns = 'Columns',
-  None = 'None',
+  Rows = "Rows",
+  Columns = "Columns",
+  None = "None",
 }
 
 export type IScrollDirection = -1 | 0 | 1;
@@ -131,9 +131,9 @@ export enum MouseButtonType {
 }
 
 export enum RowControlType {
-  Drag = 'Drag',
-  Expand = 'Expand',
-  Checkbox = 'Checkbox',
+  Drag = "Drag",
+  Expand = "Expand",
+  Checkbox = "Checkbox",
 }
 
 export interface IRowControlItem {
@@ -146,7 +146,7 @@ export type ICellItem = [colIndex: number, rowIndex: number];
 export type ICollaborator = {
   activeCell?: ICellItem;
   activeCellId: [recordId: string, field: string];
-  user: Omit<IUser, 'phone'>;
+  user: Omit<IUser, "phone">;
   borderColor: string;
   timeStamp: number;
 }[];
@@ -159,30 +159,30 @@ export interface IPositionWithBounds {
 }
 
 export enum DraggableType {
-  All = 'all',
-  None = 'none',
-  Column = 'column',
-  Row = 'row',
+  All = "all",
+  None = "none",
+  Column = "column",
+  Row = "row",
 }
 
 export enum GridCustomIcon {
-  Description = 'description',
+  Description = "description",
 }
 
 export enum SelectableType {
-  All = 'all',
-  None = 'none',
-  Column = 'column',
-  Row = 'row',
-  Cell = 'cell',
+  All = "all",
+  None = "none",
+  Column = "column",
+  Row = "row",
+  Cell = "cell",
 }
 
 export enum LinearRowType {
-  Row = 'ROW',
-  Group = 'GROUP',
-  GroupTitle = 'GROUP_TITLE',
-  AddRow = 'ADD_ROW',
-  Append = 'APPEND',
+  Row = "ROW",
+  Group = "GROUP",
+  GroupTitle = "GROUP_TITLE",
+  AddRow = "ADD_ROW",
+  Append = "APPEND",
 }
 
 export interface IActiveCellBound extends IRectangle {
@@ -212,7 +212,10 @@ export interface IGroupAddButtonPoint {
   type: LinearRowType.Append;
 }
 
-export type IGroupPoint = IGroupHeaderPoint | IGroupRowPoint | IGroupAddButtonPoint;
+export type IGroupPoint =
+  | IGroupHeaderPoint
+  | IGroupRowPoint
+  | IGroupAddButtonPoint;
 
 export type ILinearRow =
   | {

@@ -2,5 +2,4 @@
  * ViewToolbar exports
  */
 
-export * from './ViewToolbar';
-
+export * from "./ViewToolbar";

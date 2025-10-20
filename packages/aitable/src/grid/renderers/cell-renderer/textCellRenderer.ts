@@ -1,23 +1,32 @@
-import { GRID_DEFAULT } from '../../configs';
-import { drawMultiLineText } from '../base-renderer/baseRenderer';
-import { CellType } from './interface';
+import { GRID_DEFAULT } from "../../configs";
+import { drawMultiLineText } from "../base-renderer/baseRenderer";
+import { CellType } from "./interface";
 import type {
   IInternalCellRenderer,
   ITextCell,
   ICellRenderProps,
   ICellMeasureProps,
-} from './interface';
+} from "./interface";
 
-const { maxRowCount, cellHorizontalPadding, cellVerticalPaddingMD, cellTextLineHeight } =
-  GRID_DEFAULT;
+const {
+  maxRowCount,
+  cellHorizontalPadding,
+  cellVerticalPaddingMD,
+  cellTextLineHeight,
+} = GRID_DEFAULT;
 
 export const textCellRenderer: IInternalCellRenderer<ITextCell> = {
   type: CellType.Text,
   measure: (cell: ITextCell, props: ICellMeasureProps) => {
     const { displayData } = cell;
     const { ctx, theme, width, height } = props;
-    if (!ctx || !theme) return { width: width ?? 0, height: height ?? 0, totalHeight: height ?? 0 };
-    
+    if (!ctx || !theme)
+      return {
+        width: width ?? 0,
+        height: height ?? 0,
+        totalHeight: height ?? 0,
+      };
+
     const { cellTextColor } = theme;
 
     if (!displayData) {
@@ -38,7 +47,10 @@ export const textCellRenderer: IInternalCellRenderer<ITextCell> = {
 
     return {
       width,
-      height: Math.max(height, cellVerticalPaddingMD + displayRowCount * cellTextLineHeight),
+      height: Math.max(
+        height,
+        cellVerticalPaddingMD + displayRowCount * cellTextLineHeight,
+      ),
       totalHeight,
     };
   },
@@ -46,10 +58,12 @@ export const textCellRenderer: IInternalCellRenderer<ITextCell> = {
     const { displayData } = cell;
     const { ctx, rect, theme, isActive } = props;
     if (!ctx || !rect || !theme) return;
-    
+
     const { x, y, width, height } = rect;
 
-    if (!displayData) {return;}
+    if (!displayData) {
+      return;
+    }
 
     const { cellTextColor } = theme;
     const renderHeight = height - cellVerticalPaddingMD;
@@ -58,7 +72,9 @@ export const textCellRenderer: IInternalCellRenderer<ITextCell> = {
       x: x + cellHorizontalPadding,
       y: y + cellVerticalPaddingMD,
       text: displayData,
-      maxLines: isActive ? Infinity : Math.max(Math.floor(renderHeight / cellTextLineHeight), 1),
+      maxLines: isActive
+        ? Infinity
+        : Math.max(Math.floor(renderHeight / cellTextLineHeight), 1),
       lineHeight: cellTextLineHeight,
       maxWidth: width - cellHorizontalPadding * 2,
       fill: cellTextColor,

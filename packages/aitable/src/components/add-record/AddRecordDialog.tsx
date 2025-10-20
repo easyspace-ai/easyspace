@@ -1,6 +1,6 @@
 /**
  * AddRecordDialog - 添加记录弹窗
- * 
+ *
  * 特性：
  * - Portal 居中显示
  * - ESC 关闭、Tab 捕获
@@ -11,22 +11,22 @@
  * - 移动端适配
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { cn, tokens, elevation } from '../../grid/design-system';
-import { X, Loader2, AlertCircle } from 'lucide-react';
-import type { AddRecordDialogProps, FormValues, FormErrors } from './types';
-import { getFieldEditor, isFieldEditable } from './field-editors';
-import { validateForm, hasErrors } from './validators';
-import { createAdapter } from '../../api/sdk-adapter';
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
+import { cn, tokens, elevation } from "../../grid/design-system";
+import { X, Loader2, AlertCircle } from "lucide-react";
+import type { AddRecordDialogProps, FormValues, FormErrors } from "./types";
+import { getFieldEditor, isFieldEditable } from "./field-editors";
+import { validateForm, hasErrors } from "./validators";
+import { createAdapter } from "../../api/sdk-adapter";
 
 const DEFAULT_LOCALE = {
-  title: '添加记录',
-  cancel: '取消',
-  save: '保存',
-  saving: '保存中...',
-  required: '此字段为必填项',
-  invalidFormat: '格式不正确',
+  title: "添加记录",
+  cancel: "取消",
+  save: "保存",
+  saving: "保存中...",
+  required: "此字段为必填项",
+  invalidFormat: "格式不正确",
 };
 
 export function AddRecordDialog(props: AddRecordDialogProps) {
@@ -65,7 +65,8 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
 
   // 获取可编辑字段（排除锁定和计算字段）
   const editableFields = fields.filter(
-    (field) => field.visible !== false && !field.locked && isFieldEditable(field.type)
+    (field) =>
+      field.visible !== false && !field.locked && isFieldEditable(field.type),
   );
 
   // Primary 字段置顶
@@ -99,8 +100,8 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
 
     // 没有 adapter，无法提交
     if (!adapter) {
-      setSubmitError('未配置数据适配器，无法保存');
-      console.error('AddRecordDialog: adapter is required for submission');
+      setSubmitError("未配置数据适配器，无法保存");
+      console.error("AddRecordDialog: adapter is required for submission");
       return;
     }
 
@@ -133,9 +134,9 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
       resetForm();
       onClose();
     } catch (error: any) {
-      console.error('Failed to create record:', error);
-      setSubmitError(error.message || '保存失败，请重试');
-      
+      console.error("Failed to create record:", error);
+      setSubmitError(error.message || "保存失败，请重试");
+
       // 失败回调
       if (onError) {
         onError(error);
@@ -143,20 +144,31 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
     } finally {
       setIsSubmitting(false);
     }
-  }, [sortedFields, values, locale, adapter, tableId, transformBeforeSubmit, onSuccess, onError, onClose, resetForm]);
+  }, [
+    sortedFields,
+    values,
+    locale,
+    adapter,
+    tableId,
+    transformBeforeSubmit,
+    onSuccess,
+    onError,
+    onClose,
+    resetForm,
+  ]);
 
   // ESC 关闭
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !isSubmitting) {
+      if (e.key === "Escape" && !isSubmitting) {
         onClose();
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, isSubmitting, onClose]);
 
   // 焦点管理
@@ -166,12 +178,12 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
       previousActiveElement.current = document.activeElement as HTMLElement;
 
       // 禁用 body 滚动
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
 
       // 聚焦到对话框
       setTimeout(() => {
         const firstInput = dialogRef.current?.querySelector<HTMLElement>(
-          'input:not([disabled]), textarea:not([disabled]), select:not([disabled])'
+          "input:not([disabled]), textarea:not([disabled]), select:not([disabled])",
         );
         if (firstInput) {
           firstInput.focus();
@@ -179,7 +191,7 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
       }, 100);
     } else {
       // 恢复 body 滚动
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
 
       // 恢复焦点
       if (previousActiveElement.current) {
@@ -188,7 +200,7 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
     }
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
@@ -197,11 +209,12 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
     if (!isOpen || !dialogRef.current) return;
 
     const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
+      if (e.key !== "Tab") return;
 
-      const focusableElements = dialogRef.current!.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      );
+      const focusableElements =
+        dialogRef.current!.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        );
 
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
@@ -215,8 +228,8 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
       }
     };
 
-    document.addEventListener('keydown', handleTabKey);
-    return () => document.removeEventListener('keydown', handleTabKey);
+    document.addEventListener("keydown", handleTabKey);
+    return () => document.removeEventListener("keydown", handleTabKey);
   }, [isOpen]);
 
   // Enter 快捷键提交
@@ -246,10 +259,10 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
       <div
         ref={dialogRef}
         className={cn(
-          'relative z-[1001] w-full rounded-lg bg-white',
-          'max-w-2xl max-h-[90vh] flex flex-col',
-          'shadow-2xl',
-          'animate-in fade-in-0 zoom-in-95 duration-200'
+          "relative z-[1001] w-full rounded-lg bg-white",
+          "max-w-2xl max-h-[90vh] flex flex-col",
+          "shadow-2xl",
+          "animate-in fade-in-0 zoom-in-95 duration-200",
         )}
         style={{
           backgroundColor: tokens.colors.surface.base,
@@ -273,10 +286,10 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
             onClick={onClose}
             disabled={isSubmitting}
             className={cn(
-              'p-1 rounded-md text-gray-500 hover:text-gray-700',
-              'hover:bg-gray-100 transition-colors',
-              'focus:outline-none focus:ring-2 focus:ring-blue-500',
-              isSubmitting && 'cursor-not-allowed opacity-50'
+              "p-1 rounded-md text-gray-500 hover:text-gray-700",
+              "hover:bg-gray-100 transition-colors",
+              "focus:outline-none focus:ring-2 focus:ring-blue-500",
+              isSubmitting && "cursor-not-allowed opacity-50",
             )}
             aria-label="关闭"
           >
@@ -293,7 +306,8 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
           ) : (
             <div className="space-y-4">
               {sortedFields.map((field) => {
-                const Editor = customEditors[field.type] || getFieldEditor(field.type);
+                const Editor =
+                  customEditors[field.type] || getFieldEditor(field.type);
                 const error = errors[field.id];
                 const value = values[field.id];
 
@@ -325,7 +339,9 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
                     <Editor
                       field={field}
                       value={value}
-                      onChange={(newValue) => handleValueChange(field.id, newValue)}
+                      onChange={(newValue) =>
+                        handleValueChange(field.id, newValue)
+                      }
                       error={error}
                       autoFocus={sortedFields.indexOf(field) === 0}
                       onEnter={handleFieldEnter}
@@ -341,7 +357,9 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
 
                     {/* 字段描述 */}
                     {field.description && !error && (
-                      <p className="text-xs text-gray-500">{field.description}</p>
+                      <p className="text-xs text-gray-500">
+                        {field.description}
+                      </p>
                     )}
                   </div>
                 );
@@ -371,10 +389,10 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
             onClick={onClose}
             disabled={isSubmitting}
             className={cn(
-              'px-4 h-9 rounded-md text-sm font-medium',
-              'border transition-all',
-              'hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500',
-              isSubmitting && 'cursor-not-allowed opacity-50'
+              "px-4 h-9 rounded-md text-sm font-medium",
+              "border transition-all",
+              "hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500",
+              isSubmitting && "cursor-not-allowed opacity-50",
             )}
             style={{
               borderColor: tokens.colors.border.default,
@@ -388,12 +406,12 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
             onClick={handleSubmit}
             disabled={isSubmitting || sortedFields.length === 0}
             className={cn(
-              'px-4 h-9 rounded-md text-sm font-medium',
-              'bg-blue-600 text-white',
-              'hover:bg-blue-700 active:bg-blue-800',
-              'transition-all shadow-sm hover:shadow-md',
-              'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-              'disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-600'
+              "px-4 h-9 rounded-md text-sm font-medium",
+              "bg-blue-600 text-white",
+              "hover:bg-blue-700 active:bg-blue-800",
+              "transition-all shadow-sm hover:shadow-md",
+              "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+              "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-600",
             )}
           >
             {isSubmitting ? (
@@ -408,7 +426,6 @@ export function AddRecordDialog(props: AddRecordDialogProps) {
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
-

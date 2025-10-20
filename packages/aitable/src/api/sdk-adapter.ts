@@ -1,17 +1,17 @@
 /**
  * SDK Adapter - 统一 LuckDB SDK 和 ApiClient 接口
- * 
+ *
  * 这个适配器允许 Grid 组件接受外部的 SDK 实例，
  * 而不需要自己维护 SDK 的初始化和登录状态。
- * 
+ *
  * 使用场景：
  * 1. 外部系统已经有一个登录好的 SDK 实例
  * 2. 直接传入 Grid 组件，无需重复初始化
  * 3. Grid 组件通过适配器统一访问
  */
 
-import type { LuckDB } from '@easyspace/sdk';
-import type { ApiClient } from './client';
+import type { LuckDB } from "@easyspace/sdk";
+import type { ApiClient } from "./client";
 import type {
   IBase,
   ITable,
@@ -29,7 +29,7 @@ import type {
   IGetRecordsRo,
   PaginatedResponse,
   ITablePermission,
-} from './types';
+} from "./types";
 
 /**
  * SDK 适配器接口
@@ -52,21 +52,37 @@ export interface ISDKAdapter {
   getFields(tableId: string): Promise<IField[]>;
   getField(tableId: string, fieldId: string): Promise<IField>;
   createField(tableId: string, data: ICreateFieldRo): Promise<IField>;
-  updateField(tableId: string, fieldId: string, data: IUpdateFieldRo): Promise<IField>;
+  updateField(
+    tableId: string,
+    fieldId: string,
+    data: IUpdateFieldRo,
+  ): Promise<IField>;
   deleteField(tableId: string, fieldId: string): Promise<void>;
 
   // Record APIs
-  getRecords(tableId: string, params?: IGetRecordsRo): Promise<PaginatedResponse<IRecord>>;
+  getRecords(
+    tableId: string,
+    params?: IGetRecordsRo,
+  ): Promise<PaginatedResponse<IRecord>>;
   getRecord(tableId: string, recordId: string): Promise<IRecord>;
   createRecord(tableId: string, data: ICreateRecordRo): Promise<IRecord>;
-  updateRecord(tableId: string, recordId: string, fieldId: string, value: any): Promise<IRecord>;
+  updateRecord(
+    tableId: string,
+    recordId: string,
+    fieldId: string,
+    value: any,
+  ): Promise<IRecord>;
   deleteRecord(tableId: string, recordId: string): Promise<void>;
 
   // View APIs
   getViews(tableId: string): Promise<IView[]>;
   getView(tableId: string, viewId: string): Promise<IView>;
   createView(tableId: string, data: ICreateViewRo): Promise<IView>;
-  updateView(tableId: string, viewId: string, data: IUpdateViewRo): Promise<IView>;
+  updateView(
+    tableId: string,
+    viewId: string,
+    data: IUpdateViewRo,
+  ): Promise<IView>;
   deleteView(tableId: string, viewId: string): Promise<void>;
 }
 
@@ -116,23 +132,23 @@ export class LuckDBAdapter implements ISDKAdapter {
   async getTablePermission(tableId: string): Promise<ITablePermission> {
     // LuckDB SDK 可能没有这个方法，需要通过其他方式获取
     // 这里暂时返回默认权限
-    console.warn('LuckDB SDK does not support getTablePermission yet');
+    console.warn("LuckDB SDK does not support getTablePermission yet");
     return {
-      'table|read': true,
-      'table|update': true,
-      'table|delete': true,
-      'record|create': true,
-      'record|read': true,
-      'record|update': true,
-      'record|delete': true,
-      'field|create': true,
-      'field|read': true,
-      'field|update': true,
-      'field|delete': true,
-      'view|create': true,
-      'view|read': true,
-      'view|update': true,
-      'view|delete': true,
+      "table|read": true,
+      "table|update": true,
+      "table|delete": true,
+      "record|create": true,
+      "record|read": true,
+      "record|update": true,
+      "record|delete": true,
+      "field|create": true,
+      "field|read": true,
+      "field|update": true,
+      "field|delete": true,
+      "view|create": true,
+      "view|read": true,
+      "view|update": true,
+      "view|delete": true,
     };
   }
 
@@ -156,7 +172,7 @@ export class LuckDBAdapter implements ISDKAdapter {
   async updateField(
     tableId: string,
     fieldId: string,
-    data: IUpdateFieldRo
+    data: IUpdateFieldRo,
   ): Promise<IField> {
     return this.sdk.updateField(fieldId, data) as Promise<IField>;
   }
@@ -169,13 +185,13 @@ export class LuckDBAdapter implements ISDKAdapter {
 
   async getRecords(
     tableId: string,
-    params?: IGetRecordsRo
+    params?: IGetRecordsRo,
   ): Promise<PaginatedResponse<IRecord>> {
     const result = await this.sdk.listRecords({
       tableId,
       ...params,
     });
-    
+
     // 适配返回格式
     return {
       data: result.data || [],
@@ -200,7 +216,7 @@ export class LuckDBAdapter implements ISDKAdapter {
     tableId: string,
     recordId: string,
     fieldId: string,
-    value: any
+    value: any,
   ): Promise<IRecord> {
     return this.sdk.updateRecord(recordId, {
       data: { [fieldId]: value },
@@ -231,7 +247,7 @@ export class LuckDBAdapter implements ISDKAdapter {
   async updateView(
     tableId: string,
     viewId: string,
-    data: IUpdateViewRo
+    data: IUpdateViewRo,
   ): Promise<IView> {
     return this.sdk.updateView(viewId, data) as Promise<IView>;
   }
@@ -296,7 +312,7 @@ export class ApiClientAdapter implements ISDKAdapter {
   async updateField(
     tableId: string,
     fieldId: string,
-    data: IUpdateFieldRo
+    data: IUpdateFieldRo,
   ): Promise<IField> {
     return this.client.updateField(tableId, fieldId, data);
   }
@@ -307,7 +323,7 @@ export class ApiClientAdapter implements ISDKAdapter {
 
   async getRecords(
     tableId: string,
-    params?: IGetRecordsRo
+    params?: IGetRecordsRo,
   ): Promise<PaginatedResponse<IRecord>> {
     return this.client.getRecords(tableId, params);
   }
@@ -324,7 +340,7 @@ export class ApiClientAdapter implements ISDKAdapter {
     tableId: string,
     recordId: string,
     fieldId: string,
-    value: any
+    value: any,
   ): Promise<IRecord> {
     return this.client.updateRecord(tableId, recordId, fieldId, value);
   }
@@ -348,7 +364,7 @@ export class ApiClientAdapter implements ISDKAdapter {
   async updateView(
     tableId: string,
     viewId: string,
-    data: IUpdateViewRo
+    data: IUpdateViewRo,
   ): Promise<IView> {
     return this.client.updateView(tableId, viewId, data);
   }
@@ -364,10 +380,10 @@ export class ApiClientAdapter implements ISDKAdapter {
  */
 export function createAdapter(sdkOrClient: LuckDB | ApiClient): ISDKAdapter {
   // 检查是否是 LuckDB SDK
-  if ('login' in sdkOrClient && 'auth' in sdkOrClient) {
+  if ("login" in sdkOrClient && "auth" in sdkOrClient) {
     return new LuckDBAdapter(sdkOrClient as LuckDB);
   }
-  
+
   // 否则当作 ApiClient
   return new ApiClientAdapter(sdkOrClient as ApiClient);
 }
@@ -376,12 +392,12 @@ export function createAdapter(sdkOrClient: LuckDB | ApiClient): ISDKAdapter {
  * 类型守卫 - 检查是否是 LuckDB SDK
  */
 export function isLuckDBSDK(sdkOrClient: any): sdkOrClient is LuckDB {
-  return 'login' in sdkOrClient && 'auth' in sdkOrClient;
+  return "login" in sdkOrClient && "auth" in sdkOrClient;
 }
 
 /**
  * 类型守卫 - 检查是否是 ApiClient
  */
 export function isApiClient(sdkOrClient: any): sdkOrClient is ApiClient {
-  return 'setToken' in sdkOrClient && 'clearToken' in sdkOrClient;
+  return "setToken" in sdkOrClient && "clearToken" in sdkOrClient;
 }

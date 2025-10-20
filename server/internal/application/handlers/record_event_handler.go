@@ -13,7 +13,6 @@ import (
 type RecordEventHandler struct {
 	// 可以注入需要的服务
 	// calculationService *CalculationService
-	// websocketService   *WebSocketService
 	// cacheService       *CacheService
 }
 

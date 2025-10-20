@@ -2,7 +2,7 @@
  * WebSocket Connection Manager
  * 占位符实现 - 待完善
  */
-import ReconnectingWebSocket from 'reconnecting-websocket';
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 export interface IWebSocketConfig {
   url?: string;
@@ -22,7 +22,7 @@ export class WebSocketManager {
   connect(url?: string): ReconnectingWebSocket {
     const wsUrl = url || this.config.url;
     if (!wsUrl) {
-      throw new Error('WebSocket URL not provided');
+      throw new Error("WebSocket URL not provided");
     }
     // 占位符实现 - 创建 ReconnectingWebSocket 实例
     this.ws = new ReconnectingWebSocket(wsUrl);
@@ -54,4 +54,3 @@ export class WebSocketManager {
 export function createWebSocket(config: IWebSocketConfig): WebSocketManager {
   return new WebSocketManager(config);
 }
-

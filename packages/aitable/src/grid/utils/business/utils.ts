@@ -6,7 +6,10 @@ export const cancelTimeout = (timeoutID: ITimeoutID) => {
   cancelAnimationFrame(timeoutID.id);
 };
 
-export const requestTimeout = (callback: () => void, delay: number): ITimeoutID => {
+export const requestTimeout = (
+  callback: () => void,
+  delay: number,
+): ITimeoutID => {
   const start = Date.now();
 
   function tick() {
@@ -48,7 +51,9 @@ export const getWheelDelta = ({
 
 export const hexToRGBA = (hex: string, alpha = 1) => {
   const [r, g, b] = parseToRGB(hex);
-  if (r == null || g == null || b == null) {return hex;}
+  if (r == null || g == null || b == null) {
+    return hex;
+  }
   return `rgba(${+r},${+g},${+b},${alpha})`;
 };
 
@@ -56,14 +61,16 @@ export const parseToRGB = (hex: string) => {
   let r, g, b;
 
   if (hex.length === 4) {
-    r = '0x' + hex[1] + hex[1];
-    g = '0x' + hex[2] + hex[2];
-    b = '0x' + hex[3] + hex[3];
+    r = "0x" + hex[1] + hex[1];
+    g = "0x" + hex[2] + hex[2];
+    b = "0x" + hex[3] + hex[3];
   } else if (hex.length === 7) {
-    r = '0x' + hex[1] + hex[2];
-    g = '0x' + hex[3] + hex[4];
-    b = '0x' + hex[5] + hex[6];
+    r = "0x" + hex[1] + hex[2];
+    g = "0x" + hex[3] + hex[4];
+    b = "0x" + hex[5] + hex[6];
   }
-  if (r == null || g == null || b == null) {return [];}
+  if (r == null || g == null || b == null) {
+    return [];
+  }
   return [+r, +g, +b];
 };

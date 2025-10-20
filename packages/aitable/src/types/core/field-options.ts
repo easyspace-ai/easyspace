@@ -3,7 +3,7 @@
  * Provides strict typing for all field option configurations
  */
 
-import { FieldType, FIELD_TYPES } from './field-types';
+import { FieldType, FIELD_TYPES } from "./field-types";
 
 /**
  * Base field options interface
@@ -16,7 +16,9 @@ export interface BaseFieldOptions {
  * Text field options
  */
 export interface TextFieldOptions extends BaseFieldOptions {
-  readonly type: typeof FIELD_TYPES.SingleLineText | typeof FIELD_TYPES.LongText;
+  readonly type:
+    | typeof FIELD_TYPES.SingleLineText
+    | typeof FIELD_TYPES.LongText;
   readonly maxLength?: number;
   readonly defaultValue?: string;
 }
@@ -28,7 +30,7 @@ export interface NumberFieldOptions extends BaseFieldOptions {
   readonly type: typeof FIELD_TYPES.Number;
   readonly precision?: number;
   readonly formatting?: {
-    readonly type?: 'number' | 'currency' | 'percent';
+    readonly type?: "number" | "currency" | "percent";
     readonly symbol?: string;
     readonly showThousandsSeparator?: boolean;
   };
@@ -70,8 +72,8 @@ export interface MultipleSelectFieldOptions extends BaseFieldOptions {
 export interface DateFieldOptions extends BaseFieldOptions {
   readonly type: typeof FIELD_TYPES.Date;
   readonly includeTime?: boolean;
-  readonly dateFormat?: 'YYYY-MM-DD' | 'MM/DD/YYYY' | 'DD/MM/YYYY';
-  readonly timeFormat?: '12' | '24';
+  readonly dateFormat?: "YYYY-MM-DD" | "MM/DD/YYYY" | "DD/MM/YYYY";
+  readonly timeFormat?: "12" | "24";
   readonly defaultValue?: string; // ISO string
 }
 
@@ -89,7 +91,7 @@ export interface CheckboxFieldOptions extends BaseFieldOptions {
 export interface RatingFieldOptions extends BaseFieldOptions {
   readonly type: typeof FIELD_TYPES.Rating;
   readonly max?: number;
-  readonly icon?: 'star' | 'heart' | 'thumbs' | 'fire' | 'smile';
+  readonly icon?: "star" | "heart" | "thumbs" | "fire" | "smile";
   readonly color?: string;
   readonly defaultValue?: number;
 }
@@ -108,7 +110,10 @@ export interface LinkFieldOptions extends BaseFieldOptions {
  * User field options
  */
 export interface UserFieldOptions extends BaseFieldOptions {
-  readonly type: typeof FIELD_TYPES.User | typeof FIELD_TYPES.CreatedBy | typeof FIELD_TYPES.LastModifiedBy;
+  readonly type:
+    | typeof FIELD_TYPES.User
+    | typeof FIELD_TYPES.CreatedBy
+    | typeof FIELD_TYPES.LastModifiedBy;
   readonly isMultiple?: boolean;
   readonly shouldNotify?: boolean;
 }
@@ -130,7 +135,7 @@ export interface FormulaFieldOptions extends BaseFieldOptions {
   readonly type: typeof FIELD_TYPES.Formula;
   readonly expression: string;
   readonly referencedFieldIds?: string[];
-  readonly formatting?: NumberFieldOptions['formatting'];
+  readonly formatting?: NumberFieldOptions["formatting"];
 }
 
 /**
@@ -140,8 +145,15 @@ export interface RollupFieldOptions extends BaseFieldOptions {
   readonly type: typeof FIELD_TYPES.Rollup | typeof FIELD_TYPES.Count;
   readonly linkedFieldId: string;
   readonly rollupFieldId?: string;
-  readonly aggregation: 'sum' | 'average' | 'min' | 'max' | 'count' | 'countA' | 'countAll';
-  readonly formatting?: NumberFieldOptions['formatting'];
+  readonly aggregation:
+    | "sum"
+    | "average"
+    | "min"
+    | "max"
+    | "count"
+    | "countA"
+    | "countAll";
+  readonly formatting?: NumberFieldOptions["formatting"];
 }
 
 /**
@@ -161,7 +173,7 @@ export interface ButtonFieldOptions extends BaseFieldOptions {
   readonly type: typeof FIELD_TYPES.Button;
   readonly label: string;
   readonly url?: string;
-  readonly openMode?: 'currentTab' | 'newTab' | 'popup';
+  readonly openMode?: "currentTab" | "newTab" | "popup";
 }
 
 /**
@@ -193,8 +205,10 @@ export interface URLFieldOptions extends BaseFieldOptions {
  * System field options (read-only fields)
  */
 export interface SystemFieldOptions extends BaseFieldOptions {
-  readonly type: typeof FIELD_TYPES.CreatedTime | typeof FIELD_TYPES.LastModifiedTime;
-  readonly dateFormat?: DateFieldOptions['dateFormat'];
+  readonly type:
+    | typeof FIELD_TYPES.CreatedTime
+    | typeof FIELD_TYPES.LastModifiedTime;
+  readonly dateFormat?: DateFieldOptions["dateFormat"];
   readonly includeTime?: boolean;
 }
 
@@ -253,16 +267,15 @@ export type FieldOptionsMap = {
 /**
  * Get field options type for a specific field type
  */
-export type GetFieldOptions<T extends FieldType> = T extends keyof FieldOptionsMap
-  ? FieldOptionsMap[T]
-  : BaseFieldOptions;
+export type GetFieldOptions<T extends FieldType> =
+  T extends keyof FieldOptionsMap ? FieldOptionsMap[T] : BaseFieldOptions;
 
 /**
  * Type guard to check if options match a specific field type
  */
 export function isFieldOptionsForType<T extends FieldType>(
   options: FieldOptions,
-  fieldType: T
+  fieldType: T,
 ): options is GetFieldOptions<T> {
   return options.type === fieldType;
 }
@@ -274,46 +287,46 @@ export const DefaultFieldOptions = {
   [FIELD_TYPES.SingleLineText]: (): TextFieldOptions => ({
     type: FIELD_TYPES.SingleLineText,
   }),
-  
+
   [FIELD_TYPES.LongText]: (): TextFieldOptions => ({
     type: FIELD_TYPES.LongText,
   }),
-  
+
   [FIELD_TYPES.Number]: (): NumberFieldOptions => ({
     type: FIELD_TYPES.Number,
     precision: 0,
     formatting: {
-      type: 'number',
+      type: "number",
       showThousandsSeparator: false,
     },
   }),
-  
+
   [FIELD_TYPES.SingleSelect]: (): SingleSelectFieldOptions => ({
     type: FIELD_TYPES.SingleSelect,
     options: [],
   }),
-  
+
   [FIELD_TYPES.MultipleSelect]: (): MultipleSelectFieldOptions => ({
     type: FIELD_TYPES.MultipleSelect,
     options: [],
   }),
-  
+
   [FIELD_TYPES.Date]: (): DateFieldOptions => ({
     type: FIELD_TYPES.Date,
     includeTime: false,
-    dateFormat: 'YYYY-MM-DD',
+    dateFormat: "YYYY-MM-DD",
   }),
-  
+
   [FIELD_TYPES.Checkbox]: (): CheckboxFieldOptions => ({
     type: FIELD_TYPES.Checkbox,
     defaultValue: false,
   }),
-  
+
   [FIELD_TYPES.Rating]: (): RatingFieldOptions => ({
     type: FIELD_TYPES.Rating,
     max: 5,
-    icon: 'star',
+    icon: "star",
   }),
-  
+
   // Add other default options as needed...
 } as const;

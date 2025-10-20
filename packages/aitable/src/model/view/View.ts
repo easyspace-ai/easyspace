@@ -3,7 +3,14 @@
  * Base class for all view types
  */
 
-import type { IView, ViewType, IFilter, ISort, IGroup, IColumnMeta } from '../../api/types';
+import type {
+  IView,
+  ViewType,
+  IFilter,
+  ISort,
+  IGroup,
+  IColumnMeta,
+} from "../../api/types";
 
 export interface IViewConfig {
   id: string;
@@ -109,8 +116,8 @@ export class View {
       group: this.group,
       options: this.options,
       columnMeta: this.columnMeta,
-      createdTime: this.createdTime || '',
-      lastModifiedTime: this.lastModifiedTime || '',
+      createdTime: this.createdTime || "",
+      lastModifiedTime: this.lastModifiedTime || "",
     };
   }
 
@@ -152,5 +159,3 @@ export function createViewInstance(view: IView): IViewInstance {
 export function createViewInstances(views: IView[]): IViewInstance[] {
   return views.map(createViewInstance);
 }
-
-

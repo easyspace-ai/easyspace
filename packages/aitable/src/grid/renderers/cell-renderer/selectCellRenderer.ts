@@ -1,12 +1,12 @@
-import { LRUCache } from 'lru-cache';
-import type { IGridTheme } from '../../configs';
-import { GRID_DEFAULT } from '../../configs';
-import type { IRectangle } from '../../interface';
-import type { SpriteManager } from '../../managers';
-import { GridInnerIcon } from '../../managers';
-import { isPointInsideRectangle } from '../../utils';
-import { drawRect, drawSingleLineText } from '../base-renderer/baseRenderer';
-import { CellRegionType, CellType } from './interface';
+import { LRUCache } from "lru-cache";
+import type { IGridTheme } from "../../configs";
+import { GRID_DEFAULT } from "../../configs";
+import type { IRectangle } from "../../interface";
+import type { SpriteManager } from "../../managers";
+import { GridInnerIcon } from "../../managers";
+import { isPointInsideRectangle } from "../../utils";
+import { drawRect, drawSingleLineText } from "../base-renderer/baseRenderer";
+import { CellRegionType, CellType } from "./interface";
 import type {
   IInternalCellRenderer,
   ICellRenderProps,
@@ -14,11 +14,11 @@ import type {
   ICellMeasureProps,
   ICellClickProps,
   ICellClickCallback,
-} from './interface';
+} from "./interface";
 
 enum ISelectRegionType {
-  Content = 'Content',
-  DeleteBtn = 'DeleteBtn',
+  Content = "Content",
+  DeleteBtn = "DeleteBtn",
 }
 
 interface ISelectRegion extends IRectangle {
@@ -49,10 +49,20 @@ const drawLabel = (
     editable?: boolean;
     theme: IGridTheme;
     spriteManager: SpriteManager;
-  }
+  },
 ) => {
-  const { x, y, width, text, maxTextWidth, textColor, bgColor, editable, theme, spriteManager } =
-    props;
+  const {
+    x,
+    y,
+    width,
+    text,
+    maxTextWidth,
+    textColor,
+    bgColor,
+    editable,
+    theme,
+    spriteManager,
+  } = props;
   const { fontSizeXS, iconSizeSM, iconSizeXS } = theme;
 
   drawRect(ctx, {
@@ -90,11 +100,18 @@ export const selectCellRenderer: IInternalCellRenderer<ISelectCell> = {
   measure: (cell: ISelectCell, props: ICellMeasureProps) => {
     const { displayData, readonly } = cell;
     const { ctx, theme, width, height } = props;
-    if (!ctx || !theme) return { width: width ?? 0, height: height ?? 0, totalHeight: height ?? 0 };
-    
+    if (!ctx || !theme)
+      return {
+        width: width ?? 0,
+        height: height ?? 0,
+        totalHeight: height ?? 0,
+      };
+
     const { cellTextColor, fontSizeXS, iconSizeSM, iconSizeXS } = theme;
 
-    if (!displayData.length) {return { width, height, totalHeight: height };}
+    if (!displayData.length) {
+      return { width, height, totalHeight: height };
+    }
 
     const drawArea: IRectangle = {
       x: cellHorizontalPadding,
@@ -112,7 +129,7 @@ export const selectCellRenderer: IInternalCellRenderer<ISelectCell> = {
     const rightEdgeOfDrawArea = drawArea.x + drawArea.width;
     const lineHeight = iconSizeSM + OPTION_GAP_SIZE;
 
-    const cacheKey = `${String(width)}-${displayData.join(',')}`;
+    const cacheKey = `${String(width)}-${displayData.join(",")}`;
     const positions: ISelectRegion[] = [];
 
     for (const text of displayData) {
@@ -160,19 +177,28 @@ export const selectCellRenderer: IInternalCellRenderer<ISelectCell> = {
 
     return {
       width: width ?? 0,
-      height: Math.max(height ?? 0, SELECT_CELL_PADDING_TOP + displayRowCount * lineHeight),
+      height: Math.max(
+        height ?? 0,
+        SELECT_CELL_PADDING_TOP + displayRowCount * lineHeight,
+      ),
       totalHeight,
     };
   },
   draw: (cell: ISelectCell, props: ICellRenderProps) => {
     const { ctx, rect, theme, isActive, spriteManager } = props;
     if (!ctx || !rect || !theme) return;
-    
+
     const { displayData, choiceMap, readonly } = cell;
     const { x: _x, y: _y, width, height } = rect;
     const clipEnable = !isActive && displayData.length;
-    const { fontSizeXS, fontFamily, iconSizeXS, iconSizeSM, cellOptionBg, cellOptionTextColor } =
-      theme;
+    const {
+      fontSizeXS,
+      fontFamily,
+      iconSizeXS,
+      iconSizeSM,
+      cellOptionBg,
+      cellOptionTextColor,
+    } = theme;
 
     const drawArea: IRectangle = {
       x: _x + cellHorizontalPadding,
@@ -183,7 +209,10 @@ export const selectCellRenderer: IInternalCellRenderer<ISelectCell> = {
     const combinedHeight = iconSizeSM + OPTION_GAP_SIZE;
     const rows = isActive
       ? Infinity
-      : Math.max(1, Math.floor((drawArea.height - iconSizeSM) / combinedHeight) + 1);
+      : Math.max(
+          1,
+          Math.floor((drawArea.height - iconSizeSM) / combinedHeight) + 1,
+        );
     const editable = !readonly && isActive;
     const deleteBtnWidth = editable ? iconSizeXS : 0;
     const maxTextWidth = drawArea.width - OPTION_GAP_SIZE * 2 - deleteBtnWidth;
@@ -209,13 +238,16 @@ export const selectCellRenderer: IInternalCellRenderer<ISelectCell> = {
       const bgColor = choice?.backgroundColor || cellOptionBg;
       const textColor = choice?.color || cellOptionTextColor;
 
-      const { width: displayWidth, text: displayText } = drawSingleLineText(ctx, {
-        text,
-        fill: textColor,
-        maxWidth: maxTextWidth,
-        fontSize: fontSizeXS,
-        needRender: false,
-      });
+      const { width: displayWidth, text: displayText } = drawSingleLineText(
+        ctx,
+        {
+          text,
+          fill: textColor,
+          maxWidth: maxTextWidth,
+          fontSize: fontSizeXS,
+          needRender: false,
+        },
+      );
 
       const width = Math.min(displayWidth + totalOptionPadding, drawArea.width);
 
@@ -239,36 +271,54 @@ export const selectCellRenderer: IInternalCellRenderer<ISelectCell> = {
       });
 
       x += width + OPTION_PADDING_HORIZONTAL;
-      if (x > rightEdgeOfDrawArea && row >= rows) {break;}
+      if (x > rightEdgeOfDrawArea && row >= rows) {
+        break;
+      }
     }
 
     ctx.restore();
   },
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  checkRegion: (cell: ISelectCell, props: ICellClickProps, shouldCalculate?: boolean) => {
+  checkRegion: (
+    cell: ISelectCell,
+    props: ICellClickProps,
+    shouldCalculate?: boolean,
+  ) => {
     const { data, displayData, readonly } = cell;
     const { width, isActive, hoverCellPosition, activeCellBound } = props;
     const editable = !readonly && isActive && activeCellBound;
-    if (!editable || !hoverCellPosition) {return { type: CellRegionType.Blank };}
+    if (!editable || !hoverCellPosition) {
+      return { type: CellRegionType.Blank };
+    }
 
     const { scrollTop } = activeCellBound;
     const { x: hoverX, y: hoverY } = hoverCellPosition;
 
-    const cacheKey = `${String(width)}-${displayData.join(',')}`;
+    const cacheKey = `${String(width)}-${displayData.join(",")}`;
     const positions = positionCache.get(cacheKey);
 
-    if (!positions) {return { type: CellRegionType.Blank };}
+    if (!positions) {
+      return { type: CellRegionType.Blank };
+    }
 
     for (let i = 0; i < positions.length; i++) {
       const position = positions[i];
       if (!position) continue;
       const { type, x, y, width, height } = position;
 
-      if (isPointInsideRectangle([hoverX, scrollTop + hoverY], [x, y], [x + width, y + height])) {
+      if (
+        isPointInsideRectangle(
+          [hoverX, scrollTop + hoverY],
+          [x, y],
+          [x + width, y + height],
+        )
+      ) {
         if (!shouldCalculate) {
           return {
             type:
-              type === ISelectRegionType.DeleteBtn ? CellRegionType.Update : CellRegionType.Preview,
+              type === ISelectRegionType.DeleteBtn
+                ? CellRegionType.Update
+                : CellRegionType.Preview,
             data: null,
           };
         }
@@ -276,7 +326,9 @@ export const selectCellRenderer: IInternalCellRenderer<ISelectCell> = {
         const realIndex = Math.floor(i / 2);
 
         if (type === ISelectRegionType.DeleteBtn) {
-          const result = data.filter((_: any, index: number) => index !== realIndex);
+          const result = data.filter(
+            (_: any, index: number) => index !== realIndex,
+          );
           return {
             type: CellRegionType.Update,
             data: result.length ? result : null,
@@ -291,11 +343,17 @@ export const selectCellRenderer: IInternalCellRenderer<ISelectCell> = {
 
     return { type: CellRegionType.Blank };
   },
-  onClick: (cell: ISelectCell, props: ICellClickProps, callback?: ICellClickCallback) => {
+  onClick: (
+    cell: ISelectCell,
+    props: ICellClickProps,
+    callback?: ICellClickCallback,
+  ) => {
     const { readonly, isEditingOnClick } = cell;
     const { isActive } = props;
     const cellRegion = selectCellRenderer.checkRegion?.(cell, props, true);
-    if (!cellRegion) {return;}
+    if (!cellRegion) {
+      return;
+    }
     if (cellRegion.type === CellRegionType.Blank) {
       const editable = !readonly && isActive;
       if (editable && isEditingOnClick) {

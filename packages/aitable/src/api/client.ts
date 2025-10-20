@@ -3,7 +3,7 @@
  * Main API client for communicating with Teable backend
  */
 
-import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
+import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import type {
   IBase,
   ITable,
@@ -26,7 +26,7 @@ import type {
   IGetRecordsRo,
   PaginatedResponse,
   ITablePermission,
-} from './types';
+} from "./types";
 
 export interface ApiClientConfig {
   baseURL: string;
@@ -47,7 +47,7 @@ export class ApiClient {
       baseURL: config.baseURL,
       timeout: config.timeout || 30000,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...(config.token ? { Authorization: `Bearer ${config.token}` } : {}),
       },
     });
@@ -70,7 +70,7 @@ export class ApiClient {
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // Response interceptor
@@ -80,10 +80,10 @@ export class ApiClient {
         if (error.response?.status === 401) {
           this.config.onUnauthorized?.();
         }
-        
+
         this.config.onError?.(error);
         return Promise.reject(error);
-      }
+      },
     );
   }
 
@@ -92,7 +92,7 @@ export class ApiClient {
    */
   setToken(token: string): void {
     this.config.token = token;
-    this.client.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    this.client.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
 
   /**
@@ -100,7 +100,7 @@ export class ApiClient {
    */
   clearToken(): void {
     this.config.token = undefined;
-    delete this.client.defaults.headers.common['Authorization'];
+    delete this.client.defaults.headers.common["Authorization"];
   }
 
   // ==================== Base APIs ====================
@@ -109,7 +109,7 @@ export class ApiClient {
    * Get all bases
    */
   async getBases(): Promise<IBase[]> {
-    const response = await this.client.get('/base');
+    const response = await this.client.get("/base");
     return response.data;
   }
 
@@ -125,7 +125,7 @@ export class ApiClient {
    * Create a new base
    */
   async createBase(data: ICreateBaseRo): Promise<IBase> {
-    const response = await this.client.post('/base', data);
+    const response = await this.client.post("/base", data);
     return response.data;
   }
 
@@ -207,7 +207,9 @@ export class ApiClient {
    * Get a field by ID
    */
   async getField(tableId: string, fieldId: string): Promise<IField> {
-    const response = await this.client.get(`/table/${tableId}/field/${fieldId}`);
+    const response = await this.client.get(
+      `/table/${tableId}/field/${fieldId}`,
+    );
     return response.data;
   }
 
@@ -225,11 +227,11 @@ export class ApiClient {
   async updateField(
     tableId: string,
     fieldId: string,
-    data: IUpdateFieldRo
+    data: IUpdateFieldRo,
   ): Promise<IField> {
     const response = await this.client.patch(
       `/table/${tableId}/field/${fieldId}`,
-      data
+      data,
     );
     return response.data;
   }
@@ -248,11 +250,11 @@ export class ApiClient {
     tableId: string,
     fieldId: string,
     newType: string,
-    options?: any
+    options?: any,
   ): Promise<IField> {
     const response = await this.client.patch(
       `/table/${tableId}/field/${fieldId}/convert`,
-      { type: newType, options }
+      { type: newType, options },
     );
     return response.data;
   }
@@ -264,7 +266,7 @@ export class ApiClient {
    */
   async getRecords(
     tableId: string,
-    params?: IGetRecordsRo
+    params?: IGetRecordsRo,
   ): Promise<PaginatedResponse<IRecord>> {
     const response = await this.client.get(`/table/${tableId}/record`, {
       params,
@@ -277,7 +279,7 @@ export class ApiClient {
    */
   async getRecord(tableId: string, recordId: string): Promise<IRecord> {
     const response = await this.client.get(
-      `/table/${tableId}/record/${recordId}`
+      `/table/${tableId}/record/${recordId}`,
     );
     return response.data;
   }
@@ -285,10 +287,7 @@ export class ApiClient {
   /**
    * Create a new record
    */
-  async createRecord(
-    tableId: string,
-    data: ICreateRecordRo
-  ): Promise<IRecord> {
+  async createRecord(tableId: string, data: ICreateRecordRo): Promise<IRecord> {
     const response = await this.client.post(`/table/${tableId}/record`, data);
     return response.data;
   }
@@ -300,14 +299,14 @@ export class ApiClient {
     tableId: string,
     recordId: string,
     fieldId: string,
-    value: any
+    value: any,
   ): Promise<IRecord> {
     const response = await this.client.patch(
       `/table/${tableId}/record/${recordId}`,
       {
         fieldId,
         value,
-      }
+      },
     );
     return response.data;
   }
@@ -317,12 +316,11 @@ export class ApiClient {
    */
   async batchUpdateRecords(
     tableId: string,
-    updates: IUpdateRecordRo[]
+    updates: IUpdateRecordRo[],
   ): Promise<IRecord[]> {
-    const response = await this.client.patch(
-      `/table/${tableId}/record/batch`,
-      { records: updates }
-    );
+    const response = await this.client.patch(`/table/${tableId}/record/batch`, {
+      records: updates,
+    });
     return response.data;
   }
 
@@ -338,7 +336,7 @@ export class ApiClient {
    */
   async batchDeleteRecords(
     tableId: string,
-    recordIds: string[]
+    recordIds: string[],
   ): Promise<void> {
     await this.client.delete(`/table/${tableId}/record/batch`, {
       data: { recordIds },
@@ -377,11 +375,11 @@ export class ApiClient {
   async updateView(
     tableId: string,
     viewId: string,
-    data: IUpdateViewRo
+    data: IUpdateViewRo,
   ): Promise<IView> {
     const response = await this.client.patch(
       `/table/${tableId}/view/${viewId}`,
-      data
+      data,
     );
     return response.data;
   }
@@ -398,12 +396,9 @@ export class ApiClient {
   /**
    * Get comments for a record
    */
-  async getComments(
-    tableId: string,
-    recordId: string
-  ): Promise<IComment[]> {
+  async getComments(tableId: string, recordId: string): Promise<IComment[]> {
     const response = await this.client.get(
-      `/table/${tableId}/record/${recordId}/comment`
+      `/table/${tableId}/record/${recordId}/comment`,
     );
     return response.data;
   }
@@ -414,11 +409,11 @@ export class ApiClient {
   async createComment(
     tableId: string,
     recordId: string,
-    data: ICreateCommentRo
+    data: ICreateCommentRo,
   ): Promise<IComment> {
     const response = await this.client.post(
       `/table/${tableId}/record/${recordId}/comment`,
-      data
+      data,
     );
     return response.data;
   }
@@ -430,11 +425,11 @@ export class ApiClient {
     tableId: string,
     recordId: string,
     commentId: string,
-    data: IUpdateCommentRo
+    data: IUpdateCommentRo,
   ): Promise<IComment> {
     const response = await this.client.patch(
       `/table/${tableId}/record/${recordId}/comment/${commentId}`,
-      data
+      data,
     );
     return response.data;
   }
@@ -445,10 +440,10 @@ export class ApiClient {
   async deleteComment(
     tableId: string,
     recordId: string,
-    commentId: string
+    commentId: string,
   ): Promise<void> {
     await this.client.delete(
-      `/table/${tableId}/record/${recordId}/comment/${commentId}`
+      `/table/${tableId}/record/${recordId}/comment/${commentId}`,
     );
   }
 
@@ -468,7 +463,7 @@ export class ApiClient {
   async post<T = any>(
     url: string,
     data?: any,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<T> {
     const response = await this.client.post(url, data, config);
     return response.data;
@@ -480,7 +475,7 @@ export class ApiClient {
   async patch<T = any>(
     url: string,
     data?: any,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<T> {
     const response = await this.client.patch(url, data, config);
     return response.data;
@@ -494,5 +489,3 @@ export class ApiClient {
     return response.data;
   }
 }
-
-

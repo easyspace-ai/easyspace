@@ -4,8 +4,8 @@
  */
 
 import React, { useState } from 'react';
-import { AddRecordDialog } from '@luckdb/aitable';
-import type { FieldConfig } from '@luckdb/aitable';
+import { AddRecordDialog } from '@easyspace/aitable';
+import type { FieldConfig } from '@easyspace/aitable';
 
 // 测试字段配置
 const testFields: FieldConfig[] = [

@@ -1,6 +1,6 @@
 /**
  * SelectEditor - 重构版本
- * 
+ *
  * 优化点：
  * 1. ✅ 移除内联 hover 事件操作 style
  * 2. ✅ 使用 CSS :hover 和 Tailwind
@@ -9,12 +9,22 @@
  * 5. ✅ 使用设计系统
  */
 
-import React, { useState, useMemo, useCallback, useRef, useEffect, forwardRef } from 'react';
-import Fuse from 'fuse.js';
-import { Check, Search as SearchIcon } from 'lucide-react';
-import type { ISelectCell, IMultiSelectCell } from '../../../renderers/cell-renderer/interface';
-import type { IEditorRef } from '../EditorContainer';
-import { tokens, cn } from '../../../design-system';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+  forwardRef,
+} from "react";
+import Fuse from "fuse.js";
+import { Check, Search as SearchIcon } from "lucide-react";
+import type {
+  ISelectCell,
+  IMultiSelectCell,
+} from "../../../renderers/cell-renderer/interface";
+import type { IEditorRef } from "../EditorContainer";
+import { tokens, cn } from "../../../design-system";
 
 export interface ISelectEditorProps {
   cell: ISelectCell | IMultiSelectCell;
@@ -56,30 +66,24 @@ const OptionItem: React.FC<OptionItemProps> = ({
       onClick={isDisabled ? undefined : onClick}
       className={cn(
         // 基础样式
-        'flex items-center gap-2',
-        'px-3 py-2 rounded-md',
-        'text-sm transition-all duration-150 ease-out',
-        
+        "flex items-center gap-2",
+        "px-3 py-2 rounded-md",
+        "text-sm transition-all duration-150 ease-out",
+
         // 光标
-        isDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
-        
+        isDisabled ? "cursor-not-allowed" : "cursor-pointer",
+
         // 选中状态
-        isSelected && [
-          'bg-blue-50 text-blue-700',
-          'hover:bg-blue-100',
-        ],
-        
+        isSelected && ["bg-blue-50 text-blue-700", "hover:bg-blue-100"],
+
         // 未选中状态
-        !isSelected && [
-          'text-gray-700',
-          'hover:bg-gray-50',
-        ],
-        
+        !isSelected && ["text-gray-700", "hover:bg-gray-50"],
+
         // Focus 状态（键盘导航）
-        isFocused && 'ring-2 ring-blue-500 ring-offset-1',
-        
+        isFocused && "ring-2 ring-blue-500 ring-offset-1",
+
         // 禁用状态
-        isDisabled && 'opacity-50',
+        isDisabled && "opacity-50",
       )}
       role="option"
       aria-selected={isSelected}
@@ -88,14 +92,16 @@ const OptionItem: React.FC<OptionItemProps> = ({
       {isMultiple && (
         <div
           className={cn(
-            'flex items-center justify-center',
-            'w-4 h-4 rounded border-2 transition-colors',
+            "flex items-center justify-center",
+            "w-4 h-4 rounded border-2 transition-colors",
             isSelected
-              ? 'bg-blue-500 border-blue-500'
-              : 'bg-white border-gray-300'
+              ? "bg-blue-500 border-blue-500"
+              : "bg-white border-gray-300",
           )}
         >
-          {isSelected && <Check size={12} className="text-white" strokeWidth={3} />}
+          {isSelected && (
+            <Check size={12} className="text-white" strokeWidth={3} />
+          )}
         </div>
       )}
 
@@ -110,10 +116,14 @@ const OptionItem: React.FC<OptionItemProps> = ({
 
       {/* 选项名称 */}
       <span className="flex-1 truncate">{option.name}</span>
-      
+
       {/* 单选：Checkmark */}
       {!isMultiple && isSelected && (
-        <Check size={16} className="text-blue-600 flex-shrink-0" strokeWidth={2.5} />
+        <Check
+          size={16}
+          className="text-blue-600 flex-shrink-0"
+          strokeWidth={2.5}
+        />
       )}
     </div>
   );
@@ -127,9 +137,15 @@ const SelectEditorBase: React.ForwardRefRenderFunction<
   ISelectEditorProps
 > = (props, ref) => {
   const { cell, style, isEditing, setEditing, onChange, rect } = props;
-  const { data, isMultiple, choiceSorted = [], choiceMap = {}, readonly } = cell;
+  const {
+    data,
+    isMultiple,
+    choiceSorted = [],
+    choiceMap = {},
+    readonly,
+  } = cell;
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [focusedIndex, setFocusedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -148,25 +164,33 @@ const SelectEditorBase: React.ForwardRefRenderFunction<
   const fuse = useMemo(
     () =>
       new Fuse(options, {
-        keys: ['name'],
+        keys: ["name"],
         threshold: 0.3,
         includeScore: true,
       }),
-    [options]
+    [options],
   );
 
   // 过滤选项
   const filteredOptions = useMemo(() => {
-    if (!searchQuery) {return options;}
+    if (!searchQuery) {
+      return options;
+    }
     return fuse.search(searchQuery).map((result) => result.item);
   }, [options, fuse, searchQuery]);
 
   // 获取选中值
   const selectedValues = useMemo(() => {
-    if (!data) {return [];}
-    if (!Array.isArray(data)) {return [data];}
+    if (!data) {
+      return [];
+    }
+    if (!Array.isArray(data)) {
+      return [data];
+    }
     return data.map((item: any) => {
-      if (typeof item === 'string') {return item;}
+      if (typeof item === "string") {
+        return item;
+      }
       return item.title || item.id || item.name;
     });
   }, [data]);
@@ -174,7 +198,7 @@ const SelectEditorBase: React.ForwardRefRenderFunction<
   // 检查是否选中
   const isSelected = useCallback(
     (optionId: string) => selectedValues.includes(optionId),
-    [selectedValues]
+    [selectedValues],
   );
 
   // Ref API
@@ -187,7 +211,9 @@ const SelectEditorBase: React.ForwardRefRenderFunction<
   // 处理选择
   const handleSelect = useCallback(
     (optionId: string) => {
-      if (readonly) {return;}
+      if (readonly) {
+        return;
+      }
 
       if (isMultiple) {
         const newValue = isSelected(optionId)
@@ -199,39 +225,43 @@ const SelectEditorBase: React.ForwardRefRenderFunction<
         setEditing?.(false);
       }
     },
-    [readonly, isMultiple, isSelected, selectedValues, onChange, setEditing]
+    [readonly, isMultiple, isSelected, selectedValues, onChange, setEditing],
   );
 
   // 键盘导航
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       switch (e.key) {
-        case 'ArrowDown':
+        case "ArrowDown":
           e.preventDefault();
-          setFocusedIndex((prev) => Math.min(prev + 1, filteredOptions.length - 1));
+          setFocusedIndex((prev) =>
+            Math.min(prev + 1, filteredOptions.length - 1),
+          );
           break;
-        case 'ArrowUp':
+        case "ArrowUp":
           e.preventDefault();
           setFocusedIndex((prev) => Math.max(prev - 1, 0));
           break;
-        case 'Enter':
+        case "Enter":
           e.preventDefault();
           if (filteredOptions[focusedIndex]) {
             handleSelect(filteredOptions[focusedIndex].id);
           }
           break;
-        case 'Escape':
+        case "Escape":
           e.preventDefault();
           setEditing?.(false);
           break;
       }
     },
-    [filteredOptions, focusedIndex, handleSelect, setEditing]
+    [filteredOptions, focusedIndex, handleSelect, setEditing],
   );
 
   // 计算弹窗位置
   const popupStyle = useMemo(() => {
-    if (!rect) {return {};}
+    if (!rect) {
+      return {};
+    }
 
     const baseStyle = {
       left: rect.x,
@@ -261,39 +291,45 @@ const SelectEditorBase: React.ForwardRefRenderFunction<
   // 滚动到焦点项
   useEffect(() => {
     if (listRef.current && focusedIndex >= 0) {
-      const focusedElement = listRef.current.children[focusedIndex] as HTMLElement;
-      focusedElement?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      const focusedElement = listRef.current.children[
+        focusedIndex
+      ] as HTMLElement;
+      focusedElement?.scrollIntoView({ block: "nearest", behavior: "smooth" });
     }
   }, [focusedIndex]);
 
   // 点击外部关闭
   useEffect(() => {
-    if (!isEditing) {return;}
+    if (!isEditing) {
+      return;
+    }
 
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (!target.closest('.select-editor-popup')) {
+      if (!target.closest(".select-editor-popup")) {
         setEditing?.(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isEditing, setEditing]);
 
-  if (!isEditing) {return null;}
+  if (!isEditing) {
+    return null;
+  }
 
   return (
     <div
       className={cn(
-        'select-editor-popup',
-        'fixed z-[1500]',
-        'flex flex-col gap-2',
-        'min-w-[220px] max-w-[320px]',
-        'p-2',
-        'bg-white rounded-lg border border-gray-200',
-        'shadow-lg',
-        'animate-in fade-in-0 zoom-in-95 duration-200',
+        "select-editor-popup",
+        "fixed z-[1500]",
+        "flex flex-col gap-2",
+        "min-w-[220px] max-w-[320px]",
+        "p-2",
+        "bg-white rounded-lg border border-gray-200",
+        "shadow-lg",
+        "animate-in fade-in-0 zoom-in-95 duration-200",
       )}
       style={{
         ...popupStyle,
@@ -317,13 +353,13 @@ const SelectEditorBase: React.ForwardRefRenderFunction<
           placeholder="搜索选项..."
           disabled={readonly}
           className={cn(
-            'w-full h-8 pl-8 pr-3',
-            'text-sm',
-            'bg-white border border-gray-200 rounded-md',
-            'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-            'transition-all duration-150',
-            'placeholder:text-gray-400',
-            readonly && 'bg-gray-50 cursor-not-allowed',
+            "w-full h-8 pl-8 pr-3",
+            "text-sm",
+            "bg-white border border-gray-200 rounded-md",
+            "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+            "transition-all duration-150",
+            "placeholder:text-gray-400",
+            readonly && "bg-gray-50 cursor-not-allowed",
           )}
         />
       </div>
@@ -333,7 +369,7 @@ const SelectEditorBase: React.ForwardRefRenderFunction<
         ref={listRef}
         className="max-h-[240px] overflow-y-auto px-1 py-1 -mx-1 space-y-0.5"
         style={{
-          scrollbarWidth: 'thin',
+          scrollbarWidth: "thin",
           scrollbarColor: `${tokens.colors.border.default} transparent`,
         }}
       >
@@ -366,12 +402,12 @@ const SelectEditorBase: React.ForwardRefRenderFunction<
             onClick={() => setEditing?.(false)}
             disabled={readonly}
             className={cn(
-              'px-3 py-1.5 text-sm font-medium',
-              'bg-blue-500 text-white rounded-md',
-              'hover:bg-blue-600 active:bg-blue-700',
-              'transition-colors duration-150',
-              'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-              readonly && 'opacity-50 cursor-not-allowed',
+              "px-3 py-1.5 text-sm font-medium",
+              "bg-blue-500 text-white rounded-md",
+              "hover:bg-blue-600 active:bg-blue-700",
+              "transition-colors duration-150",
+              "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+              readonly && "opacity-50 cursor-not-allowed",
             )}
           >
             确定
@@ -383,4 +419,3 @@ const SelectEditorBase: React.ForwardRefRenderFunction<
 };
 
 export const SelectEditor = forwardRef(SelectEditorBase);
-

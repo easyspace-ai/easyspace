@@ -1,6 +1,8 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback } from "react";
 
-export const useScrollFrameRate = (scrollFunction?: (deltaX: number, deltaY: number) => void) => {
+export const useScrollFrameRate = (
+  scrollFunction?: (deltaX: number, deltaY: number) => void,
+) => {
   const requestRef = useRef(0);
   const lastTimeRef = useRef(0);
   const frameCountRef = useRef(0);
@@ -51,7 +53,7 @@ export const useScrollFrameRate = (scrollFunction?: (deltaX: number, deltaY: num
         }, duration * 1000);
       }
     },
-    [measureFrameRate, scrollFunction]
+    [measureFrameRate, scrollFunction],
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -17,7 +17,7 @@
 ### 1. 使用 Design Tokens
 
 ```tsx
-import { tokens, cn } from '@luckdb/aitable/grid/design-system';
+import { tokens, cn } from "@luckdb/aitable/grid/design-system";
 
 // 使用颜色
 const Button = () => (
@@ -37,11 +37,11 @@ const Button = () => (
 const BetterButton = () => (
   <button
     className={cn(
-      'bg-blue-500 text-white',
-      'px-4 py-2 rounded-md',
-      'transition-colors duration-200',
-      'hover:bg-blue-600',
-      'focus-visible:ring-2 focus-visible:ring-blue-500'
+      "bg-blue-500 text-white",
+      "px-4 py-2 rounded-md",
+      "transition-colors duration-200",
+      "hover:bg-blue-600",
+      "focus-visible:ring-2 focus-visible:ring-blue-500",
     )}
   >
     Better Button
@@ -52,7 +52,11 @@ const BetterButton = () => (
 ### 2. 使用主题切换
 
 ```tsx
-import { ThemeProvider, useTheme, ThemeToggle } from '@luckdb/aitable/grid/design-system';
+import {
+  ThemeProvider,
+  useTheme,
+  ThemeToggle,
+} from "@luckdb/aitable/grid/design-system";
 
 function App() {
   return (
@@ -65,10 +69,10 @@ function App() {
 
 function YourComponent() {
   const { theme, isDark, toggleTheme } = useTheme();
-  
+
   return (
     <div style={{ backgroundColor: theme.cellBg }}>
-      Current mode: {isDark ? 'Dark' : 'Light'}
+      Current mode: {isDark ? "Dark" : "Light"}
       <button onClick={toggleTheme}>Toggle</button>
     </div>
   );
@@ -78,32 +82,26 @@ function YourComponent() {
 ### 3. 使用动画
 
 ```tsx
-import { animations, cn } from '@luckdb/aitable/grid/design-system';
+import { animations, cn } from "@luckdb/aitable/grid/design-system";
 
 // 方式 1: Tailwind classes（推荐）
 const Modal = () => (
-  <div className={cn(
-    animations.tailwind.scaleIn,
-    'bg-white rounded-lg shadow-lg'
-  )}>
+  <div
+    className={cn(animations.tailwind.scaleIn, "bg-white rounded-lg shadow-lg")}
+  >
     Content
   </div>
 );
 
 // 方式 2: CSS transitions
 const HoverCard = () => (
-  <div className={cn(
-    animations.hover.standard,
-    'bg-white rounded-lg'
-  )}>
+  <div className={cn(animations.hover.standard, "bg-white rounded-lg")}>
     Hover me
   </div>
 );
 
 // 方式 3: Custom animations
-const LoadingSpinner = () => (
-  <div className={animations.loading.spinner} />
-);
+const LoadingSpinner = () => <div className={animations.loading.spinner} />;
 ```
 
 ## 设计 Tokens 参考
@@ -114,7 +112,7 @@ const LoadingSpinner = () => (
 tokens.colors = {
   // Primary colors
   primary: { 50...900 },
-  
+
   // Surface colors
   surface: {
     base: '#ffffff',
@@ -123,7 +121,7 @@ tokens.colors = {
     selected: '#e0f2fe',
     disabled: '#f9fafb',
   },
-  
+
   // Border colors
   border: {
     subtle: '#e5e7eb',
@@ -132,7 +130,7 @@ tokens.colors = {
     focus: '#3b82f6',
     error: '#ef4444',
   },
-  
+
   // Text colors
   text: {
     primary: '#0f172a',
@@ -141,10 +139,10 @@ tokens.colors = {
     inverse: '#ffffff',
     // ...
   },
-  
+
   // Cell-specific
   cell: { /* ... */ },
-  
+
   // Column-specific
   column: { /* ... */ },
 };
@@ -154,13 +152,13 @@ tokens.colors = {
 
 ```ts
 tokens.spacing = {
-  0: '0',
-  1: '0.25rem',  // 4px
-  2: '0.5rem',   // 8px
-  3: '0.75rem',  // 12px
-  4: '1rem',     // 16px
-  6: '1.5rem',   // 24px
-  8: '2rem',     // 32px
+  0: "0",
+  1: "0.25rem", // 4px
+  2: "0.5rem", // 8px
+  3: "0.75rem", // 12px
+  4: "1rem", // 16px
+  6: "1.5rem", // 24px
+  8: "2rem", // 32px
   // ...
 };
 ```
@@ -169,12 +167,12 @@ tokens.spacing = {
 
 ```ts
 tokens.radius = {
-  none: '0',
-  sm: '0.25rem',   // 4px
-  md: '0.375rem',  // 6px - 推荐默认值
-  lg: '0.5rem',    // 8px
-  xl: '0.75rem',   // 12px
-  full: '9999px',
+  none: "0",
+  sm: "0.25rem", // 4px
+  md: "0.375rem", // 6px - 推荐默认值
+  lg: "0.5rem", // 8px
+  xl: "0.75rem", // 12px
+  full: "9999px",
 };
 ```
 
@@ -182,13 +180,13 @@ tokens.radius = {
 
 ```ts
 tokens.elevation = {
-  flat: 'none',
-  xs: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-  sm: '0 1px 3px 0 rgba(0, 0, 0, 0.1), ...',
-  md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), ...',
-  lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), ...',
-  xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), ...',
-  focus: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+  flat: "none",
+  xs: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+  sm: "0 1px 3px 0 rgba(0, 0, 0, 0.1), ...",
+  md: "0 4px 6px -1px rgba(0, 0, 0, 0.1), ...",
+  lg: "0 10px 15px -3px rgba(0, 0, 0, 0.1), ...",
+  xl: "0 20px 25px -5px rgba(0, 0, 0, 0.1), ...",
+  focus: "0 0 0 3px rgba(59, 130, 246, 0.1)",
 };
 ```
 
@@ -197,7 +195,7 @@ tokens.elevation = {
 ### 重构后的 GridToolbar
 
 ```tsx
-import { GridToolbar } from '@luckdb/aitable/grid/components/toolbar/GridToolbar.refactored';
+import { GridToolbar } from "@luckdb/aitable/grid/components/toolbar/GridToolbar.refactored";
 
 // ✅ 现在使用：
 // - Lucide React 图标（不再是 Unicode）
@@ -211,13 +209,13 @@ import { GridToolbar } from '@luckdb/aitable/grid/components/toolbar/GridToolbar
   undoDisabled={!canUndo}
   redoDisabled={!canRedo}
   // ...
-/>
+/>;
 ```
 
 ### 重构后的 TextEditor
 
 ```tsx
-import { TextEditor } from '@luckdb/aitable/grid/components/editors/basic/TextEditor.refactored';
+import { TextEditor } from "@luckdb/aitable/grid/components/editors/basic/TextEditor.refactored";
 
 // ✅ 优化：
 // - border: 1px（从 2px）
@@ -231,13 +229,13 @@ import { TextEditor } from '@luckdb/aitable/grid/components/editors/basic/TextEd
   theme={theme}
   isEditing={true}
   onChange={handleChange}
-/>
+/>;
 ```
 
 ### 重构后的 SelectEditor
 
 ```tsx
-import { SelectEditor } from '@luckdb/aitable/grid/components/editors/enhanced/SelectEditor.refactored';
+import { SelectEditor } from "@luckdb/aitable/grid/components/editors/enhanced/SelectEditor.refactored";
 
 // ✅ 优化：
 // - 移除内联 hover 事件
@@ -245,11 +243,7 @@ import { SelectEditor } from '@luckdb/aitable/grid/components/editors/enhanced/S
 // - 键盘导航视觉反馈
 // - 流畅的动画
 
-<SelectEditor
-  cell={selectCell}
-  isEditing={true}
-  onChange={handleSelect}
-/>
+<SelectEditor cell={selectCell} isEditing={true} onChange={handleSelect} />;
 ```
 
 ## 迁移指南
@@ -392,15 +386,15 @@ const Button = React.memo(({ onClick, children }) => (
 ### 查看当前主题
 
 ```tsx
-import { useTheme } from '@luckdb/aitable/grid/design-system';
+import { useTheme } from "@luckdb/aitable/grid/design-system";
 
 function DebugPanel() {
   const { theme, mode, isDark } = useTheme();
-  
+
   return (
     <div>
       <p>Mode: {mode}</p>
-      <p>Is Dark: {isDark ? 'Yes' : 'No'}</p>
+      <p>Is Dark: {isDark ? "Yes" : "No"}</p>
       <p>Cell BG: {theme.cellBg}</p>
     </div>
   );
@@ -459,7 +453,7 @@ export const myAnimation = {
 
 // 或者添加 Tailwind class
 export const tailwindAnimations = {
-  myAnimation: 'animate-in slide-in-from-left-4 duration-300',
+  myAnimation: "animate-in slide-in-from-left-4 duration-300",
 };
 ```
 
@@ -484,4 +478,3 @@ export const tailwindAnimations = {
 ---
 
 **打造顶级的设计品质，一次做对！** 🎨
-

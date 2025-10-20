@@ -1,12 +1,15 @@
-import { useMemo, useCallback } from 'react';
-import { getGroupDisplayValue, sortGroupValues } from '../../utils/business/groupValue';
+import { useMemo, useCallback } from "react";
+import {
+  getGroupDisplayValue,
+  sortGroupValues,
+} from "../../utils/business/groupValue";
 
 /**
  * Group point interface
  */
 export interface IGroupPoint {
   id: string;
-  type: 'header' | 'data';
+  type: "header" | "data";
   depth: number;
   value: unknown;
   displayValue: string;
@@ -21,7 +24,7 @@ export interface IGroupField {
   fieldId: string;
   fieldName: string;
   fieldType?: string;
-  order?: 'asc' | 'desc';
+  order?: "asc" | "desc";
 }
 
 /**
@@ -39,7 +42,7 @@ export interface IRecordWithGroup {
 export const useGridGroupCollection = (
   records: IRecordWithGroup[],
   groupFields: IGroupField[],
-  collapsedGroups?: Set<string>
+  collapsedGroups?: Set<string>,
 ) => {
   /**
    * Build group tree structure
@@ -67,11 +70,14 @@ export const useGridGroupCollection = (
     const groups: IGroupPoint[] = [];
     rootGroups.forEach((recordIds, groupValue) => {
       const groupId = JSON.stringify(groupValue);
-      const displayValue = getGroupDisplayValue(groupValue, groupFields[0]?.fieldType);
-      
+      const displayValue = getGroupDisplayValue(
+        groupValue,
+        groupFields[0]?.fieldType,
+      );
+
       const groupPoint: IGroupPoint = {
         id: groupId,
-        type: 'header',
+        type: "header",
         depth: 0,
         value: groupValue,
         displayValue,
@@ -85,9 +91,9 @@ export const useGridGroupCollection = (
 
     // Sort groups
     groups.sort((a, b) => {
-      const order = groupFields[0]?.order || 'asc';
+      const order = groupFields[0]?.order || "asc";
       const result = sortGroupValues(a.value, b.value);
-      return order === 'desc' ? -result : result;
+      return order === "desc" ? -result : result;
     });
 
     return {
@@ -102,17 +108,21 @@ export const useGridGroupCollection = (
    */
   const getGroupRecords = useCallback(
     (groupId: string): IRecordWithGroup[] => {
-      if (!groupCollection) {return [];}
+      if (!groupCollection) {
+        return [];
+      }
 
       const groupPoint = groupCollection.groupMap.get(groupId);
-      if (!groupPoint) {return [];}
+      if (!groupPoint) {
+        return [];
+      }
 
       return records.filter((record) => {
         const recordGroupId = JSON.stringify(record.groupValue);
         return recordGroupId === groupId;
       });
     },
-    [records, groupCollection]
+    [records, groupCollection],
   );
 
   /**
@@ -122,7 +132,7 @@ export const useGridGroupCollection = (
     (groupId: string): IGroupPoint | undefined => {
       return groupCollection?.groupMap.get(groupId);
     },
-    [groupCollection]
+    [groupCollection],
   );
 
   /**
@@ -133,7 +143,7 @@ export const useGridGroupCollection = (
       const group = getGroup(groupId);
       return group?.isCollapsed || false;
     },
-    [getGroup]
+    [getGroup],
   );
 
   /**
@@ -159,4 +169,3 @@ export const useGridGroupCollection = (
     hasGroups: !!groupCollection && groupCollection.totalGroups > 0,
   };
 };
-

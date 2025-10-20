@@ -1,5 +1,5 @@
-import { throttle } from 'lodash';
-import type { ICellItem, IRectangle } from '../../interface';
+import { throttle } from "lodash";
+import type { ICellItem, IRectangle } from "../../interface";
 
 interface ILoadResult {
   img: HTMLImageElement | undefined;
@@ -10,7 +10,11 @@ interface ILoadResult {
 
 export interface IGlobalImageManager {
   setWindow(newWindow: IRectangle, freezeCols: number): void;
-  loadOrGetImage(url: string, col: number, row: number): HTMLImageElement | ImageBitmap | undefined;
+  loadOrGetImage(
+    url: string,
+    col: number,
+    row: number,
+  ): HTMLImageElement | ImageBitmap | undefined;
   setCallback(imageLoaded: (locations: ICellItem[]) => void): void;
 }
 
@@ -53,8 +57,12 @@ export class ImageManager implements IGlobalImageManager {
     const col = unpackCol(packed);
     const row = unpackRow(packed, col);
     const w = this.visibleWindow;
-    if (col < this.freezeColumnCount && row >= w.y && row <= w.y + w.height) {return true;}
-    return col >= w.x && col <= w.x + w.width && row >= w.y && row <= w.y + w.height;
+    if (col < this.freezeColumnCount && row >= w.y && row <= w.y + w.height) {
+      return true;
+    }
+    return (
+      col >= w.x && col <= w.x + w.width && row >= w.y && row <= w.y + w.height
+    );
   };
 
   private cache: Record<string, ILoadResult> = {};
@@ -98,8 +106,9 @@ export class ImageManager implements IGlobalImageManager {
       this.visibleWindow.width === newWindow.width &&
       this.visibleWindow.height === newWindow.height &&
       this.freezeColumnCount === freezeColumnCount
-    )
-      {return;}
+    ) {
+      return;
+    }
     this.visibleWindow = newWindow;
     this.freezeColumnCount = freezeColumnCount;
     this.clearOutOfWindow();
@@ -115,17 +124,21 @@ export class ImageManager implements IGlobalImageManager {
       cells: [packColRowToNumber(col, row)],
       url,
       cancel: () => {
-        if (canceled) {return;}
+        if (canceled) {
+          return;
+        }
         canceled = true;
         if (imgPool.length < 12) {
           imgPool.unshift(img); // never retain more than 12
         } else if (!loaded) {
-          img.src = '';
+          img.src = "";
         }
       },
     };
 
-    const loadPromise = new Promise((r) => img.addEventListener('load', () => r(null)));
+    const loadPromise = new Promise((r) =>
+      img.addEventListener("load", () => r(null)),
+    );
     // use request animation time to avoid paying src set costs during draw calls
     requestAnimationFrame(async () => {
       try {
@@ -151,7 +164,7 @@ export class ImageManager implements IGlobalImageManager {
   public loadOrGetImage(
     url: string,
     col: number,
-    row: number
+    row: number,
   ): HTMLImageElement | ImageBitmap | undefined {
     const key = url;
 

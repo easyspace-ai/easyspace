@@ -18,21 +18,19 @@
 ### 基础用法
 
 ```tsx
-import { AddFieldDialogV2 } from '@luckdb/aitable/field-config';
+import { AddFieldDialogV2 } from "@luckdb/aitable/field-config";
 
 function MyComponent() {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleAddField = (name: string, type: string, config?: any) => {
-    console.log('创建字段:', { name, type, config });
+    console.log("创建字段:", { name, type, config });
     // 调用 API 创建字段...
   };
 
   return (
     <>
-      <button onClick={() => setIsOpen(true)}>
-        ➕ 添加新字段
-      </button>
+      <button onClick={() => setIsOpen(true)}>➕ 添加新字段</button>
 
       <AddFieldDialogV2
         isOpen={isOpen}
@@ -48,12 +46,13 @@ function MyComponent() {
 
 ```typescript
 interface AddFieldDialogProps {
-  isOpen: boolean;                    // 是否显示对话框
-  onClose: () => void;                // 关闭回调
-  onConfirm: (                        // 确认创建回调
-    fieldName: string,                // 字段名称
-    fieldType: string,                // 字段类型 ID
-    config?: FieldConfig              // 字段配置（可选）
+  isOpen: boolean; // 是否显示对话框
+  onClose: () => void; // 关闭回调
+  onConfirm: (
+    // 确认创建回调
+    fieldName: string, // 字段名称
+    fieldType: string, // 字段类型 ID
+    config?: FieldConfig, // 字段配置（可选）
   ) => void;
 }
 ```
@@ -203,11 +202,11 @@ style={{
 
 ```typescript
 const fieldTypeColors = {
-  text: '#3b82f6',        // 蓝色 - 专业、信任
-  number: '#f59e0b',      // 橙色 - 醒目、数据
-  singleSelect: '#8b5cf6', // 紫色 - 选项、分类
-  date: '#06b6d4',        // 青色 - 时间流动
-  rating: '#eab308',      // 金色 - 价值、质量
+  text: "#3b82f6", // 蓝色 - 专业、信任
+  number: "#f59e0b", // 橙色 - 醒目、数据
+  singleSelect: "#8b5cf6", // 紫色 - 选项、分类
+  date: "#06b6d4", // 青色 - 时间流动
+  rating: "#eab308", // 金色 - 价值、质量
   // ... 更多
 };
 ```
@@ -232,7 +231,7 @@ const fieldTypeColors = {
 #### Stagger 列表动画
 
 ```typescript
-animation: `slideInStagger 300ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms both`
+animation: `slideInStagger 300ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms both`;
 ```
 
 #### Hover 微交互
@@ -257,14 +256,14 @@ function CreateStatusField() {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleCreateField = (name: string, type: string, config?: any) => {
-    if (type === 'singleSelect') {
+    if (type === "singleSelect") {
       // config 的类型为 SelectFieldConfig
-      console.log('创建单选字段:', {
-        name,              // "状态"
-        type,              // "singleSelect"
-        options: config.options  // [{ id, label, color }, ...]
+      console.log("创建单选字段:", {
+        name, // "状态"
+        type, // "singleSelect"
+        options: config.options, // [{ id, label, color }, ...]
       });
-      
+
       // 调用 API
       api.createField({
         name,
@@ -289,14 +288,14 @@ function CreateStatusField() {
 ```tsx
 function CreatePriceField() {
   const handleCreateField = (name: string, type: string, config?: any) => {
-    if (type === 'number') {
+    if (type === "number") {
       // config 的类型为 NumberFieldConfig
-      console.log('创建数字字段:', {
-        name,              // "价格"
-        type,              // "number"
-        format: config.format,      // "currency"
+      console.log("创建数字字段:", {
+        name, // "价格"
+        type, // "number"
+        format: config.format, // "currency"
         precision: config.precision, // 2
-        min: config.min,            // 0
+        min: config.min, // 0
       });
     }
   };
@@ -359,19 +358,19 @@ function renderFieldConfiguration() {
 ```typescript
 const defaultConfigs = {
   status: {
-    type: 'singleSelect',
+    type: "singleSelect",
     options: [
-      { label: '待处理', color: '#ef4444' },
-      { label: '进行中', color: '#f59e0b' },
-      { label: '已完成', color: '#22c55e' },
+      { label: "待处理", color: "#ef4444" },
+      { label: "进行中", color: "#f59e0b" },
+      { label: "已完成", color: "#22c55e" },
     ],
   },
   priority: {
-    type: 'singleSelect',
+    type: "singleSelect",
     options: [
-      { label: '高', color: '#ef4444' },
-      { label: '中', color: '#f59e0b' },
-      { label: '低', color: '#3b82f6' },
+      { label: "高", color: "#ef4444" },
+      { label: "中", color: "#f59e0b" },
+      { label: "低", color: "#3b82f6" },
     ],
   },
 };
@@ -385,14 +384,14 @@ const defaultConfigs = {
 const handleConfirm = (name: string, type: string, config?: any) => {
   // 验证字段名称
   if (!name || name.trim().length === 0) {
-    toast.error('字段名称不能为空');
+    toast.error("字段名称不能为空");
     return;
   }
 
   // 验证选择字段的选项
-  if (type === 'singleSelect' || type === 'multipleSelect') {
+  if (type === "singleSelect" || type === "multipleSelect") {
     if (!config?.options || config.options.length === 0) {
-      toast.error('请至少添加一个选项');
+      toast.error("请至少添加一个选项");
       return;
     }
   }
@@ -411,7 +410,7 @@ const handleCreateField = async (name: string, type: string, config?: any) => {
     toast.success(`字段 "${name}" 创建成功`);
     setIsOpen(false);
   } catch (error) {
-    toast.error('创建字段失败: ' + error.message);
+    toast.error("创建字段失败: " + error.message);
   }
 };
 ```
@@ -425,7 +424,7 @@ const handleCreateField = async (name: string, type: string, config?: any) => {
 ```typescript
 // 在 fieldTypes 数组中过滤掉不需要的类型
 const availableFieldTypes = fieldTypes.filter(
-  type => !['attachment', 'user'].includes(type.id)
+  (type) => !["attachment", "user"].includes(type.id),
 );
 ```
 
@@ -436,9 +435,9 @@ const availableFieldTypes = fieldTypes.filter(
 ```typescript
 const categoryConfig = {
   basic: {
-    name: '基础',  // 改名
+    name: "基础", // 改名
     icon: FileText,
-    color: '#3b82f6',
+    color: "#3b82f6",
   },
   // ...
 };
@@ -468,7 +467,7 @@ const filteredFieldTypes = useMemo(() => {
 
 ```typescript
 const SelectFieldConfiguration = lazy(
-  () => import('./field-configurations/SelectFieldConfiguration')
+  () => import("./field-configurations/SelectFieldConfiguration"),
 );
 ```
 
@@ -483,7 +482,7 @@ const customTokens = {
   colors: {
     ...tokens.colors,
     primary: {
-      500: '#your-brand-color',
+      500: "#your-brand-color",
     },
   },
 };
@@ -507,7 +506,7 @@ import { AddFieldDialogV2 } from './AddFieldDialog.v2';
 
 test('应该能够选择字段类型', () => {
   const onConfirm = jest.fn();
-  
+
   render(
     <AddFieldDialogV2
       isOpen={true}
@@ -518,15 +517,15 @@ test('应该能够选择字段类型', () => {
 
   // 点击单选字段类型
   fireEvent.click(screen.getByText('单选'));
-  
+
   // 输入字段名称
   fireEvent.change(screen.getByPlaceholderText(/请输入字段名称/), {
     target: { value: '状态' },
   });
-  
+
   // 确认创建
   fireEvent.click(screen.getByText('创建字段'));
-  
+
   expect(onConfirm).toHaveBeenCalledWith('状态', 'singleSelect', expect.any(Object));
 });
 ```
@@ -554,4 +553,3 @@ MIT
 ---
 
 **享受创建字段的愉悦体验！** 🎉
-

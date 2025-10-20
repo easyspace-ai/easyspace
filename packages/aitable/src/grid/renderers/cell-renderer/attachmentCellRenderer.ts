@@ -1,13 +1,13 @@
-import type { IAttachmentCell } from './interface';
-import { CellType } from './interface';
-import type { IBaseCellRenderer } from './interface';
+import type { IAttachmentCell } from "./interface";
+import { CellType } from "./interface";
+import type { IBaseCellRenderer } from "./interface";
 
 export const attachmentCellRenderer: IBaseCellRenderer<IAttachmentCell> = {
   type: CellType.Attachment,
   draw: (cell, props) => {
     const { ctx, theme, rect } = props;
     if (!ctx || !theme || !rect) return;
-    
+
     const { data } = cell;
     const { textColor, cellLineColor } = theme;
     const { x, y, width, height } = rect;
@@ -15,8 +15,8 @@ export const attachmentCellRenderer: IBaseCellRenderer<IAttachmentCell> = {
     // 设置文本样式
     ctx.fillStyle = textColor;
     ctx.font = `${theme.fontSize}px ${theme.fontFamily}`;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
 
     // 绘制附件信息
     if (data && data.length > 0) {
@@ -25,7 +25,7 @@ export const attachmentCellRenderer: IBaseCellRenderer<IAttachmentCell> = {
       const textY = y + height / 2;
       ctx.fillText(text, textX, textY);
     } else {
-      const text = '无附件';
+      const text = "无附件";
       const textX = x + 8;
       const textY = y + height / 2;
       ctx.fillStyle = theme.textColorSecondary;

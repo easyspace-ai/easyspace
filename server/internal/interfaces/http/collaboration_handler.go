@@ -6,23 +6,16 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"github.com/easyspace-ai/luckdb/server/internal/domain/websocket"
 	"github.com/easyspace-ai/luckdb/server/pkg/errors"
 	"github.com/easyspace-ai/luckdb/server/pkg/response"
 )
 
 // CollaborationHandler 协作功能HTTP处理器
-type CollaborationHandler struct {
-	collaborationService *websocket.CollaborationService
-	logger               *zap.Logger
-}
+type CollaborationHandler struct{ logger *zap.Logger }
 
 // NewCollaborationHandler 创建协作功能HTTP处理器
-func NewCollaborationHandler(collaborationService *websocket.CollaborationService, logger *zap.Logger) *CollaborationHandler {
-	return &CollaborationHandler{
-		collaborationService: collaborationService,
-		logger:               logger,
-	}
+func NewCollaborationHandler(_ interface{}, logger *zap.Logger) *CollaborationHandler {
+	return &CollaborationHandler{logger: logger}
 }
 
 // UpdatePresenceRequest 更新在线状态请求
@@ -50,7 +43,7 @@ func (h *CollaborationHandler) UpdatePresence(c *gin.Context) {
 	}
 
 	// 从JWT中获取用户ID和会话ID
-	userID, exists := c.Get("user_id")
+	_, exists := c.Get("user_id")
 	if !exists {
 		h.handleError(c, errors.ErrUnauthorized.WithDetails("User ID not found"))
 		return
@@ -62,10 +55,7 @@ func (h *CollaborationHandler) UpdatePresence(c *gin.Context) {
 	}
 
 	// 更新在线状态
-	if err := h.collaborationService.UpdateUserPresence(c.Request.Context(), userID.(string), sessionID, req.Collection, req.Data); err != nil {
-		h.handleError(c, errors.ErrInternalServer.WithDetails(err.Error()))
-		return
-	}
+	// 旧协作服务依赖 WebSocket，已移除；改走业务事件/YJS 侧，此处仅返回成功占位
 
 	response.SuccessWithMessage(c, map[string]bool{"success": true}, "")
 }
@@ -88,7 +78,7 @@ func (h *CollaborationHandler) RemovePresence(c *gin.Context) {
 	}
 
 	// 从JWT中获取用户ID和会话ID
-	userID, exists := c.Get("user_id")
+	_, exists := c.Get("user_id")
 	if !exists {
 		h.handleError(c, errors.ErrUnauthorized.WithDetails("User ID not found"))
 		return
@@ -99,11 +89,7 @@ func (h *CollaborationHandler) RemovePresence(c *gin.Context) {
 		sessionID = "default"
 	}
 
-	// 移除在线状态
-	if err := h.collaborationService.RemoveUserPresence(c.Request.Context(), userID.(string), sessionID, collection); err != nil {
-		h.handleError(c, errors.ErrInternalServer.WithDetails(err.Error()))
-		return
-	}
+	// 移除在线状态（legacy 占位，无实际后端存储）
 
 	response.SuccessWithMessage(c, map[string]bool{"success": true}, "")
 }
@@ -126,9 +112,7 @@ func (h *CollaborationHandler) GetPresence(c *gin.Context) {
 	}
 
 	// 获取在线状态
-	presence := h.collaborationService.GetPresenceInfo(collection)
-
-	response.SuccessWithMessage(c, presence, "")
+	response.SuccessWithMessage(c, []map[string]interface{}{}, "")
 }
 
 // UpdateCursorRequest 更新光标位置请求
@@ -158,7 +142,7 @@ func (h *CollaborationHandler) UpdateCursor(c *gin.Context) {
 	}
 
 	// 从JWT中获取用户ID和会话ID
-	userID, exists := c.Get("user_id")
+	_, exists := c.Get("user_id")
 	if !exists {
 		h.handleError(c, errors.ErrUnauthorized.WithDetails("User ID not found"))
 		return
@@ -169,20 +153,8 @@ func (h *CollaborationHandler) UpdateCursor(c *gin.Context) {
 		sessionID = "default"
 	}
 
-	// 创建光标信息
-	cursor := &websocket.CursorInfo{
-		UserID:    userID.(string),
-		SessionID: sessionID,
-		Position:  req.Position,
-		Selection: req.Selection,
-		Timestamp: time.Now(),
-	}
-
-	// 更新光标位置
-	if err := h.collaborationService.UpdateUserCursor(c.Request.Context(), userID.(string), sessionID, req.Collection, req.Document, cursor); err != nil {
-		h.handleError(c, errors.ErrInternalServer.WithDetails(err.Error()))
-		return
-	}
+	// 旧协作服务已移除，此处不再存储，返回成功
+	_ = time.Now() // 保留时间引用
 
 	response.SuccessWithMessage(c, map[string]bool{"success": true}, "")
 }
@@ -207,7 +179,7 @@ func (h *CollaborationHandler) RemoveCursor(c *gin.Context) {
 	}
 
 	// 从JWT中获取用户ID和会话ID
-	userID, exists := c.Get("user_id")
+	_, exists := c.Get("user_id")
 	if !exists {
 		h.handleError(c, errors.ErrUnauthorized.WithDetails("User ID not found"))
 		return
@@ -218,11 +190,7 @@ func (h *CollaborationHandler) RemoveCursor(c *gin.Context) {
 		sessionID = "default"
 	}
 
-	// 移除光标
-	if err := h.collaborationService.RemoveUserCursor(c.Request.Context(), userID.(string), sessionID, collection, document); err != nil {
-		h.handleError(c, errors.ErrInternalServer.WithDetails(err.Error()))
-		return
-	}
+	// 移除光标（legacy 占位）
 
 	response.SuccessWithMessage(c, map[string]bool{"success": true}, "")
 }
@@ -245,9 +213,7 @@ func (h *CollaborationHandler) GetCursors(c *gin.Context) {
 	}
 
 	// 获取光标信息
-	cursors := h.collaborationService.GetCursorInfo(collection)
-
-	response.SuccessWithMessage(c, cursors, "")
+	response.SuccessWithMessage(c, []map[string]interface{}{}, "")
 }
 
 // SendNotificationRequest 发送通知请求
@@ -277,10 +243,7 @@ func (h *CollaborationHandler) SendNotification(c *gin.Context) {
 	}
 
 	// 发送通知
-	if err := h.collaborationService.PublishCollaborationNotification(req.Collection, req.UserID, req.Type, req.Data); err != nil {
-		h.handleError(c, errors.ErrInternalServer.WithDetails(err.Error()))
-		return
-	}
+	// 旧协作服务已移除，此处仅返回成功占位
 
 	response.SuccessWithMessage(c, map[string]bool{"success": true}, "")
 }

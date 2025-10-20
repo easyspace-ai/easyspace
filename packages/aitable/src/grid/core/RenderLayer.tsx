@@ -1,8 +1,8 @@
-import type { FC } from 'react';
-import { useRef, useEffect, useMemo } from 'react';
-import type { IVisibleRegion } from '../hooks/primitive';
-import type { IInteractionLayerProps } from './InteractionLayer';
-import { RegionType } from '../types/grid';
+import type { FC } from "react";
+import { useRef, useEffect, useMemo } from "react";
+import type { IVisibleRegion } from "../hooks/primitive";
+import type { IInteractionLayerProps } from "./InteractionLayer";
+import { RegionType } from "../types/grid";
 import type {
   ILinearRow,
   ICellItem,
@@ -13,32 +13,32 @@ import type {
   ICellPosition,
   IActiveCellBound,
   IColumnFreezeState,
-} from '../types/grid';
-import type { CombinedSelection } from '../managers';
-import { drawGrid } from '../renderers/layout-renderer/layoutRenderer';
+} from "../types/grid";
+import type { CombinedSelection } from "../managers";
+import { drawGrid } from "../renderers/layout-renderer/layoutRenderer";
 
 export interface IRenderLayerProps
   extends Pick<
     IInteractionLayerProps,
-    | 'theme'
-    | 'width'
-    | 'height'
-    | 'columns'
-    | 'commentCountMap'
-    | 'rowControls'
-    | 'imageManager'
-    | 'spriteManager'
-    | 'scrollState'
-    | 'coordInstance'
-    | 'columnStatistics'
-    | 'groupCollection'
-    | 'rowIndexVisible'
-    | 'searchCursor'
-    | 'searchHitIndex'
-    | 'collaborators'
-    | 'columnHeaderHeight'
-    | 'isMultiSelectionEnable'
-    | 'getCellContent'
+    | "theme"
+    | "width"
+    | "height"
+    | "columns"
+    | "commentCountMap"
+    | "rowControls"
+    | "imageManager"
+    | "spriteManager"
+    | "scrollState"
+    | "coordInstance"
+    | "columnStatistics"
+    | "groupCollection"
+    | "rowIndexVisible"
+    | "searchCursor"
+    | "searchHitIndex"
+    | "collaborators"
+    | "columnHeaderHeight"
+    | "isMultiSelectionEnable"
+    | "getCellContent"
   > {
   isEditing?: boolean;
   visibleRegion: IVisibleRegion;
@@ -63,7 +63,9 @@ export interface IRenderLayerProps
   getLinearRow: (index: number) => ILinearRow;
 }
 
-export const RenderLayer: FC<React.PropsWithChildren<IRenderLayerProps>> = (props) => {
+export const RenderLayer: FC<React.PropsWithChildren<IRenderLayerProps>> = (
+  props,
+) => {
   const {
     theme,
     width,
@@ -108,15 +110,16 @@ export const RenderLayer: FC<React.PropsWithChildren<IRenderLayerProps>> = (prop
   } = props;
   const { containerWidth } = coordInstance;
   const { x, y, columnIndex, rowIndex, type, isOutOfBounds } = originMouseState;
-  const isInteracting = _isInteracting || type === RegionType.ColumnFreezeHandler;
+  const isInteracting =
+    _isInteracting || type === RegionType.ColumnFreezeHandler;
 
   const mainCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const lastPropsRef = useRef<IRenderLayerProps>();
 
   const cacheCanvas = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.style.opacity = '0';
-    canvas.style.position = 'fixed';
+    const canvas = document.createElement("canvas");
+    canvas.style.opacity = "0";
+    canvas.style.position = "fixed";
     return canvas;
   }, []);
 
@@ -132,13 +135,17 @@ export const RenderLayer: FC<React.PropsWithChildren<IRenderLayerProps>> = (prop
   }, [columnIndex, rowIndex, type, isOutOfBounds]);
 
   const mousePosition: IPosition | null = useMemo(() => {
-    if (!isInteracting) {return null;}
+    if (!isInteracting) {
+      return null;
+    }
     return { x, y };
   }, [x, y, isInteracting]);
 
   useEffect(() => {
     const mainCanvas = mainCanvasRef.current;
-    if (mainCanvas == null) {return;}
+    if (mainCanvas == null) {
+      return;
+    }
     const lastProps = lastPropsRef.current;
     const props = {
       theme,
@@ -160,7 +167,9 @@ export const RenderLayer: FC<React.PropsWithChildren<IRenderLayerProps>> = (prop
       scrollState,
       columnFreezeState,
       hoverCellPosition,
-      mouseState: mousePosition ? { ...mouseState, ...mousePosition } : mouseState,
+      mouseState: mousePosition
+        ? { ...mouseState, ...mousePosition }
+        : mouseState,
       selection,
       isSelecting,
       isInteracting,
@@ -236,7 +245,7 @@ export const RenderLayer: FC<React.PropsWithChildren<IRenderLayerProps>> = (prop
       ref={mainCanvasRef}
       style={{
         backgroundColor: theme.cellBg,
-        pointerEvents: 'none',
+        pointerEvents: "none",
       }}
     />
   );

@@ -10,9 +10,7 @@
  * import '@luckdb/aitable/dist/index.css'
  */
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /* 基础样式重置 */
 @layer base {
@@ -39,11 +37,17 @@
   }
 
   .luckdb-toolbar-button {
-    @apply toolbar-button;
+    @apply inline-flex items-center justify-center gap-2 h-8 px-3 rounded-md text-sm font-medium;
+    @apply bg-white border border-gray-200 text-gray-700;
+    @apply hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900;
+    @apply active:bg-gray-100 transition-all duration-200 ease-out;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500;
   }
 
   .luckdb-toolbar-button-primary {
-    @apply toolbar-button-primary;
+    @apply bg-blue-600 border-blue-600 text-white;
+    @apply hover:bg-blue-700 hover:border-blue-700;
+    @apply active:bg-blue-800 shadow-sm hover:shadow-md;
   }
 
   .luckdb-toolbar-dropdown {
@@ -70,15 +74,15 @@
   }
 
   .luckdb-grid-cell {
-    @apply grid-cell;
+    @apply border-r border-b border-gray-200 bg-white;
   }
 
   .luckdb-grid-cell-hover {
-    @apply grid-cell-hover;
+    @apply hover:bg-gray-50 transition-colors duration-150;
   }
 
   .luckdb-grid-cell-selected {
-    @apply grid-cell-selected;
+    @apply bg-blue-50 border-blue-500 ring-1 ring-blue-500;
   }
 
   /* 行样式 */
@@ -110,12 +114,12 @@
   /* 对话框样式 */
   .luckdb-dialog {
     @apply fixed inset-0 z-50 flex items-center justify-center;
-    @apply bg-black bg-opacity-50 backdrop-blur-sm;
+    @apply bg-black/50 backdrop-blur-sm;
   }
 
   .luckdb-dialog-content {
     @apply bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6;
-    @apply animate-scale-in;
+    animation: luckdb-scale-in 0.2s ease-out;
   }
 
   .luckdb-dialog-header {

@@ -22,7 +22,7 @@ export interface CreateRecordDTO {
   order?: {
     viewId: string;
     anchorId: string;
-    position: 'before' | 'after';
+    position: "before" | "after";
   };
 }
 
@@ -53,9 +53,8 @@ export interface GetRecordsDTO {
   filter?: any;
   sort?: any[];
   groupBy?: string[];
-  fieldKeyType?: 'id' | 'name';
-  cellFormat?: 'text' | 'json';
+  fieldKeyType?: "id" | "name";
+  cellFormat?: "text" | "json";
   skip?: number;
   take?: number;
 }
-

@@ -3,19 +3,19 @@
  * Aggregate/rollup fields from linked records
  */
 
-import { Field } from './Field';
+import { Field } from "./Field";
 
 export type RollupFunc =
-  | 'count'
-  | 'countEmpty'
-  | 'countNonEmpty'
-  | 'countUnique'
-  | 'sum'
-  | 'average'
-  | 'max'
-  | 'min'
-  | 'arrayJoin'
-  | 'arrayUnique';
+  | "count"
+  | "countEmpty"
+  | "countNonEmpty"
+  | "countUnique"
+  | "sum"
+  | "average"
+  | "max"
+  | "min"
+  | "arrayJoin"
+  | "arrayUnique";
 
 export interface IRollupFieldOptions {
   expression?: {
@@ -24,14 +24,13 @@ export interface IRollupFieldOptions {
     func?: RollupFunc;
   };
   formatting?: {
-    type?: 'text' | 'number' | 'date';
+    type?: "text" | "number" | "date";
     precision?: number;
     dateFormat?: string;
   };
 }
 
 export class RollupField extends Field {
-
   constructor(config: any) {
     super(config);
     // Rollup fields are always computed
@@ -45,29 +44,29 @@ export class RollupField extends Field {
 
   format(value: unknown): string {
     if (this.isEmpty(value)) {
-      return '';
+      return "";
     }
 
     const formatting = (this.options as any).formatting;
 
     switch (formatting?.type) {
-      case 'number':
-        if (typeof value === 'number') {
+      case "number":
+        if (typeof value === "number") {
           const precision = formatting.precision ?? 0;
           return value.toFixed(precision);
         }
         return String(value);
 
-      case 'date':
-        if (value instanceof Date || typeof value === 'string') {
+      case "date":
+        if (value instanceof Date || typeof value === "string") {
           return String(value);
         }
         return String(value);
 
-      case 'text':
+      case "text":
       default:
         if (Array.isArray(value)) {
-          return value.join(', ');
+          return value.join(", ");
         }
         return String(value);
     }
@@ -95,9 +94,9 @@ export class RollupField extends Field {
    */
   getRollupConfig() {
     return {
-      linkFieldId: ((this.options as any).expression)?.linkFieldId,
-      foreignFieldId: ((this.options as any).expression)?.foreignFieldId,
-      func: ((this.options as any).expression)?.func,
+      linkFieldId: (this.options as any).expression?.linkFieldId,
+      foreignFieldId: (this.options as any).expression?.foreignFieldId,
+      func: (this.options as any).expression?.func,
     };
   }
 
@@ -106,19 +105,13 @@ export class RollupField extends Field {
    */
   hasValidConfig(): boolean {
     const config = this.getRollupConfig();
-    return Boolean(
-      config.linkFieldId &&
-      config.foreignFieldId &&
-      config.func
-    );
+    return Boolean(config.linkFieldId && config.foreignFieldId && config.func);
   }
 
   /**
    * Get rollup function
    */
   getRollupFunc(): RollupFunc | undefined {
-    return ((this.options as any).expression)?.func;
+    return (this.options as any).expression?.func;
   }
 }
-
-

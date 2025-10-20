@@ -2,7 +2,7 @@
  * View Domain Model - 领域层 View 模型
  */
 
-import type { ViewType } from '../infrastructure';
+import type { ViewType } from "../infrastructure";
 
 /**
  * View 领域模型
@@ -41,4 +41,3 @@ export interface UpdateViewCommand {
   group?: any[];
   columnMeta?: Map<string, any> | Record<string, any>;
 }
-

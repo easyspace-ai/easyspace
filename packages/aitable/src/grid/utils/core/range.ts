@@ -1,5 +1,5 @@
-import type { ICellItem, IRange } from '../../types/grid';
-import type { CombinedSelection } from '../../managers';
+import type { ICellItem, IRange } from "../../types/grid";
+import type { CombinedSelection } from "../../managers";
 
 export const isRangeWithinRanges = (checkedRange: IRange, ranges: IRange[]) => {
   const [checkedStart, checkedEnd] = checkedRange;
@@ -27,7 +27,7 @@ export const flatRanges = (ranges: IRange[]): number[] => {
 export const isPointInsideRectangle = (
   checkPoint: [number, number],
   startPoint: [number, number],
-  endPoint: [number, number]
+  endPoint: [number, number],
 ): boolean => {
   const [checkX, checkY] = checkPoint;
   const [startX, startY] = startPoint;
@@ -107,7 +107,10 @@ export const calculateMaxRange = (selection: CombinedSelection) => {
   if (isCellSelection) {
     const [startColIndex, startRowIndex] = ranges[0];
     const [endColIndex, endRowIndex] = ranges[1];
-    return [Math.max(startColIndex, endColIndex), Math.max(startRowIndex, endRowIndex)];
+    return [
+      Math.max(startColIndex, endColIndex),
+      Math.max(startRowIndex, endRowIndex),
+    ];
   }
   return null;
 };
@@ -115,7 +118,7 @@ export const calculateMaxRange = (selection: CombinedSelection) => {
 export const checkIfRowOrCellActive = (
   activeCell: ICellItem | null,
   rowIndex: number,
-  columnIndex: number
+  columnIndex: number,
 ) => {
   if (activeCell == null) {
     return {
@@ -126,14 +129,15 @@ export const checkIfRowOrCellActive = (
   const [activeColumnIndex, activeRowIndex] = activeCell;
   return {
     isRowActive: activeRowIndex === rowIndex,
-    isCellActive: activeRowIndex === rowIndex && activeColumnIndex === columnIndex,
+    isCellActive:
+      activeRowIndex === rowIndex && activeColumnIndex === columnIndex,
   };
 };
 
 export const checkIfRowOrCellSelected = (
   selection: CombinedSelection,
   rowIndex: number,
-  columnIndex: number
+  columnIndex: number,
 ) => {
   const { isRowSelection, isCellSelection } = selection;
   if (isRowSelection && selection.includes([rowIndex, rowIndex])) {

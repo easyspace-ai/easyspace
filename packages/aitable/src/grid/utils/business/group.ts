@@ -11,14 +11,20 @@ export interface IGroupIndexCollection {
   cumulativeCount: number;
 }
 
-export const createGroupIndexCollections = (data: IGroupPoint[]): IGroupIndexCollection[] => {
+export const createGroupIndexCollections = (
+  data: IGroupPoint[],
+): IGroupIndexCollection[] => {
   let cumulativeCount = 0;
   const groupIndexCollections: IGroupIndexCollection[] = [];
 
   data.forEach((item, index) => {
     const { type } = item;
     if (type === 0) {
-      groupIndexCollections.push({ startIndex: index, cumulativeCount, value: item.value });
+      groupIndexCollections.push({
+        startIndex: index,
+        cumulativeCount,
+        value: item.value,
+      });
     } else if (type === 1) {
       cumulativeCount += item.count ?? 1;
     }
@@ -29,7 +35,7 @@ export const createGroupIndexCollections = (data: IGroupPoint[]): IGroupIndexCol
 
 export const binarySearchIndexPoint = (
   indexPoints: IGroupIndexCollection[],
-  targetIndex: number
+  targetIndex: number,
 ): IGroupIndexCollection | null => {
   let low = 0;
   let high = indexPoints.length - 1;
@@ -52,9 +58,12 @@ export const binarySearchIndexPoint = (
 
 export const getInfoByGroupIndexCollections = (
   groupIndexCollections: IGroupIndexCollection[],
-  targetIndex: number
+  targetIndex: number,
 ) => {
-  const groupIndexCollection = binarySearchIndexPoint(groupIndexCollections, targetIndex);
+  const groupIndexCollection = binarySearchIndexPoint(
+    groupIndexCollections,
+    targetIndex,
+  );
 
   if (!groupIndexCollection) {
     return {
