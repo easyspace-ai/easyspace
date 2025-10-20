@@ -1,16 +1,24 @@
 /**
  * Field Type Mappers - 字段类型转换器
- * 
+ *
  * 设计原则：
  * 1. 明确的转换边界
  * 2. 类型安全
  * 3. 单向数据流：DTO → Domain → Presentation
  */
 
-import type { FieldDTO, CreateFieldDTO, UpdateFieldDTO } from '../infrastructure';
-import type { FieldModel, CreateFieldCommand, UpdateFieldCommand } from '../domain';
-import type { GridColumn } from '../presentation';
-import type { FieldType } from '../core';
+import type {
+  FieldDTO,
+  CreateFieldDTO,
+  UpdateFieldDTO,
+} from "../infrastructure";
+import type {
+  FieldModel,
+  CreateFieldCommand,
+  UpdateFieldCommand,
+} from "../domain";
+import type { GridColumn } from "../presentation";
+import type { FieldType } from "../core";
 
 /**
  * Field Mapper
@@ -20,7 +28,9 @@ export class FieldMapper {
    * DTO → Domain Model
    * API 响应转换为领域模型
    */
-  static toDomain<T extends FieldType = FieldType>(dto: FieldDTO): FieldModel<T> {
+  static toDomain<T extends FieldType = FieldType>(
+    dto: FieldDTO,
+  ): FieldModel<T> {
     return {
       id: dto.id,
       name: dto.name,
@@ -86,30 +96,29 @@ export class FieldMapper {
    */
   private static getFieldIcon(type: FieldType): string {
     const iconMap: Partial<Record<FieldType, string>> = {
-      singleLineText: '📝',
-      longText: '📄',
-      number: '🔢',
-      singleSelect: '🔘',
-      multipleSelect: '☑️',
-      date: '📅',
-      checkbox: '☑️',
-      user: '👤',
-      attachment: '📎',
-      link: '🔗',
-      rating: '⭐',
-      formula: '🧮',
-      rollup: '📊',
-      autoNumber: '#️⃣',
-      createdTime: '🕒',
-      lastModifiedTime: '🕐',
-      createdBy: '👤',
-      lastModifiedBy: '👤',
-      button: '🔘',
-      email: '📧',
-      phone: '📱',
-      url: '🌐',
+      singleLineText: "📝",
+      longText: "📄",
+      number: "🔢",
+      singleSelect: "🔘",
+      multipleSelect: "☑️",
+      date: "📅",
+      checkbox: "☑️",
+      user: "👤",
+      attachment: "📎",
+      link: "🔗",
+      rating: "⭐",
+      formula: "🧮",
+      rollup: "📊",
+      autoNumber: "#️⃣",
+      createdTime: "🕒",
+      lastModifiedTime: "🕐",
+      createdBy: "👤",
+      lastModifiedBy: "👤",
+      button: "🔘",
+      email: "📧",
+      phone: "📱",
+      url: "🌐",
     };
-    return iconMap[type] || '📄';
+    return iconMap[type] || "📄";
   }
 }
-

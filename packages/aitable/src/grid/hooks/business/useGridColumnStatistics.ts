@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import type { AggregationType } from './constant';
+import { useMemo } from "react";
+import type { AggregationType } from "./constant";
 
 /**
  * Column statistics interface
@@ -16,21 +16,21 @@ export interface IColumnStatistics {
  * Statistic function names
  */
 export const STATISTIC_FUNC_NAMES: Record<AggregationType, string> = {
-  none: 'None',
-  sum: 'Sum',
-  average: 'Average',
-  avg: 'Average',
-  min: 'Min',
-  max: 'Max',
-  count: 'Count',
-  empty: 'Empty',
-  filled: 'Filled',
-  countEmpty: 'Count Empty',
-  countNotEmpty: 'Count Not Empty',
-  countUnique: 'Count Unique',
-  percentEmpty: 'Percent Empty',
-  percentNotEmpty: 'Percent Not Empty',
-  percentUnique: 'Percent Unique',
+  none: "None",
+  sum: "Sum",
+  average: "Average",
+  avg: "Average",
+  min: "Min",
+  max: "Max",
+  count: "Count",
+  empty: "Empty",
+  filled: "Filled",
+  countEmpty: "Count Empty",
+  countNotEmpty: "Count Not Empty",
+  countUnique: "Count Unique",
+  percentEmpty: "Percent Empty",
+  percentNotEmpty: "Percent Not Empty",
+  percentUnique: "Percent Unique",
 };
 
 /**
@@ -38,56 +38,57 @@ export const STATISTIC_FUNC_NAMES: Record<AggregationType, string> = {
  */
 const calculateColumnStatistic = (
   values: unknown[],
-  type: AggregationType
+  type: AggregationType,
 ): { value: number | string; displayValue: string } | null => {
   const numericValues = values
-    .filter((v) => v != null && v !== '')
+    .filter((v) => v != null && v !== "")
     .map((v) => Number(v))
     .filter((v) => !isNaN(v));
 
   const totalCount = values.length;
-  const filledCount = values.filter((v) => v != null && v !== '').length;
+  const filledCount = values.filter((v) => v != null && v !== "").length;
   const emptyCount = totalCount - filledCount;
 
   switch (type) {
-    case 'sum': {
+    case "sum": {
       const sum = numericValues.reduce((a, b) => a + b, 0);
       return { value: sum, displayValue: sum.toLocaleString() };
     }
 
-    case 'avg': {
+    case "avg": {
       if (numericValues.length === 0) {
-        return { value: 0, displayValue: '0' };
+        return { value: 0, displayValue: "0" };
       }
-      const avg = numericValues.reduce((a, b) => a + b, 0) / numericValues.length;
+      const avg =
+        numericValues.reduce((a, b) => a + b, 0) / numericValues.length;
       return { value: avg, displayValue: avg.toFixed(2) };
     }
 
-    case 'min': {
+    case "min": {
       if (numericValues.length === 0) {
-        return { value: 0, displayValue: '0' };
+        return { value: 0, displayValue: "0" };
       }
       const min = Math.min(...numericValues);
       return { value: min, displayValue: min.toLocaleString() };
     }
 
-    case 'max': {
+    case "max": {
       if (numericValues.length === 0) {
-        return { value: 0, displayValue: '0' };
+        return { value: 0, displayValue: "0" };
       }
       const max = Math.max(...numericValues);
       return { value: max, displayValue: max.toLocaleString() };
     }
 
-    case 'count': {
+    case "count": {
       return { value: totalCount, displayValue: totalCount.toLocaleString() };
     }
 
-    case 'empty': {
+    case "empty": {
       return { value: emptyCount, displayValue: emptyCount.toLocaleString() };
     }
 
-    case 'filled': {
+    case "filled": {
       return { value: filledCount, displayValue: filledCount.toLocaleString() };
     }
 
@@ -117,14 +118,15 @@ export interface IRecordData {
 export const useGridColumnStatistics = (
   columns: IColumnConfig[],
   records: IRecordData[],
-  enabledStatistics?: Record<string, AggregationType>
+  enabledStatistics?: Record<string, AggregationType>,
 ) => {
   const columnStatistics = useMemo((): IColumnStatistics => {
     const statistics: IColumnStatistics = {};
 
     columns.forEach((column) => {
-      const statisticType = enabledStatistics?.[column.id] || column.statisticType;
-      
+      const statisticType =
+        enabledStatistics?.[column.id] || column.statisticType;
+
       if (!statisticType) {
         statistics[column.id] = null;
         return;
@@ -135,7 +137,7 @@ export const useGridColumnStatistics = (
 
       // Calculate statistic
       const result = calculateColumnStatistic(values, statisticType);
-      
+
       if (result) {
         statistics[column.id] = {
           type: statisticType,
@@ -169,7 +171,7 @@ export const useGridColumnStatistics = (
    */
   const getStatisticDisplay = (columnId: string): string => {
     const stat = columnStatistics[columnId];
-    return stat?.displayValue || '';
+    return stat?.displayValue || "";
   };
 
   return {
@@ -179,4 +181,3 @@ export const useGridColumnStatistics = (
     getStatisticDisplay,
   };
 };
-

@@ -1,6 +1,6 @@
 /**
  * CreateViewMenu - 创建视图下拉菜单（重构版）
- * 
+ *
  * 设计原则：
  * 1. 渐变图标底色（视觉惊艳）
  * 2. Hover 时微妙位移（交互反馈）
@@ -8,9 +8,9 @@
  * 4. 流畅的进场动画
  */
 
-import React, { useEffect, useRef } from 'react';
-import { cn, tokens } from '../../grid/design-system';
-import { ALL_VIEW_TYPES } from './viewTypeIcons';
+import React, { useEffect, useRef } from "react";
+import { cn, tokens } from "../../grid/design-system";
+import { ALL_VIEW_TYPES } from "./viewTypeIcons";
 
 export interface CreateViewMenuProps {
   onSelect: (viewType: string) => void;
@@ -30,18 +30,18 @@ export function CreateViewMenu({ onSelect, onClose }: CreateViewMenuProps) {
 
     // 延迟添加监听器，避免立即触发
     const timer = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }, 0);
 
     return () => {
       clearTimeout(timer);
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose]);
 
   // 键盘导航
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       onClose();
     }
   };
@@ -51,7 +51,7 @@ export function CreateViewMenu({ onSelect, onClose }: CreateViewMenuProps) {
       {/* 背景遮罩 */}
       <div
         className="fixed inset-0 z-[998]"
-        style={{ backgroundColor: 'transparent' }}
+        style={{ backgroundColor: "transparent" }}
         onClick={onClose}
         aria-hidden="true"
       />
@@ -61,11 +61,11 @@ export function CreateViewMenu({ onSelect, onClose }: CreateViewMenuProps) {
         ref={menuRef}
         onKeyDown={handleKeyDown}
         className={cn(
-          'absolute top-full left-0 mt-2',
-          'bg-white rounded-xl border shadow-xl',
-          'py-2 min-w-[240px]',
-          'z-[999]',
-          'animate-in fade-in-0 slide-in-from-top-2 duration-200',
+          "absolute top-full left-0 mt-2",
+          "bg-white rounded-xl border shadow-xl",
+          "py-2 min-w-[240px]",
+          "z-[999]",
+          "animate-in fade-in-0 slide-in-from-top-2 duration-200",
         )}
         style={{
           backgroundColor: tokens.colors.surface.base,
@@ -86,8 +86,8 @@ export function CreateViewMenu({ onSelect, onClose }: CreateViewMenuProps) {
         </div>
 
         {/* 分隔线 */}
-        <div 
-          className="mx-2 my-1 h-px" 
+        <div
+          className="mx-2 my-1 h-px"
           style={{ backgroundColor: tokens.colors.border.subtle }}
         />
 
@@ -100,12 +100,12 @@ export function CreateViewMenu({ onSelect, onClose }: CreateViewMenuProps) {
                 key={viewType.type}
                 onClick={() => onSelect(viewType.type)}
                 className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg',
-                  'text-sm text-left',
-                  'transition-all duration-200 ease-out',
-                  'hover:bg-gray-50 hover:translate-x-0.5',
-                  'focus:outline-none focus:bg-gray-50',
-                  'group',
+                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg",
+                  "text-sm text-left",
+                  "transition-all duration-200 ease-out",
+                  "hover:bg-gray-50 hover:translate-x-0.5",
+                  "focus:outline-none focus:bg-gray-50",
+                  "group",
                 )}
                 style={{
                   color: tokens.colors.text.primary,
@@ -115,16 +115,16 @@ export function CreateViewMenu({ onSelect, onClose }: CreateViewMenuProps) {
                 {/* 图标容器 - 渐变背景 */}
                 <div
                   className={cn(
-                    'flex-shrink-0 flex items-center justify-center',
-                    'w-9 h-9 rounded-lg',
-                    'bg-gradient-to-br',
+                    "flex-shrink-0 flex items-center justify-center",
+                    "w-9 h-9 rounded-lg",
+                    "bg-gradient-to-br",
                     viewType.gradient,
-                    'transition-all duration-200',
-                    'group-hover:scale-110 group-hover:shadow-md',
+                    "transition-all duration-200",
+                    "group-hover:scale-110 group-hover:shadow-md",
                   )}
                 >
-                  <IconComponent 
-                    size={18} 
+                  <IconComponent
+                    size={18}
                     className="text-white"
                     strokeWidth={2}
                   />
@@ -132,10 +132,8 @@ export function CreateViewMenu({ onSelect, onClose }: CreateViewMenuProps) {
 
                 {/* 名称和描述 */}
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium truncate">
-                    {viewType.name}
-                  </div>
-                  <div 
+                  <div className="font-medium truncate">{viewType.name}</div>
+                  <div
                     className="text-xs truncate mt-0.5"
                     style={{ color: tokens.colors.text.secondary }}
                   >
@@ -146,9 +144,9 @@ export function CreateViewMenu({ onSelect, onClose }: CreateViewMenuProps) {
                 {/* Hover 箭头指示 */}
                 <div
                   className={cn(
-                    'flex-shrink-0 w-0 opacity-0',
-                    'transition-all duration-200',
-                    'group-hover:w-4 group-hover:opacity-100',
+                    "flex-shrink-0 w-0 opacity-0",
+                    "transition-all duration-200",
+                    "group-hover:w-4 group-hover:opacity-100",
                   )}
                 >
                   <svg
@@ -174,7 +172,7 @@ export function CreateViewMenu({ onSelect, onClose }: CreateViewMenuProps) {
         </div>
 
         {/* 底部提示 */}
-        <div 
+        <div
           className="mx-2 mt-2 pt-2 border-t"
           style={{ borderColor: tokens.colors.border.subtle }}
         >
@@ -195,13 +193,13 @@ export function CreateViewMenu({ onSelect, onClose }: CreateViewMenuProps) {
  */
 function getViewTypeDescription(type: string): string {
   const descriptions: Record<string, string> = {
-    grid: '经典表格，强大灵活',
-    kanban: '看板拖拽，可视化工作流',
-    calendar: '时间视图，日程管理',
-    gantt: '甘特图，项目进度跟踪',
-    gallery: '卡片展示，图片预览',
-    form: '表单收集，数据录入',
-    list: '简洁列表，快速浏览',
+    grid: "经典表格，强大灵活",
+    kanban: "看板拖拽，可视化工作流",
+    calendar: "时间视图，日程管理",
+    gantt: "甘特图，项目进度跟踪",
+    gallery: "卡片展示，图片预览",
+    form: "表单收集，数据录入",
+    list: "简洁列表，快速浏览",
   };
-  return descriptions[type] || '高效的数据视图';
+  return descriptions[type] || "高效的数据视图";
 }

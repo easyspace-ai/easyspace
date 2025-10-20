@@ -2,7 +2,7 @@
  * Table Domain Model - 领域层 Table 模型
  */
 
-import type { CreateFieldCommand } from './field.model';
+import type { CreateFieldCommand } from "./field.model";
 
 /**
  * Table 领域模型
@@ -37,4 +37,3 @@ export interface UpdateTableCommand {
   icon?: string;
   description?: string;
 }
-

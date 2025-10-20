@@ -3,19 +3,18 @@
  * Computed formula fields
  */
 
-import { Field } from './Field';
+import { Field } from "./Field";
 
 export interface IFormulaFieldOptions {
   expression?: string;
   formatting?: {
-    type?: 'text' | 'number' | 'date' | 'boolean';
+    type?: "text" | "number" | "date" | "boolean";
     precision?: number;
     dateFormat?: string;
   };
 }
 
 export class FormulaField extends Field {
-
   constructor(config: any) {
     super(config);
     // Formula fields are always computed
@@ -29,30 +28,30 @@ export class FormulaField extends Field {
 
   format(value: unknown): string {
     if (this.isEmpty(value)) {
-      return '';
+      return "";
     }
 
     const formatting = (this.options as any).formatting;
 
     switch (formatting?.type) {
-      case 'number':
-        if (typeof value === 'number') {
+      case "number":
+        if (typeof value === "number") {
           const precision = formatting.precision ?? 0;
           return value.toFixed(precision);
         }
         return String(value);
 
-      case 'date':
-        if (value instanceof Date || typeof value === 'string') {
+      case "date":
+        if (value instanceof Date || typeof value === "string") {
           // Would use date formatting here
           return String(value);
         }
         return String(value);
 
-      case 'boolean':
-        return value ? 'true' : 'false';
+      case "boolean":
+        return value ? "true" : "false";
 
-      case 'text':
+      case "text":
       default:
         return String(value);
     }
@@ -79,15 +78,16 @@ export class FormulaField extends Field {
    * Get formula expression
    */
   getExpression(): string {
-    return ((this.options as any).expression) ?? '';
+    return (this.options as any).expression ?? "";
   }
 
   /**
    * Check if formula is valid
    */
   hasValidExpression(): boolean {
-    return Boolean(((this.options as any).expression) && ((this.options as any).expression).trim().length > 0);
+    return Boolean(
+      (this.options as any).expression &&
+        (this.options as any).expression.trim().length > 0,
+    );
   }
 }
-
-

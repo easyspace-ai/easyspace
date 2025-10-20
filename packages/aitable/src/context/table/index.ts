@@ -1,3 +1,1 @@
-export { TableProvider, useTable } from './TableContext';
-
-
+export { TableProvider, useTable } from "./TableContext";

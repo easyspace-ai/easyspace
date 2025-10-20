@@ -23,12 +23,21 @@ filter/
 主要的过滤管理组件，集成了所有过滤功能。
 
 ```tsx
-import { FilterManager, type FilterField, type FilterCondition } from '@aitable/filter';
+import {
+  FilterManager,
+  type FilterField,
+  type FilterCondition,
+} from "@aitable/filter";
 
 const fields: FilterField[] = [
-  { id: 'name', name: '姓名', type: 'text' },
-  { id: 'age', name: '年龄', type: 'number' },
-  { id: 'department', name: '部门', type: 'select', options: ['技术部', '产品部'] },
+  { id: "name", name: "姓名", type: "text" },
+  { id: "age", name: "年龄", type: "number" },
+  {
+    id: "department",
+    name: "部门",
+    type: "select",
+    options: ["技术部", "产品部"],
+  },
 ];
 
 const [conditions, setConditions] = useState<FilterCondition[]>([]);
@@ -39,7 +48,7 @@ const [conditions, setConditions] = useState<FilterCondition[]>([]);
   conditions={conditions}
   onConditionsChange={setConditions}
   onFilteredDataChange={(filtered) => console.log(filtered)}
-/>
+/>;
 ```
 
 ### FilterDialog
@@ -47,6 +56,7 @@ const [conditions, setConditions] = useState<FilterCondition[]>([]);
 过滤条件设置对话框，支持多条件组合。
 
 **特性：**
+
 - 直观的条件构建界面
 - 支持多种字段类型
 - 智能的操作符选择
@@ -57,6 +67,7 @@ const [conditions, setConditions] = useState<FilterCondition[]>([]);
 单个过滤条件组件，根据字段类型动态调整输入方式。
 
 **支持的字段类型：**
+
 - `text`: 文本输入
 - `number`: 数字输入
 - `date`: 日期选择
@@ -65,6 +76,7 @@ const [conditions, setConditions] = useState<FilterCondition[]>([]);
 - `attachment`: 附件（仅支持空值检查）
 
 **支持的操作符：**
+
 - 等于/不等于
 - 包含/不包含
 - 开头是/结尾是
@@ -77,7 +89,7 @@ const [conditions, setConditions] = useState<FilterCondition[]>([]);
 过滤功能已集成到 ViewToolbar 中：
 
 ```tsx
-import { ViewToolbar } from '@aitable/view-toolbar';
+import { ViewToolbar } from "@aitable/view-toolbar";
 
 <ViewToolbar
   config={{ showFilter: true }}
@@ -85,7 +97,7 @@ import { ViewToolbar } from '@aitable/view-toolbar';
   filterConditions={conditions}
   onFilterConditionsChange={setConditions}
   onFilteredDataChange={handleFilteredData}
-/>
+/>;
 ```
 
 ## 使用示例
@@ -93,19 +105,28 @@ import { ViewToolbar } from '@aitable/view-toolbar';
 ### 基础用法
 
 ```tsx
-import React, { useState } from 'react';
-import { FilterManager, type FilterField, type FilterCondition } from '@aitable/filter';
+import React, { useState } from "react";
+import {
+  FilterManager,
+  type FilterField,
+  type FilterCondition,
+} from "@aitable/filter";
 
 function MyComponent() {
   const [data] = useState([
-    { id: 1, name: '张三', age: 25, department: '技术部' },
-    { id: 2, name: '李四', age: 30, department: '产品部' },
+    { id: 1, name: "张三", age: 25, department: "技术部" },
+    { id: 2, name: "李四", age: 30, department: "产品部" },
   ]);
 
   const fields: FilterField[] = [
-    { id: 'name', name: '姓名', type: 'text' },
-    { id: 'age', name: '年龄', type: 'number' },
-    { id: 'department', name: '部门', type: 'select', options: ['技术部', '产品部'] },
+    { id: "name", name: "姓名", type: "text" },
+    { id: "age", name: "年龄", type: "number" },
+    {
+      id: "department",
+      name: "部门",
+      type: "select",
+      options: ["技术部", "产品部"],
+    },
   ];
 
   const [conditions, setConditions] = useState<FilterCondition[]>([]);
@@ -120,10 +141,10 @@ function MyComponent() {
         onConditionsChange={setConditions}
         onFilteredDataChange={setFilteredData}
       />
-      
+
       {/* 显示过滤后的数据 */}
       <div>
-        {filteredData.map(item => (
+        {filteredData.map((item) => (
           <div key={item.id}>{item.name}</div>
         ))}
       </div>
@@ -138,8 +159,8 @@ function MyComponent() {
 // 自定义过滤逻辑
 const customFilterData = (data: any[], conditions: FilterCondition[]) => {
   // 实现自定义过滤逻辑
-  return data.filter(item => {
-    return conditions.every(condition => {
+  return data.filter((item) => {
+    return conditions.every((condition) => {
       // 自定义条件检查
       return checkCondition(item, condition);
     });
@@ -154,7 +175,7 @@ const customFilterData = (data: any[], conditions: FilterCondition[]) => {
   onConditionsChange={setConditions}
   onFilteredDataChange={setFilteredData}
   customFilter={customFilterData}
-/>
+/>;
 ```
 
 ## API 参考
@@ -163,10 +184,10 @@ const customFilterData = (data: any[], conditions: FilterCondition[]) => {
 
 ```tsx
 interface FilterField {
-  id: string;           // 字段ID
-  name: string;         // 字段显示名称
-  type: 'text' | 'number' | 'date' | 'select' | 'boolean' | 'attachment';
-  options?: string[];   // 选择类型字段的选项
+  id: string; // 字段ID
+  name: string; // 字段显示名称
+  type: "text" | "number" | "date" | "select" | "boolean" | "attachment";
+  options?: string[]; // 选择类型字段的选项
 }
 ```
 
@@ -174,24 +195,31 @@ interface FilterField {
 
 ```tsx
 interface FilterCondition {
-  id: string;           // 条件ID
-  fieldId: string;      // 字段ID
+  id: string; // 条件ID
+  fieldId: string; // 字段ID
   operator: FilterOperator; // 操作符
-  value: any;           // 过滤值
+  value: any; // 过滤值
 }
 ```
 
 ### FilterOperator
 
 ```tsx
-type FilterOperator = 
-  | 'equals' | 'not_equals'
-  | 'contains' | 'not_contains'
-  | 'starts_with' | 'ends_with'
-  | 'greater_than' | 'less_than'
-  | 'greater_equal' | 'less_equal'
-  | 'is_empty' | 'is_not_empty'
-  | 'in' | 'not_in';
+type FilterOperator =
+  | "equals"
+  | "not_equals"
+  | "contains"
+  | "not_contains"
+  | "starts_with"
+  | "ends_with"
+  | "greater_than"
+  | "less_than"
+  | "greater_equal"
+  | "less_equal"
+  | "is_empty"
+  | "is_not_empty"
+  | "in"
+  | "not_in";
 ```
 
 ## 设计原则

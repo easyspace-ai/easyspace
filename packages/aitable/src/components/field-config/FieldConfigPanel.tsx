@@ -1,17 +1,17 @@
-import React, { useState, useCallback } from 'react';
-import { cn, tokens, transitions, elevation } from '../../grid/design-system';
-import { 
-  Eye, 
-  EyeOff, 
-  GripVertical, 
-  MoreHorizontal, 
-  Edit3, 
-  FolderPlus, 
+import React, { useState, useCallback } from "react";
+import { cn, tokens, transitions, elevation } from "../../grid/design-system";
+import {
+  Eye,
+  EyeOff,
+  GripVertical,
+  MoreHorizontal,
+  Edit3,
+  FolderPlus,
   Trash2,
   Plus,
   HelpCircle,
-  Lock
-} from 'lucide-react';
+  Lock,
+} from "lucide-react";
 
 export interface FieldConfig {
   id: string;
@@ -50,51 +50,54 @@ export function FieldConfigPanel({
   // 拖拽开始
   const handleDragStart = useCallback((e: React.DragEvent, index: number) => {
     setDraggedIndex(index);
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', e.currentTarget.outerHTML);
-    (e.currentTarget as HTMLElement).style.opacity = '0.5';
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/html", e.currentTarget.outerHTML);
+    (e.currentTarget as HTMLElement).style.opacity = "0.5";
   }, []);
 
   // 拖拽结束
   const handleDragEnd = useCallback((e: React.DragEvent) => {
-    (e.currentTarget as HTMLElement).style.opacity = '1';
+    (e.currentTarget as HTMLElement).style.opacity = "1";
     setDraggedIndex(null);
   }, []);
 
   // 拖拽悬停
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+    e.dataTransfer.dropEffect = "move";
   }, []);
 
   // 放置
-  const handleDrop = useCallback((e: React.DragEvent, dropIndex: number) => {
-    e.preventDefault();
-    if (draggedIndex !== null && draggedIndex !== dropIndex) {
-      onFieldReorder(draggedIndex, dropIndex);
-    }
-    setDraggedIndex(null);
-  }, [draggedIndex, onFieldReorder]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent, dropIndex: number) => {
+      e.preventDefault();
+      if (draggedIndex !== null && draggedIndex !== dropIndex) {
+        onFieldReorder(draggedIndex, dropIndex);
+      }
+      setDraggedIndex(null);
+    },
+    [draggedIndex, onFieldReorder],
+  );
 
   // 获取字段类型图标
   const getFieldIcon = (type: string) => {
     switch (type) {
-      case 'text':
-        return '📝';
-      case 'number':
-        return '🔢';
-      case 'singleSelect':
-        return '🔘';
-      case 'multipleSelect':
-        return '☑️';
-      case 'date':
-        return '📅';
-      case 'attachment':
-        return '📎';
-      case 'checkbox':
-        return '☑️';
+      case "text":
+        return "📝";
+      case "number":
+        return "🔢";
+      case "singleSelect":
+        return "🔘";
+      case "multipleSelect":
+        return "☑️";
+      case "date":
+        return "📅";
+      case "attachment":
+        return "📎";
+      case "checkbox":
+        return "☑️";
       default:
-        return '📄';
+        return "📄";
     }
   };
 
@@ -105,12 +108,12 @@ export function FieldConfigPanel({
       {/* 背景遮罩 */}
       <div
         style={{
-          position: 'fixed',
+          position: "fixed",
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
           zIndex: 50,
         }}
         onClick={onClose}
@@ -119,43 +122,45 @@ export function FieldConfigPanel({
       {/* 字段配置面板 */}
       <div
         style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '400px',
-          maxHeight: '80vh',
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "400px",
+          maxHeight: "80vh",
           backgroundColor: tokens.colors.surface.base,
           border: `1px solid ${tokens.colors.border.subtle}`,
-          borderRadius: '12px',
+          borderRadius: "12px",
           boxShadow: elevation.xl,
           zIndex: 51,
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         {/* 面板标题 */}
         <div
           style={{
-            padding: '16px 20px',
+            padding: "16px 20px",
             borderBottom: `1px solid ${tokens.colors.border.subtle}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h3 style={{ 
-              fontSize: '16px', 
-              fontWeight: 600, 
-              color: tokens.colors.text.primary,
-              margin: 0 
-            }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <h3
+              style={{
+                fontSize: "16px",
+                fontWeight: 600,
+                color: tokens.colors.text.primary,
+                margin: 0,
+              }}
+            >
               字段配置
             </h3>
-            <HelpCircle 
-              size={16} 
-              style={{ color: tokens.colors.text.secondary, cursor: 'help' }} 
+            <HelpCircle
+              size={16}
+              style={{ color: tokens.colors.text.secondary, cursor: "help" }}
             />
           </div>
         </div>
@@ -164,8 +169,8 @@ export function FieldConfigPanel({
         <div
           style={{
             flex: 1,
-            overflowY: 'auto',
-            padding: '8px',
+            overflowY: "auto",
+            padding: "8px",
           }}
         >
           {fields.map((field, index) => (
@@ -177,62 +182,73 @@ export function FieldConfigPanel({
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, index)}
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '8px 12px',
-                borderRadius: '6px',
-                marginBottom: '4px',
-                backgroundColor: showContextMenu === field.id 
-                  ? tokens.colors.surface.hover 
-                  : 'transparent',
-                cursor: field.locked ? 'default' : 'grab',
+                display: "flex",
+                alignItems: "center",
+                padding: "8px 12px",
+                borderRadius: "6px",
+                marginBottom: "4px",
+                backgroundColor:
+                  showContextMenu === field.id
+                    ? tokens.colors.surface.hover
+                    : "transparent",
+                cursor: field.locked ? "default" : "grab",
                 transition: transitions.presets.all,
-                position: 'relative',
+                position: "relative",
               }}
               onMouseEnter={(e) => {
                 if (!field.locked) {
-                  e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
+                  e.currentTarget.style.backgroundColor =
+                    tokens.colors.surface.hover;
                 }
               }}
               onMouseLeave={(e) => {
                 if (showContextMenu !== field.id) {
-                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.backgroundColor = "transparent";
                 }
               }}
             >
               {/* 拖拽手柄 */}
               {!field.locked && (
-                <GripVertical 
-                  size={16} 
-                  style={{ 
+                <GripVertical
+                  size={16}
+                  style={{
                     color: tokens.colors.text.tertiary,
-                    marginRight: '8px',
-                    cursor: 'grab'
-                  }} 
+                    marginRight: "8px",
+                    cursor: "grab",
+                  }}
                 />
               )}
 
               {/* 锁定图标 */}
               {field.locked && (
-                <Lock 
-                  size={16} 
-                  style={{ 
+                <Lock
+                  size={16}
+                  style={{
                     color: tokens.colors.text.tertiary,
-                    marginRight: '8px'
-                  }} 
+                    marginRight: "8px",
+                  }}
                 />
               )}
 
               {/* 字段图标和名称 */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
-                <span style={{ fontSize: '16px' }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  flex: 1,
+                }}
+              >
+                <span style={{ fontSize: "16px" }}>
                   {getFieldIcon(field.type)}
                 </span>
-                <span style={{ 
-                  fontSize: '14px', 
-                  color: tokens.colors.text.primary,
-                  fontWeight: field.locked ? 600 : 400 
-                }}>
+                <span
+                  style={{
+                    fontSize: "14px",
+                    color: tokens.colors.text.primary,
+                    fontWeight: field.locked ? 600 : 400,
+                  }}
+                >
                   {field.name}
                 </span>
               </div>
@@ -241,51 +257,64 @@ export function FieldConfigPanel({
               <button
                 onClick={() => onFieldToggle(field.id, !field.visible)}
                 style={{
-                  padding: '4px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  marginRight: '8px',
+                  padding: "4px",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  marginRight: "8px",
                   transition: transitions.presets.all,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
+                  e.currentTarget.style.backgroundColor =
+                    tokens.colors.surface.hover;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
                 {field.visible ? (
-                  <Eye size={16} style={{ color: tokens.colors.text.primary }} />
+                  <Eye
+                    size={16}
+                    style={{ color: tokens.colors.text.primary }}
+                  />
                 ) : (
-                  <EyeOff size={16} style={{ color: tokens.colors.text.tertiary }} />
+                  <EyeOff
+                    size={16}
+                    style={{ color: tokens.colors.text.tertiary }}
+                  />
                 )}
               </button>
 
               {/* 更多操作菜单 */}
               {!field.locked && (
-                <div style={{ position: 'relative' }}>
+                <div style={{ position: "relative" }}>
                   <button
-                    onClick={() => setShowContextMenu(
-                      showContextMenu === field.id ? null : field.id
-                    )}
+                    onClick={() =>
+                      setShowContextMenu(
+                        showContextMenu === field.id ? null : field.id,
+                      )
+                    }
                     style={{
-                      padding: '4px',
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
+                      padding: "4px",
+                      backgroundColor: "transparent",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
                       transition: transitions.presets.all,
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
+                      e.currentTarget.style.backgroundColor =
+                        tokens.colors.surface.hover;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.backgroundColor = "transparent";
                     }}
                   >
-                    <MoreHorizontal size={16} style={{ color: tokens.colors.text.secondary }} />
+                    <MoreHorizontal
+                      size={16}
+                      style={{ color: tokens.colors.text.secondary }}
+                    />
                   </button>
 
                   {/* 上下文菜单 */}
@@ -294,7 +323,7 @@ export function FieldConfigPanel({
                       {/* 背景遮罩 */}
                       <div
                         style={{
-                          position: 'fixed',
+                          position: "fixed",
                           top: 0,
                           left: 0,
                           right: 0,
@@ -303,20 +332,20 @@ export function FieldConfigPanel({
                         }}
                         onClick={() => setShowContextMenu(null)}
                       />
-                      
+
                       {/* 菜单内容 */}
                       <div
                         style={{
-                          position: 'absolute',
-                          top: '100%',
-                          right: '0',
+                          position: "absolute",
+                          top: "100%",
+                          right: "0",
                           backgroundColor: tokens.colors.surface.base,
                           border: `1px solid ${tokens.colors.border.subtle}`,
-                          borderRadius: '6px',
+                          borderRadius: "6px",
                           boxShadow: elevation.lg,
-                          padding: '4px',
+                          padding: "4px",
                           zIndex: 53,
-                          minWidth: '120px',
+                          minWidth: "120px",
                         }}
                       >
                         <button
@@ -325,25 +354,27 @@ export function FieldConfigPanel({
                             setShowContextMenu(null);
                           }}
                           style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            fontSize: '13px',
+                            width: "100%",
+                            padding: "8px 12px",
+                            fontSize: "13px",
                             color: tokens.colors.text.primary,
-                            backgroundColor: 'transparent',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
+                            backgroundColor: "transparent",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            textAlign: "left",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
                             transition: transitions.presets.all,
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
+                            e.currentTarget.style.backgroundColor =
+                              tokens.colors.surface.hover;
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.backgroundColor =
+                              "transparent";
                           }}
                         >
                           <Edit3 size={14} />
@@ -356,25 +387,27 @@ export function FieldConfigPanel({
                             setShowContextMenu(null);
                           }}
                           style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            fontSize: '13px',
+                            width: "100%",
+                            padding: "8px 12px",
+                            fontSize: "13px",
                             color: tokens.colors.text.primary,
-                            backgroundColor: 'transparent',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
+                            backgroundColor: "transparent",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            textAlign: "left",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
                             transition: transitions.presets.all,
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
+                            e.currentTarget.style.backgroundColor =
+                              tokens.colors.surface.hover;
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.backgroundColor =
+                              "transparent";
                           }}
                         >
                           <FolderPlus size={14} />
@@ -387,25 +420,27 @@ export function FieldConfigPanel({
                             setShowContextMenu(null);
                           }}
                           style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            fontSize: '13px',
+                            width: "100%",
+                            padding: "8px 12px",
+                            fontSize: "13px",
                             color: tokens.colors.text.destructive,
-                            backgroundColor: 'transparent',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
+                            backgroundColor: "transparent",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            textAlign: "left",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
                             transition: transitions.presets.all,
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = tokens.colors.surface.destructive;
+                            e.currentTarget.style.backgroundColor =
+                              tokens.colors.surface.destructive;
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.backgroundColor =
+                              "transparent";
                           }}
                         >
                           <Trash2 size={14} />
@@ -419,9 +454,7 @@ export function FieldConfigPanel({
             </div>
           ))}
         </div>
-
       </div>
     </>
   );
 }
-

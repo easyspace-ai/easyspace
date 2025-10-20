@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 /**
  * Tooltip position
@@ -54,4 +54,3 @@ export const showGridTooltip = (info: ITooltipInfo) => {
 export const hideGridTooltip = () => {
   useGridTooltipStore.getState().clearTooltip();
 };
-

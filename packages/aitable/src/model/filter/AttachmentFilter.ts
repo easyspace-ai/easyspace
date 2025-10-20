@@ -3,9 +3,9 @@
  * 附件字段过滤器
  */
 
-import { BaseFilter, type IFilterConfig } from './BaseFilter';
-import type { Field } from '../field/Field';
-import type { RecordModel } from '../record/Record';
+import { BaseFilter, type IFilterConfig } from "./BaseFilter";
+import type { Field } from "../field/Field";
+import type { RecordModel } from "../record/Record";
 
 export class AttachmentFilter extends BaseFilter {
   constructor(field: Field, config: IFilterConfig) {
@@ -16,9 +16,9 @@ export class AttachmentFilter extends BaseFilter {
     const { operator } = this.config;
 
     switch (operator) {
-      case 'isEmpty':
+      case "isEmpty":
         return this.matchIsEmpty(record);
-      case 'isNotEmpty':
+      case "isNotEmpty":
         return this.matchIsNotEmpty(record);
       default:
         return false;
@@ -30,26 +30,26 @@ export class AttachmentFilter extends BaseFilter {
     const fieldName = this.field.name;
 
     switch (operator) {
-      case 'isEmpty':
+      case "isEmpty":
         return `${fieldName} 无附件`;
-      case 'isNotEmpty':
+      case "isNotEmpty":
         return `${fieldName} 有附件`;
       default:
-        return '';
+        return "";
     }
   }
 
   protected override matchIsEmpty(record: RecordModel): boolean {
     const value = this.getValue(record);
-    
-    if (value === null || value === undefined) {return true;}
-    
+
+    if (value === null || value === undefined) {
+      return true;
+    }
+
     if (Array.isArray(value)) {
       return value.length === 0;
     }
-    
+
     return false;
   }
 }
-
-

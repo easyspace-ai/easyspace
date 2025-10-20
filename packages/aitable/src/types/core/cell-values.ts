@@ -3,7 +3,7 @@
  * Provides strict typing for cell values based on field types
  */
 
-import { FieldType, FIELD_TYPES } from './field-types';
+import { FieldType, FIELD_TYPES } from "./field-types";
 
 /**
  * User reference interface
@@ -132,28 +132,32 @@ export const CellValueGuards = {
    * Check if value is a valid text cell value
    */
   isTextValue(value: unknown): value is string | null {
-    return typeof value === 'string' || value === null;
+    return typeof value === "string" || value === null;
   },
 
   /**
    * Check if value is a valid number cell value
    */
   isNumberValue(value: unknown): value is number | null {
-    return typeof value === 'number' || value === null;
+    return typeof value === "number" || value === null;
   },
 
   /**
    * Check if value is a valid boolean cell value
    */
   isBooleanValue(value: unknown): value is boolean | null {
-    return typeof value === 'boolean' || value === null;
+    return typeof value === "boolean" || value === null;
   },
 
   /**
    * Check if value is a valid string array cell value
    */
   isStringArrayValue(value: unknown): value is string[] | null {
-    return Array.isArray(value) && value.every(item => typeof item === 'string') || value === null;
+    return (
+      (Array.isArray(value) &&
+        value.every((item) => typeof item === "string")) ||
+      value === null
+    );
   },
 
   /**
@@ -161,12 +165,12 @@ export const CellValueGuards = {
    */
   isUserReference(value: unknown): value is UserReference {
     return (
-      typeof value === 'object' &&
+      typeof value === "object" &&
       value !== null &&
-      'id' in value &&
-      'name' in value &&
-      typeof (value as any).id === 'string' &&
-      typeof (value as any).name === 'string'
+      "id" in value &&
+      "name" in value &&
+      typeof (value as any).id === "string" &&
+      typeof (value as any).name === "string"
     );
   },
 
@@ -174,7 +178,10 @@ export const CellValueGuards = {
    * Check if value is a valid user reference array
    */
   isUserReferenceArray(value: unknown): value is UserReference[] | null {
-    return Array.isArray(value) && value.every(CellValueGuards.isUserReference) || value === null;
+    return (
+      (Array.isArray(value) && value.every(CellValueGuards.isUserReference)) ||
+      value === null
+    );
   },
 
   /**
@@ -182,18 +189,18 @@ export const CellValueGuards = {
    */
   isAttachment(value: unknown): value is Attachment {
     return (
-      typeof value === 'object' &&
+      typeof value === "object" &&
       value !== null &&
-      'id' in value &&
-      'name' in value &&
-      'url' in value &&
-      'size' in value &&
-      'type' in value &&
-      typeof (value as any).id === 'string' &&
-      typeof (value as any).name === 'string' &&
-      typeof (value as any).url === 'string' &&
-      typeof (value as any).size === 'number' &&
-      typeof (value as any).type === 'string'
+      "id" in value &&
+      "name" in value &&
+      "url" in value &&
+      "size" in value &&
+      "type" in value &&
+      typeof (value as any).id === "string" &&
+      typeof (value as any).name === "string" &&
+      typeof (value as any).url === "string" &&
+      typeof (value as any).size === "number" &&
+      typeof (value as any).type === "string"
     );
   },
 
@@ -201,7 +208,10 @@ export const CellValueGuards = {
    * Check if value is a valid attachment array
    */
   isAttachmentArray(value: unknown): value is Attachment[] | null {
-    return Array.isArray(value) && value.every(CellValueGuards.isAttachment) || value === null;
+    return (
+      (Array.isArray(value) && value.every(CellValueGuards.isAttachment)) ||
+      value === null
+    );
   },
 
   /**
@@ -209,10 +219,10 @@ export const CellValueGuards = {
    */
   isLinkRecord(value: unknown): value is LinkRecord {
     return (
-      typeof value === 'object' &&
+      typeof value === "object" &&
       value !== null &&
-      'id' in value &&
-      typeof (value as any).id === 'string'
+      "id" in value &&
+      typeof (value as any).id === "string"
     );
   },
 
@@ -220,7 +230,10 @@ export const CellValueGuards = {
    * Check if value is a valid link record array
    */
   isLinkRecordArray(value: unknown): value is LinkRecord[] | null {
-    return Array.isArray(value) && value.every(CellValueGuards.isLinkRecord) || value === null;
+    return (
+      (Array.isArray(value) && value.every(CellValueGuards.isLinkRecord)) ||
+      value === null
+    );
   },
 };
 
@@ -233,7 +246,7 @@ export const CellValueValidators = {
    */
   validateForFieldType<T extends FieldType>(
     value: unknown,
-    fieldType: T
+    fieldType: T,
   ): value is GetCellValue<T> {
     switch (fieldType) {
       case FIELD_TYPES.SingleLineText:

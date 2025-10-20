@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { tokens, transitions, elevation } from '../../grid/design-system';
+import React, { useState, useMemo } from "react";
+import { tokens, transitions, elevation } from "../../grid/design-system";
 import {
   X,
   Search,
@@ -20,7 +20,7 @@ import {
   ChevronRight,
   Check,
   Sparkles,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   SelectFieldConfiguration,
   NumberFieldConfiguration,
@@ -30,18 +30,18 @@ import {
   type NumberFieldConfig,
   type DateFieldConfig,
   type RatingFieldConfig,
-} from './field-configurations';
+} from "./field-configurations";
 
 /**
  * 字段类型分类
  */
 export type FieldCategory =
-  | 'basic' // 基础类型
-  | 'select' // 选择类型
-  | 'datetime' // 日期时间
-  | 'link' // 链接类型
-  | 'advanced' // 高级类型
-  | 'collab'; // 协作类型
+  | "basic" // 基础类型
+  | "select" // 选择类型
+  | "datetime" // 日期时间
+  | "link" // 链接类型
+  | "advanced" // 高级类型
+  | "collab"; // 协作类型
 
 /**
  * 字段类型定义
@@ -70,34 +70,34 @@ const categoryConfig: Record<
   }
 > = {
   basic: {
-    name: '基础类型',
+    name: "基础类型",
     icon: FileText,
-    color: '#3b82f6',
+    color: "#3b82f6",
   },
   select: {
-    name: '选择类型',
+    name: "选择类型",
     icon: List,
-    color: '#8b5cf6',
+    color: "#8b5cf6",
   },
   datetime: {
-    name: '日期时间',
+    name: "日期时间",
     icon: Calendar,
-    color: '#06b6d4',
+    color: "#06b6d4",
   },
   link: {
-    name: '链接类型',
+    name: "链接类型",
     icon: Link,
-    color: '#10b981',
+    color: "#10b981",
   },
   advanced: {
-    name: '高级类型',
+    name: "高级类型",
     icon: Sparkles,
-    color: '#f59e0b',
+    color: "#f59e0b",
   },
   collab: {
-    name: '协作类型',
+    name: "协作类型",
     icon: User,
-    color: '#ec4899',
+    color: "#ec4899",
   },
 };
 
@@ -107,180 +107,180 @@ const categoryConfig: Record<
 const fieldTypes: FieldType[] = [
   // 基础类型
   {
-    id: 'text',
-    name: '单行文本',
+    id: "text",
+    name: "单行文本",
     icon: Text,
-    description: '简短的文本内容',
-    example: '如：姓名、标题、标签',
-    category: 'basic',
-    color: '#3b82f6',
+    description: "简短的文本内容",
+    example: "如：姓名、标题、标签",
+    category: "basic",
+    color: "#3b82f6",
     popular: true,
-    keywords: ['文本', 'text', '单行'],
+    keywords: ["文本", "text", "单行"],
   },
   {
-    id: 'longText',
-    name: '长文本',
+    id: "longText",
+    name: "长文本",
     icon: FileText,
-    description: '多行文本，支持换行',
-    example: '如：描述、备注、说明',
-    category: 'basic',
-    color: '#10b981',
+    description: "多行文本，支持换行",
+    example: "如：描述、备注、说明",
+    category: "basic",
+    color: "#10b981",
     popular: true,
-    keywords: ['长文本', 'textarea', '多行'],
+    keywords: ["长文本", "textarea", "多行"],
   },
   {
-    id: 'number',
-    name: '数字',
+    id: "number",
+    name: "数字",
     icon: Hash,
-    description: '数值和计算',
-    example: '如：价格、数量、得分',
-    category: 'basic',
-    color: '#f59e0b',
+    description: "数值和计算",
+    example: "如：价格、数量、得分",
+    category: "basic",
+    color: "#f59e0b",
     popular: true,
-    keywords: ['数字', 'number', '数值'],
+    keywords: ["数字", "number", "数值"],
   },
 
   // 选择类型
   {
-    id: 'singleSelect',
-    name: '单选',
+    id: "singleSelect",
+    name: "单选",
     icon: CheckSquare,
-    description: '从多个选项中选择一个',
-    example: '如：状态、优先级、类型',
-    category: 'select',
-    color: '#8b5cf6',
+    description: "从多个选项中选择一个",
+    example: "如：状态、优先级、类型",
+    category: "select",
+    color: "#8b5cf6",
     popular: true,
-    keywords: ['单选', 'select', '选项'],
+    keywords: ["单选", "select", "选项"],
   },
   {
-    id: 'multipleSelect',
-    name: '多选',
+    id: "multipleSelect",
+    name: "多选",
     icon: List,
-    description: '可以选择多个选项',
-    example: '如：标签、分类、技能',
-    category: 'select',
-    color: '#ec4899',
+    description: "可以选择多个选项",
+    example: "如：标签、分类、技能",
+    category: "select",
+    color: "#ec4899",
     popular: true,
-    keywords: ['多选', 'multi', '标签'],
+    keywords: ["多选", "multi", "标签"],
   },
   {
-    id: 'checkbox',
-    name: '复选框',
+    id: "checkbox",
+    name: "复选框",
     icon: Check,
-    description: '是/否 二选一',
-    example: '如：已完成、是否启用',
-    category: 'select',
-    color: '#84cc16',
-    keywords: ['复选框', 'checkbox', '是否'],
+    description: "是/否 二选一",
+    example: "如：已完成、是否启用",
+    category: "select",
+    color: "#84cc16",
+    keywords: ["复选框", "checkbox", "是否"],
   },
 
   // 日期时间
   {
-    id: 'date',
-    name: '日期',
+    id: "date",
+    name: "日期",
     icon: Calendar,
-    description: '日期和时间',
-    example: '如：创建时间、截止日期',
-    category: 'datetime',
-    color: '#06b6d4',
+    description: "日期和时间",
+    example: "如：创建时间、截止日期",
+    category: "datetime",
+    color: "#06b6d4",
     popular: true,
-    keywords: ['日期', 'date', '时间'],
+    keywords: ["日期", "date", "时间"],
   },
   {
-    id: 'duration',
-    name: '时长',
+    id: "duration",
+    name: "时长",
     icon: Clock,
-    description: '时间段或持续时间',
-    example: '如：工时、时长',
-    category: 'datetime',
-    color: '#0ea5e9',
-    keywords: ['时长', 'duration', '持续'],
+    description: "时间段或持续时间",
+    example: "如：工时、时长",
+    category: "datetime",
+    color: "#0ea5e9",
+    keywords: ["时长", "duration", "持续"],
   },
 
   // 链接类型
   {
-    id: 'link',
-    name: '链接',
+    id: "link",
+    name: "链接",
     icon: Link,
-    description: '网址链接',
-    example: '如：网站、文档链接',
-    category: 'link',
-    color: '#6366f1',
-    keywords: ['链接', 'url', '网址'],
+    description: "网址链接",
+    example: "如：网站、文档链接",
+    category: "link",
+    color: "#6366f1",
+    keywords: ["链接", "url", "网址"],
   },
   {
-    id: 'email',
-    name: '邮箱',
+    id: "email",
+    name: "邮箱",
     icon: Mail,
-    description: '电子邮件地址',
-    example: '如：联系邮箱',
-    category: 'link',
-    color: '#14b8a6',
-    keywords: ['邮箱', 'email', '邮件'],
+    description: "电子邮件地址",
+    example: "如：联系邮箱",
+    category: "link",
+    color: "#14b8a6",
+    keywords: ["邮箱", "email", "邮件"],
   },
   {
-    id: 'phone',
-    name: '电话',
+    id: "phone",
+    name: "电话",
     icon: Phone,
-    description: '电话号码',
-    example: '如：手机号、座机',
-    category: 'link',
-    color: '#ef4444',
-    keywords: ['电话', 'phone', '手机'],
+    description: "电话号码",
+    example: "如：手机号、座机",
+    category: "link",
+    color: "#ef4444",
+    keywords: ["电话", "phone", "手机"],
   },
   {
-    id: 'location',
-    name: '地址',
+    id: "location",
+    name: "地址",
     icon: MapPin,
-    description: '地理位置',
-    example: '如：公司地址、配送地址',
-    category: 'link',
-    color: '#22c55e',
-    keywords: ['地址', 'location', '位置'],
+    description: "地理位置",
+    example: "如：公司地址、配送地址",
+    category: "link",
+    color: "#22c55e",
+    keywords: ["地址", "location", "位置"],
   },
 
   // 高级类型
   {
-    id: 'rating',
-    name: '评分',
+    id: "rating",
+    name: "评分",
     icon: Star,
-    description: '星级评分',
-    example: '如：满意度、重要性',
-    category: 'advanced',
-    color: '#eab308',
-    keywords: ['评分', 'rating', '星级'],
+    description: "星级评分",
+    example: "如：满意度、重要性",
+    category: "advanced",
+    color: "#eab308",
+    keywords: ["评分", "rating", "星级"],
   },
   {
-    id: 'progress',
-    name: '进度',
+    id: "progress",
+    name: "进度",
     icon: Clock,
-    description: '百分比进度条',
-    example: '如：完成度、进展',
-    category: 'advanced',
-    color: '#a855f7',
-    keywords: ['进度', 'progress', '百分比'],
+    description: "百分比进度条",
+    example: "如：完成度、进展",
+    category: "advanced",
+    color: "#a855f7",
+    keywords: ["进度", "progress", "百分比"],
   },
 
   // 协作类型
   {
-    id: 'user',
-    name: '成员',
+    id: "user",
+    name: "成员",
     icon: User,
-    description: '选择用户或成员',
-    example: '如：负责人、参与者',
-    category: 'collab',
-    color: '#64748b',
-    keywords: ['用户', 'user', '成员', '人员'],
+    description: "选择用户或成员",
+    example: "如：负责人、参与者",
+    category: "collab",
+    color: "#64748b",
+    keywords: ["用户", "user", "成员", "人员"],
   },
   {
-    id: 'attachment',
-    name: '附件',
+    id: "attachment",
+    name: "附件",
     icon: Image,
-    description: '上传文件和图片',
-    example: '如：图片、文档、视频',
-    category: 'collab',
-    color: '#f97316',
-    keywords: ['附件', 'attachment', '文件', '图片'],
+    description: "上传文件和图片",
+    example: "如：图片、文档、视频",
+    category: "collab",
+    color: "#f97316",
+    keywords: ["附件", "attachment", "文件", "图片"],
   },
 ];
 
@@ -309,23 +309,27 @@ export type FieldTypeConfig =
  * - 清晰的视觉层次
  * - 流畅的动画效果
  */
-export function AddFieldDialog({ isOpen, onClose, onConfirm }: AddFieldDialogProps) {
+export function AddFieldDialog({
+  isOpen,
+  onClose,
+  onConfirm,
+}: AddFieldDialogProps) {
   // Step 1: 选择类型 | Step 2: 配置详情
-  const [step, setStep] = useState<'selectType' | 'configure'>('selectType');
+  const [step, setStep] = useState<"selectType" | "configure">("selectType");
 
   // 选中的字段类型
   const [selectedType, setSelectedType] = useState<FieldType | null>(null);
 
   // 字段名称
-  const [fieldName, setFieldName] = useState('');
+  const [fieldName, setFieldName] = useState("");
 
   // 搜索关键词
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   // 选中的分类（用于筛选）
-  const [selectedCategory, setSelectedCategory] = useState<FieldCategory | 'all' | 'popular'>(
-    'all'
-  );
+  const [selectedCategory, setSelectedCategory] = useState<
+    FieldCategory | "all" | "popular"
+  >("all");
 
   // 字段配置
   const [fieldConfig, setFieldConfig] = useState<FieldTypeConfig>({});
@@ -335,9 +339,9 @@ export function AddFieldDialog({ isOpen, onClose, onConfirm }: AddFieldDialogPro
     let result = fieldTypes;
 
     // 按分类筛选
-    if (selectedCategory === 'popular') {
+    if (selectedCategory === "popular") {
       result = result.filter((type) => type.popular);
-    } else if (selectedCategory !== 'all') {
+    } else if (selectedCategory !== "all") {
       result = result.filter((type) => type.category === selectedCategory);
     }
 
@@ -348,7 +352,9 @@ export function AddFieldDialog({ isOpen, onClose, onConfirm }: AddFieldDialogPro
         (type) =>
           type.name.toLowerCase().includes(query) ||
           type.description.toLowerCase().includes(query) ||
-          type.keywords?.some((keyword) => keyword.toLowerCase().includes(query))
+          type.keywords?.some((keyword) =>
+            keyword.toLowerCase().includes(query),
+          ),
       );
     }
 
@@ -357,38 +363,38 @@ export function AddFieldDialog({ isOpen, onClose, onConfirm }: AddFieldDialogPro
 
   // 重置对话框状态
   const resetDialog = () => {
-    setStep('selectType');
+    setStep("selectType");
     setSelectedType(null);
-    setFieldName('');
-    setSearchQuery('');
-    setSelectedCategory('all');
+    setFieldName("");
+    setSearchQuery("");
+    setSelectedCategory("all");
     setFieldConfig({});
   };
 
   // 选择字段类型
   const handleSelectType = (type: FieldType) => {
     setSelectedType(type);
-    setFieldName(''); // 清空之前的名称
+    setFieldName(""); // 清空之前的名称
 
     // 初始化默认配置
     let defaultConfig: FieldTypeConfig = {};
-    if (type.id === 'singleSelect' || type.id === 'multipleSelect') {
+    if (type.id === "singleSelect" || type.id === "multipleSelect") {
       defaultConfig = { options: [] };
-    } else if (type.id === 'number') {
-      defaultConfig = { format: 'number', precision: 0 };
-    } else if (type.id === 'date') {
-      defaultConfig = { includeTime: false, dateFormat: 'YYYY-MM-DD' };
-    } else if (type.id === 'rating') {
-      defaultConfig = { maxRating: 5, icon: 'star' };
+    } else if (type.id === "number") {
+      defaultConfig = { format: "number", precision: 0 };
+    } else if (type.id === "date") {
+      defaultConfig = { includeTime: false, dateFormat: "YYYY-MM-DD" };
+    } else if (type.id === "rating") {
+      defaultConfig = { maxRating: 5, icon: "star" };
     }
     setFieldConfig(defaultConfig);
 
-    setStep('configure');
+    setStep("configure");
   };
 
   // 返回类型选择
   const handleBackToTypeSelection = () => {
-    setStep('selectType');
+    setStep("selectType");
     setSelectedType(null);
   };
 
@@ -409,13 +415,13 @@ export function AddFieldDialog({ isOpen, onClose, onConfirm }: AddFieldDialogPro
 
   // 键盘事件
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      if (step === 'configure') {
+    if (e.key === "Escape") {
+      if (step === "configure") {
         handleBackToTypeSelection();
       } else {
         handleClose();
       }
-    } else if (e.key === 'Enter' && step === 'configure') {
+    } else if (e.key === "Enter" && step === "configure") {
       handleConfirm();
     }
   };
@@ -427,15 +433,15 @@ export function AddFieldDialog({ isOpen, onClose, onConfirm }: AddFieldDialogPro
       {/* 背景遮罩 */}
       <div
         style={{
-          position: 'fixed',
+          position: "fixed",
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.4)',
-          backdropFilter: 'blur(4px)',
+          backgroundColor: "rgba(0, 0, 0, 0.4)",
+          backdropFilter: "blur(4px)",
           zIndex: 60,
-          animation: 'fadeIn 200ms cubic-bezier(0.4, 0.0, 0.2, 1)',
+          animation: "fadeIn 200ms cubic-bezier(0.4, 0.0, 0.2, 1)",
         }}
         onClick={handleClose}
       />
@@ -443,24 +449,25 @@ export function AddFieldDialog({ isOpen, onClose, onConfirm }: AddFieldDialogPro
       {/* 对话框主体 */}
       <div
         style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: step === 'selectType' ? '720px' : '560px',
-          maxHeight: '85vh',
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: step === "selectType" ? "720px" : "560px",
+          maxHeight: "85vh",
           backgroundColor: tokens.colors.surface.base,
-          borderRadius: '16px',
-          boxShadow: '0 24px 48px -12px rgba(0, 0, 0, 0.18), 0 0 1px rgba(0, 0, 0, 0.3)',
+          borderRadius: "16px",
+          boxShadow:
+            "0 24px 48px -12px rgba(0, 0, 0, 0.18), 0 0 1px rgba(0, 0, 0, 0.3)",
           zIndex: 61,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          animation: 'slideUp 300ms cubic-bezier(0.16, 1, 0.3, 1)',
-          transition: 'width 300ms cubic-bezier(0.4, 0.0, 0.2, 1)',
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          animation: "slideUp 300ms cubic-bezier(0.16, 1, 0.3, 1)",
+          transition: "width 300ms cubic-bezier(0.4, 0.0, 0.2, 1)",
         }}
       >
-        {step === 'selectType' ? (
+        {step === "selectType" ? (
           <TypeSelectionStep
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -527,8 +534,8 @@ export function AddFieldDialog({ isOpen, onClose, onConfirm }: AddFieldDialogPro
 interface TypeSelectionStepProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  selectedCategory: FieldCategory | 'all' | 'popular';
-  onCategoryChange: (category: FieldCategory | 'all' | 'popular') => void;
+  selectedCategory: FieldCategory | "all" | "popular";
+  onCategoryChange: (category: FieldCategory | "all" | "popular") => void;
   filteredTypes: FieldType[];
   onSelectType: (type: FieldType) => void;
   onClose: () => void;
@@ -547,7 +554,7 @@ function TypeSelectionStep({
   const groupedTypes = useMemo(() => {
     const groups: Record<string, FieldType[]> = {};
 
-    if (selectedCategory === 'all' || selectedCategory === 'popular') {
+    if (selectedCategory === "all" || selectedCategory === "popular") {
       // 按分类分组
       filteredTypes.forEach((type) => {
         if (!groups[type.category]) {
@@ -564,12 +571,12 @@ function TypeSelectionStep({
   }, [filteredTypes, selectedCategory]);
 
   const categories: Array<{
-    id: FieldCategory | 'all' | 'popular';
+    id: FieldCategory | "all" | "popular";
     name: string;
     icon?: React.ComponentType<any>;
   }> = [
-    { id: 'all', name: '全部类型' },
-    { id: 'popular', name: '常用', icon: Star },
+    { id: "all", name: "全部类型" },
+    { id: "popular", name: "常用", icon: Star },
     ...Object.entries(categoryConfig).map(([id, config]) => ({
       id: id as FieldCategory,
       name: config.name,
@@ -582,25 +589,25 @@ function TypeSelectionStep({
       {/* 头部 */}
       <div
         style={{
-          padding: '24px 24px 20px',
+          padding: "24px 24px 20px",
           borderBottom: `1px solid ${tokens.colors.border.subtle}`,
         }}
       >
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: '16px',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "16px",
           }}
         >
           <h2
             style={{
-              fontSize: '20px',
+              fontSize: "20px",
               fontWeight: 600,
               color: tokens.colors.text.primary,
               margin: 0,
-              letterSpacing: '-0.01em',
+              letterSpacing: "-0.01em",
             }}
           >
             选择字段类型
@@ -608,21 +615,22 @@ function TypeSelectionStep({
           <button
             onClick={onClose}
             style={{
-              padding: '6px',
-              backgroundColor: 'transparent',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
+              padding: "6px",
+              backgroundColor: "transparent",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
               transition: transitions.presets.all,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
+              e.currentTarget.style.backgroundColor =
+                tokens.colors.surface.hover;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.backgroundColor = "transparent";
             }}
           >
             <X size={20} style={{ color: tokens.colors.text.secondary }} />
@@ -630,16 +638,16 @@ function TypeSelectionStep({
         </div>
 
         {/* 搜索框 */}
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: "relative" }}>
           <Search
             size={18}
             style={{
-              position: 'absolute',
-              left: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
+              position: "absolute",
+              left: "12px",
+              top: "50%",
+              transform: "translateY(-50%)",
               color: tokens.colors.text.tertiary,
-              pointerEvents: 'none',
+              pointerEvents: "none",
             }}
           />
           <input
@@ -649,16 +657,16 @@ function TypeSelectionStep({
             placeholder="搜索字段类型..."
             autoFocus
             style={{
-              width: '100%',
-              padding: '10px 16px 10px 40px',
-              fontSize: '14px',
+              width: "100%",
+              padding: "10px 16px 10px 40px",
+              fontSize: "14px",
               color: tokens.colors.text.primary,
               backgroundColor: tokens.colors.surface.base,
               border: `1px solid ${tokens.colors.border.subtle}`,
-              borderRadius: '8px',
-              outline: 'none',
+              borderRadius: "8px",
+              outline: "none",
               transition: transitions.presets.all,
-              boxSizing: 'border-box',
+              boxSizing: "border-box",
             }}
             onFocus={(e) => {
               e.target.style.borderColor = tokens.colors.border.focus;
@@ -666,7 +674,7 @@ function TypeSelectionStep({
             }}
             onBlur={(e) => {
               e.target.style.borderColor = tokens.colors.border.subtle;
-              e.target.style.boxShadow = 'none';
+              e.target.style.boxShadow = "none";
             }}
           />
         </div>
@@ -675,11 +683,11 @@ function TypeSelectionStep({
       {/* 分类标签 */}
       <div
         style={{
-          padding: '16px 24px',
+          padding: "16px 24px",
           borderBottom: `1px solid ${tokens.colors.border.subtle}`,
-          display: 'flex',
-          gap: '8px',
-          flexWrap: 'wrap',
+          display: "flex",
+          gap: "8px",
+          flexWrap: "wrap",
           backgroundColor: tokens.colors.surface.hover,
         }}
       >
@@ -692,28 +700,33 @@ function TypeSelectionStep({
               key={category.id}
               onClick={() => onCategoryChange(category.id)}
               style={{
-                padding: '6px 12px',
-                fontSize: '13px',
+                padding: "6px 12px",
+                fontSize: "13px",
                 fontWeight: isSelected ? 500 : 400,
-                color: isSelected ? tokens.colors.text.primary : tokens.colors.text.secondary,
-                backgroundColor: isSelected ? tokens.colors.surface.base : 'transparent',
-                border: `1px solid ${isSelected ? tokens.colors.border.default : 'transparent'}`,
-                borderRadius: '6px',
-                cursor: 'pointer',
+                color: isSelected
+                  ? tokens.colors.text.primary
+                  : tokens.colors.text.secondary,
+                backgroundColor: isSelected
+                  ? tokens.colors.surface.base
+                  : "transparent",
+                border: `1px solid ${isSelected ? tokens.colors.border.default : "transparent"}`,
+                borderRadius: "6px",
+                cursor: "pointer",
                 transition: transitions.presets.all,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                boxShadow: isSelected ? elevation.xs : 'none',
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                boxShadow: isSelected ? elevation.xs : "none",
               }}
               onMouseEnter={(e) => {
                 if (!isSelected) {
-                  e.currentTarget.style.backgroundColor = tokens.colors.surface.base;
+                  e.currentTarget.style.backgroundColor =
+                    tokens.colors.surface.base;
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isSelected) {
-                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.backgroundColor = "transparent";
                 }
               }}
             >
@@ -728,48 +741,61 @@ function TypeSelectionStep({
       <div
         style={{
           flex: 1,
-          overflowY: 'auto',
-          padding: '8px',
+          overflowY: "auto",
+          padding: "8px",
         }}
       >
         {Object.keys(groupedTypes).length === 0 ? (
           <div
             style={{
-              padding: '48px 24px',
-              textAlign: 'center',
+              padding: "48px 24px",
+              textAlign: "center",
               color: tokens.colors.text.secondary,
             }}
           >
             <Search
               size={48}
-              style={{ color: tokens.colors.text.tertiary, marginBottom: '16px' }}
+              style={{
+                color: tokens.colors.text.tertiary,
+                marginBottom: "16px",
+              }}
             />
-            <div style={{ fontSize: '14px' }}>没有找到匹配的字段类型</div>
-            <div style={{ fontSize: '13px', marginTop: '8px', color: tokens.colors.text.tertiary }}>
+            <div style={{ fontSize: "14px" }}>没有找到匹配的字段类型</div>
+            <div
+              style={{
+                fontSize: "13px",
+                marginTop: "8px",
+                color: tokens.colors.text.tertiary,
+              }}
+            >
               试试其他关键词
             </div>
           </div>
         ) : (
           Object.entries(groupedTypes).map(([category, types], groupIndex) => (
-            <div key={category} style={{ marginBottom: '16px' }}>
+            <div key={category} style={{ marginBottom: "16px" }}>
               {/* 分类标题 */}
-              {(selectedCategory === 'all' || selectedCategory === 'popular') && (
+              {(selectedCategory === "all" ||
+                selectedCategory === "popular") && (
                 <div
                   style={{
-                    padding: '8px 16px 8px 16px',
-                    fontSize: '12px',
+                    padding: "8px 16px 8px 16px",
+                    fontSize: "12px",
                     fontWeight: 600,
                     color: tokens.colors.text.secondary,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
                   }}
                 >
-                  {React.createElement(categoryConfig[category as FieldCategory].icon, {
-                    size: 14,
-                  })}
+                  {React.createElement(
+                    categoryConfig[category as FieldCategory].icon,
+                    {
+                      size: 14,
+                    },
+                  )}
                   {categoryConfig[category as FieldCategory].name}
                 </div>
               )}
@@ -777,10 +803,10 @@ function TypeSelectionStep({
               {/* 字段类型网格 */}
               <div
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
-                  gap: '8px',
-                  padding: '0 8px',
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, 1fr)",
+                  gap: "8px",
+                  padding: "0 8px",
                 }}
               >
                 {types.map((type, index) => {
@@ -791,59 +817,66 @@ function TypeSelectionStep({
                       key={type.id}
                       onClick={() => onSelectType(type)}
                       style={{
-                        padding: '16px',
+                        padding: "16px",
                         backgroundColor: tokens.colors.surface.base,
                         border: `1px solid ${tokens.colors.border.subtle}`,
-                        borderRadius: '10px',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        transition: 'all 200ms cubic-bezier(0.4, 0.0, 0.2, 1)',
-                        display: 'flex',
-                        gap: '12px',
-                        position: 'relative',
-                        overflow: 'hidden',
+                        borderRadius: "10px",
+                        cursor: "pointer",
+                        textAlign: "left",
+                        transition: "all 200ms cubic-bezier(0.4, 0.0, 0.2, 1)",
+                        display: "flex",
+                        gap: "12px",
+                        position: "relative",
+                        overflow: "hidden",
                         animation: `slideInStagger 300ms cubic-bezier(0.16, 1, 0.3, 1) ${groupIndex * 100 + index * 40}ms both`,
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
-                        e.currentTarget.style.borderColor = tokens.colors.border.strong;
-                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.backgroundColor =
+                          tokens.colors.surface.hover;
+                        e.currentTarget.style.borderColor =
+                          tokens.colors.border.strong;
+                        e.currentTarget.style.transform = "translateY(-2px)";
                         e.currentTarget.style.boxShadow = elevation.sm;
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = tokens.colors.surface.base;
-                        e.currentTarget.style.borderColor = tokens.colors.border.subtle;
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = 'none';
+                        e.currentTarget.style.backgroundColor =
+                          tokens.colors.surface.base;
+                        e.currentTarget.style.borderColor =
+                          tokens.colors.border.subtle;
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "none";
                       }}
                     >
                       {/* 图标 */}
                       <div
                         style={{
-                          width: '40px',
-                          height: '40px',
-                          borderRadius: '8px',
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "8px",
                           backgroundColor: `${type.color}10`,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
                           flexShrink: 0,
                         }}
                       >
-                        <IconComponent size={22} style={{ color: type.color }} />
+                        <IconComponent
+                          size={22}
+                          style={{ color: type.color }}
+                        />
                       </div>
 
                       {/* 文字信息 */}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div
                           style={{
-                            fontSize: '14px',
+                            fontSize: "14px",
                             fontWeight: 500,
                             color: tokens.colors.text.primary,
-                            marginBottom: '4px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
+                            marginBottom: "4px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
                           }}
                         >
                           {type.name}
@@ -859,9 +892,9 @@ function TypeSelectionStep({
                         </div>
                         <div
                           style={{
-                            fontSize: '12px',
+                            fontSize: "12px",
                             color: tokens.colors.text.secondary,
-                            lineHeight: '1.4',
+                            lineHeight: "1.4",
                           }}
                         >
                           {type.description}
@@ -928,7 +961,7 @@ function ConfigurationStep({
   // 渲染字段类型专属配置
   const renderFieldConfiguration = () => {
     switch (selectedType.id) {
-      case 'singleSelect':
+      case "singleSelect":
         return (
           <SelectFieldConfiguration
             config={fieldConfig as SelectFieldConfig}
@@ -937,7 +970,7 @@ function ConfigurationStep({
           />
         );
 
-      case 'multipleSelect':
+      case "multipleSelect":
         return (
           <SelectFieldConfiguration
             config={fieldConfig as SelectFieldConfig}
@@ -946,7 +979,7 @@ function ConfigurationStep({
           />
         );
 
-      case 'number':
+      case "number":
         return (
           <NumberFieldConfiguration
             config={fieldConfig as NumberFieldConfig}
@@ -954,7 +987,7 @@ function ConfigurationStep({
           />
         );
 
-      case 'date':
+      case "date":
         return (
           <DateFieldConfiguration
             config={fieldConfig as DateFieldConfig}
@@ -962,7 +995,7 @@ function ConfigurationStep({
           />
         );
 
-      case 'rating':
+      case "rating":
         return (
           <RatingFieldConfiguration
             config={fieldConfig as RatingFieldConfig}
@@ -975,12 +1008,12 @@ function ConfigurationStep({
         return (
           <div
             style={{
-              padding: '16px',
+              padding: "16px",
               backgroundColor: tokens.colors.surface.hover,
-              borderRadius: '8px',
-              fontSize: '13px',
+              borderRadius: "8px",
+              fontSize: "13px",
               color: tokens.colors.text.secondary,
-              textAlign: 'center',
+              textAlign: "center",
             }}
           >
             此字段类型暂无额外配置项
@@ -994,81 +1027,85 @@ function ConfigurationStep({
       {/* 头部 */}
       <div
         style={{
-          padding: '24px 24px 20px',
+          padding: "24px 24px 20px",
           borderBottom: `1px solid ${tokens.colors.border.subtle}`,
         }}
       >
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: '16px',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "16px",
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             {/* 返回按钮 */}
             <button
               onClick={onBack}
               style={{
-                padding: '6px',
-                backgroundColor: 'transparent',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
+                padding: "6px",
+                backgroundColor: "transparent",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer",
                 transition: transitions.presets.all,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
+                e.currentTarget.style.backgroundColor =
+                  tokens.colors.surface.hover;
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.backgroundColor = "transparent";
               }}
             >
               <ChevronRight
                 size={20}
                 style={{
                   color: tokens.colors.text.secondary,
-                  transform: 'rotate(180deg)',
+                  transform: "rotate(180deg)",
                 }}
               />
             </button>
 
             {/* 类型图标和名称 */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <div
                 style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '8px',
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "8px",
                   backgroundColor: `${selectedType.color}10`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <IconComponent size={20} style={{ color: selectedType.color }} />
+                <IconComponent
+                  size={20}
+                  style={{ color: selectedType.color }}
+                />
               </div>
               <div>
                 <h2
                   style={{
-                    fontSize: '18px',
+                    fontSize: "18px",
                     fontWeight: 600,
                     color: tokens.colors.text.primary,
                     margin: 0,
-                    letterSpacing: '-0.01em',
+                    letterSpacing: "-0.01em",
                   }}
                 >
                   {selectedType.name}
                 </h2>
                 <div
                   style={{
-                    fontSize: '12px',
+                    fontSize: "12px",
                     color: tokens.colors.text.secondary,
-                    marginTop: '2px',
+                    marginTop: "2px",
                   }}
                 >
                   {selectedType.description}
@@ -1080,21 +1117,22 @@ function ConfigurationStep({
           <button
             onClick={onClose}
             style={{
-              padding: '6px',
-              backgroundColor: 'transparent',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
+              padding: "6px",
+              backgroundColor: "transparent",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
               transition: transitions.presets.all,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
+              e.currentTarget.style.backgroundColor =
+                tokens.colors.surface.hover;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.backgroundColor = "transparent";
             }}
           >
             <X size={20} style={{ color: tokens.colors.text.secondary }} />
@@ -1103,16 +1141,16 @@ function ConfigurationStep({
       </div>
 
       {/* 配置内容 */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "24px" }}>
         {/* 字段名称 */}
-        <div style={{ marginBottom: '24px' }}>
+        <div style={{ marginBottom: "24px" }}>
           <label
             style={{
-              display: 'block',
-              fontSize: '13px',
+              display: "block",
+              fontSize: "13px",
               fontWeight: 500,
               color: tokens.colors.text.primary,
-              marginBottom: '8px',
+              marginBottom: "8px",
             }}
           >
             字段名称 <span style={{ color: tokens.colors.text.error }}>*</span>
@@ -1122,19 +1160,19 @@ function ConfigurationStep({
             value={fieldName}
             onChange={(e) => onFieldNameChange(e.target.value)}
             onKeyDown={onKeyPress}
-            placeholder={`如：${selectedType.example || '请输入字段名称'}`}
+            placeholder={`如：${selectedType.example || "请输入字段名称"}`}
             autoFocus
             style={{
-              width: '100%',
-              padding: '12px 16px',
-              fontSize: '14px',
+              width: "100%",
+              padding: "12px 16px",
+              fontSize: "14px",
               color: tokens.colors.text.primary,
               backgroundColor: tokens.colors.surface.base,
               border: `2px solid ${tokens.colors.border.subtle}`,
-              borderRadius: '8px',
-              outline: 'none',
+              borderRadius: "8px",
+              outline: "none",
               transition: transitions.presets.all,
-              boxSizing: 'border-box',
+              boxSizing: "border-box",
             }}
             onFocus={(e) => {
               e.target.style.borderColor = tokens.colors.border.focus;
@@ -1142,15 +1180,15 @@ function ConfigurationStep({
             }}
             onBlur={(e) => {
               e.target.style.borderColor = tokens.colors.border.subtle;
-              e.target.style.boxShadow = 'none';
+              e.target.style.boxShadow = "none";
             }}
           />
           {selectedType.example && (
             <div
               style={{
-                fontSize: '12px',
+                fontSize: "12px",
                 color: tokens.colors.text.tertiary,
-                marginTop: '6px',
+                marginTop: "6px",
               }}
             >
               💡 示例：{selectedType.example}
@@ -1165,25 +1203,25 @@ function ConfigurationStep({
       {/* 底部按钮 */}
       <div
         style={{
-          padding: '16px 24px',
+          padding: "16px 24px",
           borderTop: `1px solid ${tokens.colors.border.subtle}`,
-          display: 'flex',
-          justifyContent: 'flex-end',
-          gap: '12px',
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: "12px",
           backgroundColor: tokens.colors.surface.hover,
         }}
       >
         <button
           onClick={onBack}
           style={{
-            padding: '10px 18px',
-            fontSize: '14px',
+            padding: "10px 18px",
+            fontSize: "14px",
             fontWeight: 500,
             color: tokens.colors.text.secondary,
-            backgroundColor: 'transparent',
+            backgroundColor: "transparent",
             border: `1px solid ${tokens.colors.border.subtle}`,
-            borderRadius: '8px',
-            cursor: 'pointer',
+            borderRadius: "8px",
+            cursor: "pointer",
             transition: transitions.presets.all,
           }}
           onMouseEnter={(e) => {
@@ -1191,7 +1229,7 @@ function ConfigurationStep({
             e.currentTarget.style.borderColor = tokens.colors.border.default;
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.backgroundColor = "transparent";
             e.currentTarget.style.borderColor = tokens.colors.border.subtle;
           }}
         >
@@ -1201,19 +1239,19 @@ function ConfigurationStep({
         {/* 临时测试按钮 */}
         <button
           onClick={() => {
-            alert('测试按钮被点击了！');
-            console.log('🔍 测试按钮被点击');
+            alert("测试按钮被点击了！");
+            console.log("🔍 测试按钮被点击");
           }}
           style={{
-            padding: '10px 24px',
-            fontSize: '14px',
+            padding: "10px 24px",
+            fontSize: "14px",
             fontWeight: 500,
-            color: 'white',
-            backgroundColor: 'red',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            marginRight: '10px',
+            color: "white",
+            backgroundColor: "red",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            marginRight: "10px",
           }}
         >
           测试按钮
@@ -1223,46 +1261,50 @@ function ConfigurationStep({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('🔍 创建字段按钮被点击', {
+            console.log("🔍 创建字段按钮被点击", {
               fieldName,
               fieldNameTrimmed: fieldName.trim(),
               isDisabled: !fieldName.trim(),
               buttonElement: e.target,
               eventType: e.type,
             });
-            alert('按钮被点击了！'); // 临时测试
+            alert("按钮被点击了！"); // 临时测试
             onConfirm();
           }}
           disabled={false} // 临时禁用禁用状态
           style={{
-            padding: '10px 24px',
-            fontSize: '14px',
+            padding: "10px 24px",
+            fontSize: "14px",
             fontWeight: 500,
-            color: fieldName.trim() ? tokens.colors.text.inverse : tokens.colors.text.tertiary,
+            color: fieldName.trim()
+              ? tokens.colors.text.inverse
+              : tokens.colors.text.tertiary,
             backgroundColor: fieldName.trim()
               ? tokens.colors.primary[600]
               : tokens.colors.surface.disabled,
-            border: 'none',
-            borderRadius: '8px',
-            cursor: fieldName.trim() ? 'pointer' : 'not-allowed',
+            border: "none",
+            borderRadius: "8px",
+            cursor: fieldName.trim() ? "pointer" : "not-allowed",
             transition: transitions.presets.all,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: fieldName.trim() ? elevation.xs : 'none',
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            boxShadow: fieldName.trim() ? elevation.xs : "none",
           }}
           onMouseEnter={(e) => {
             if (fieldName.trim()) {
-              e.currentTarget.style.backgroundColor = tokens.colors.primary[700];
+              e.currentTarget.style.backgroundColor =
+                tokens.colors.primary[700];
               e.currentTarget.style.boxShadow = elevation.sm;
-              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.transform = "translateY(-1px)";
             }
           }}
           onMouseLeave={(e) => {
             if (fieldName.trim()) {
-              e.currentTarget.style.backgroundColor = tokens.colors.primary[600];
+              e.currentTarget.style.backgroundColor =
+                tokens.colors.primary[600];
               e.currentTarget.style.boxShadow = elevation.xs;
-              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.transform = "translateY(0)";
             }
           }}
         >

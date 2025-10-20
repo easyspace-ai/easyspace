@@ -1,5 +1,5 @@
-import React, { Component, ReactNode, ErrorInfo } from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import React, { Component, ReactNode, ErrorInfo } from "react";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 
 interface Props {
   children: ReactNode;
@@ -15,7 +15,7 @@ interface State {
 
 /**
  * Grid 组件专用错误边界
- * 
+ *
  * 特性：
  * - 捕获 Grid 相关的渲染错误
  * - 提供用户友好的错误界面
@@ -47,18 +47,18 @@ export class GridErrorBoundary extends Component<Props, State> {
 
     // 错误上报
     this.props.onError?.(error, errorInfo);
-    
+
     // 开发环境打印详细信息
-    if (process.env.NODE_ENV === 'development') {
-      console.group('🚨 Grid Error Boundary Caught Error');
-      console.error('Error:', error);
-      console.error('Error Info:', errorInfo);
-      console.error('Component Stack:', errorInfo.componentStack);
+    if (process.env.NODE_ENV === "development") {
+      console.group("🚨 Grid Error Boundary Caught Error");
+      console.error("Error:", error);
+      console.error("Error Info:", errorInfo);
+      console.error("Component Stack:", errorInfo.componentStack);
       console.groupEnd();
     }
 
     // 生产环境上报到错误监控服务
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       this.reportError(error, errorInfo);
     }
   }
@@ -74,7 +74,7 @@ export class GridErrorBoundary extends Component<Props, State> {
       //   },
       // });
     } catch (reportingError) {
-      console.warn('Failed to report error:', reportingError);
+      console.warn("Failed to report error:", reportingError);
     }
   };
 
@@ -102,11 +102,11 @@ export class GridErrorBoundary extends Component<Props, State> {
               Grid 渲染出错
             </h3>
           </div>
-          
+
           <p className="text-gray-600 text-center mb-6 max-w-md">
             表格组件遇到了一个错误。这可能是由于数据格式问题或网络连接不稳定导致的。
           </p>
-          
+
           <div className="flex space-x-3">
             <button
               onClick={this.handleRetry}
@@ -115,7 +115,7 @@ export class GridErrorBoundary extends Component<Props, State> {
               <RefreshCw className="h-4 w-4 mr-2" />
               重试
             </button>
-            
+
             <button
               onClick={() => window.location.reload()}
               className="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
@@ -123,8 +123,8 @@ export class GridErrorBoundary extends Component<Props, State> {
               刷新页面
             </button>
           </div>
-          
-          {process.env.NODE_ENV === 'development' && this.state.error && (
+
+          {process.env.NODE_ENV === "development" && this.state.error && (
             <details className="mt-6 w-full max-w-2xl">
               <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
                 开发者信息
@@ -132,18 +132,24 @@ export class GridErrorBoundary extends Component<Props, State> {
               <div className="mt-2 p-4 bg-gray-100 rounded-md text-xs font-mono text-gray-800 overflow-auto">
                 <div className="mb-2">
                   <strong>错误信息:</strong>
-                  <pre className="whitespace-pre-wrap">{this.state.error.message}</pre>
+                  <pre className="whitespace-pre-wrap">
+                    {this.state.error.message}
+                  </pre>
                 </div>
                 {this.state.error.stack && (
                   <div className="mb-2">
                     <strong>错误堆栈:</strong>
-                    <pre className="whitespace-pre-wrap">{this.state.error.stack}</pre>
+                    <pre className="whitespace-pre-wrap">
+                      {this.state.error.stack}
+                    </pre>
                   </div>
                 )}
                 {this.state.errorInfo?.componentStack && (
                   <div>
                     <strong>组件堆栈:</strong>
-                    <pre className="whitespace-pre-wrap">{this.state.errorInfo.componentStack}</pre>
+                    <pre className="whitespace-pre-wrap">
+                      {this.state.errorInfo.componentStack}
+                    </pre>
                   </div>
                 )}
               </div>

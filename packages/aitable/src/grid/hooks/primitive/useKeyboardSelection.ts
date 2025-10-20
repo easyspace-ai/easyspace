@@ -1,4 +1,4 @@
-import { useHotkeys, isHotkeyPressed } from 'react-hotkeys-hook';
+import { useHotkeys, isHotkeyPressed } from "react-hotkeys-hook";
 
 export interface IEditorRef<T = any> {
   focus?: () => void;
@@ -11,19 +11,19 @@ export interface IEditorRef<T = any> {
 export interface IEditorContainerProps {
   [key: string]: any;
 }
-import { SelectionRegionType } from '../../types/grid';
-import type { IRange } from '../../types/grid';
+import { SelectionRegionType } from "../../types/grid";
+import type { IRange } from "../../types/grid";
 
 interface ISelectionKeyboardProps
   extends Omit<
     IEditorContainerProps,
-    | 'theme'
-    | 'onChange'
-    | 'scrollState'
-    | 'activeCellBound'
-    | 'real2RowIndex'
-    | 'getCellContent'
-    | 'onCellActivated'
+    | "theme"
+    | "onChange"
+    | "scrollState"
+    | "activeCellBound"
+    | "real2RowIndex"
+    | "getCellContent"
+    | "onCellActivated"
   > {
   editorRef: React.MutableRefObject<IEditorRef | null>;
 }
@@ -48,47 +48,47 @@ export const useKeyboardSelection = (props: ISelectionKeyboardProps) => {
   const { pureRowCount, columnCount } = coordInstance;
 
   useHotkeys(
-    'mod+z',
+    "mod+z",
     () => {
       onUndo?.();
     },
     {
       enabled: !isEditing && selection.type !== SelectionRegionType.None,
       preventDefault: true,
-      enableOnFormTags: ['input', 'select', 'textarea'],
-    }
+      enableOnFormTags: ["input", "select", "textarea"],
+    },
   );
 
   useHotkeys(
-    ['mod+shift+z', 'mod+y'],
+    ["mod+shift+z", "mod+y"],
     () => {
       onRedo?.();
     },
     {
       enabled: !isEditing && selection.type !== SelectionRegionType.None,
       preventDefault: true,
-      enableOnFormTags: ['input', 'select', 'textarea'],
-    }
+      enableOnFormTags: ["input", "select", "textarea"],
+    },
   );
 
   useHotkeys(
     [
-      'up',
-      'down',
-      'left',
-      'right',
-      'mod+up',
-      'mod+down',
-      'mod+left',
-      'mod+right',
-      'shift+up',
-      'shift+down',
-      'shift+left',
-      'shift+right',
-      'mod+shift+up',
-      'mod+shift+down',
-      'mod+shift+left',
-      'mod+shift+right',
+      "up",
+      "down",
+      "left",
+      "right",
+      "mod+up",
+      "mod+down",
+      "mod+left",
+      "mod+right",
+      "shift+up",
+      "shift+down",
+      "shift+left",
+      "shift+right",
+      "mod+shift+up",
+      "mod+shift+down",
+      "mod+shift+left",
+      "mod+shift+right",
     ],
     (_keyboardEvent, hotkeysEvent) => {
       const { shift, mod } = hotkeysEvent;
@@ -97,29 +97,31 @@ export const useKeyboardSelection = (props: ISelectionKeyboardProps) => {
       let [columnIndex, rowIndex] = selection.ranges[isSelectionExpand ? 1 : 0];
 
       if (isMod) {
-        if (isHotkeyPressed('up')) {
+        if (isHotkeyPressed("up")) {
           rowIndex = 0;
-        } else if (isHotkeyPressed('down')) {
+        } else if (isHotkeyPressed("down")) {
           rowIndex = pureRowCount - 1;
-        } else if (isHotkeyPressed('left')) {
+        } else if (isHotkeyPressed("left")) {
           columnIndex = 0;
-        } else if (isHotkeyPressed('right')) {
+        } else if (isHotkeyPressed("right")) {
           columnIndex = columnCount - 1;
         }
       } else {
-        if (isHotkeyPressed('up')) {
+        if (isHotkeyPressed("up")) {
           rowIndex = Math.max(rowIndex - 1, 0);
-        } else if (isHotkeyPressed('down')) {
+        } else if (isHotkeyPressed("down")) {
           rowIndex = Math.min(rowIndex + 1, pureRowCount - 1);
-        } else if (isHotkeyPressed('left')) {
+        } else if (isHotkeyPressed("left")) {
           columnIndex = Math.max(columnIndex - 1, 0);
-        } else if (isHotkeyPressed('right')) {
+        } else if (isHotkeyPressed("right")) {
           columnIndex = Math.min(columnIndex + 1, columnCount - 1);
         }
       }
 
       const newRange = <IRange>[columnIndex, rowIndex];
-      const ranges = isSelectionExpand ? [selection.ranges[0], newRange] : [newRange, newRange];
+      const ranges = isSelectionExpand
+        ? [selection.ranges[0], newRange]
+        : [newRange, newRange];
 
       scrollToItem([columnIndex, rowIndex]);
       !isSelectionExpand && setActiveCell(newRange);
@@ -127,18 +129,19 @@ export const useKeyboardSelection = (props: ISelectionKeyboardProps) => {
     },
     {
       enabled: Boolean(activeCell && !isEditing),
-      enableOnFormTags: ['input', 'select', 'textarea'],
-    }
+      enableOnFormTags: ["input", "select", "textarea"],
+    },
   );
 
   useHotkeys(
-    ['tab', 'shift+tab'],
+    ["tab", "shift+tab"],
     () => {
       const [columnIndex, rowIndex] = selection.ranges[0];
 
       let newColumnIndex = Math.min(columnIndex + 1, columnCount - 1);
-      if (isHotkeyPressed('shift') && isHotkeyPressed('tab'))
-        {newColumnIndex = Math.max(columnIndex - 1, 0);}
+      if (isHotkeyPressed("shift") && isHotkeyPressed("tab")) {
+        newColumnIndex = Math.max(columnIndex - 1, 0);
+      }
 
       const newRange = <IRange>[newColumnIndex, rowIndex];
       const ranges = [newRange, newRange];
@@ -151,23 +154,24 @@ export const useKeyboardSelection = (props: ISelectionKeyboardProps) => {
     },
     {
       enabled: Boolean(activeCell),
-      enableOnFormTags: ['input', 'select', 'textarea'],
-    }
+      enableOnFormTags: ["input", "select", "textarea"],
+    },
   );
 
   useHotkeys(
-    ['PageUp', 'PageDown'],
+    ["PageUp", "PageDown"],
     () => {
-      const delta = coordInstance.containerHeight - coordInstance.rowInitSize - 1;
-      scrollBy(0, isHotkeyPressed('PageUp') ? -delta : delta);
+      const delta =
+        coordInstance.containerHeight - coordInstance.rowInitSize - 1;
+      scrollBy(0, isHotkeyPressed("PageUp") ? -delta : delta);
     },
     {
       enabled: Boolean(activeCell && !isEditing),
-      enableOnFormTags: ['input', 'select', 'textarea'],
-    }
+      enableOnFormTags: ["input", "select", "textarea"],
+    },
   );
   useHotkeys(
-    'mod+a',
+    "mod+a",
     () => {
       const ranges = [
         [0, 0],
@@ -177,30 +181,32 @@ export const useKeyboardSelection = (props: ISelectionKeyboardProps) => {
     },
     {
       enabled: Boolean(activeCell && !isEditing),
-      enableOnFormTags: ['input', 'select', 'textarea'],
-    }
+      enableOnFormTags: ["input", "select", "textarea"],
+    },
   );
 
   useHotkeys(
-    ['delete', 'backspace', 'f2'],
+    ["delete", "backspace", "f2"],
     () => {
-      if (isHotkeyPressed('f2')) {
+      if (isHotkeyPressed("f2")) {
         return setEditing(true);
       }
-      if (isHotkeyPressed('backspace') || isHotkeyPressed('delete')) {
+      if (isHotkeyPressed("backspace") || isHotkeyPressed("delete")) {
         return onDelete?.(selection);
       }
     },
     {
       enabled: Boolean(activeCell && !isEditing),
-      enableOnFormTags: ['input', 'select', 'textarea'],
-    }
+      enableOnFormTags: ["input", "select", "textarea"],
+    },
   );
 
   useHotkeys(
-    ['enter'],
+    ["enter"],
     (keyboardEvent) => {
-      if (keyboardEvent.isComposing) {return;}
+      if (keyboardEvent.isComposing) {
+        return;
+      }
 
       const { isColumnSelection, ranges: selectionRanges } = selection;
       if (isEditing) {
@@ -213,7 +219,9 @@ export const useKeyboardSelection = (props: ISelectionKeyboardProps) => {
         const newRange = [columnIndex, nextRowIndex] as IRange;
         editorRef.current?.saveValue?.();
         setTimeout(() => {
-          setSelection(selection.set(SelectionRegionType.Cells, [newRange, newRange]));
+          setSelection(
+            selection.set(SelectionRegionType.Cells, [newRange, newRange]),
+          );
           setActiveCell(newRange);
           setEditing(false);
           scrollToItem(newRange);
@@ -224,30 +232,30 @@ export const useKeyboardSelection = (props: ISelectionKeyboardProps) => {
     },
     {
       enabled: Boolean(activeCell),
-      enableOnFormTags: ['input', 'select', 'textarea'],
-    }
+      enableOnFormTags: ["input", "select", "textarea"],
+    },
   );
 
   useHotkeys(
-    'esc',
+    "esc",
     () => {
       setEditing(false);
     },
     {
       enabled: Boolean(activeCell),
-      enableOnFormTags: ['input', 'select', 'textarea'],
-    }
+      enableOnFormTags: ["input", "select", "textarea"],
+    },
   );
 
   useHotkeys(
-    'space',
+    "space",
     () => {
       const [, rowIndex] = activeCell!;
       onRowExpand?.(rowIndex);
     },
     {
       enabled: Boolean(activeCell && !isEditing),
-      enableOnFormTags: ['input', 'select', 'textarea'],
-    }
+      enableOnFormTags: ["input", "select", "textarea"],
+    },
   );
 };

@@ -3,7 +3,7 @@
  * Single select and multiple select fields
  */
 
-import { Field } from './Field';
+import { Field } from "./Field";
 
 export interface ISelectOption {
   id: string;
@@ -16,21 +16,23 @@ export interface ISelectFieldOptions {
 }
 
 export class SelectField extends Field {
-
   validate(value: unknown): boolean {
     if (this.isEmpty(value)) {
       return true;
     }
 
     // For single select
-    if (typeof value === 'string') {
-      return ((this.options as any).options)?.some((opt) => opt.id === value) ?? false;
+    if (typeof value === "string") {
+      return (
+        (this.options as any).options?.some((opt) => opt.id === value) ?? false
+      );
     }
 
     // For multiple select
     if (Array.isArray(value)) {
       return value.every(
-        (id) => ((this.options as any).options)?.some((opt) => opt.id === id) ?? false
+        (id) =>
+          (this.options as any).options?.some((opt) => opt.id === id) ?? false,
       );
     }
 
@@ -39,25 +41,29 @@ export class SelectField extends Field {
 
   format(value: unknown): string {
     if (this.isEmpty(value)) {
-      return '';
+      return "";
     }
 
-    if (typeof value === 'string') {
-      const option = ((this.options as any).options)?.find((opt) => opt.id === value);
-      return option?.name ?? '';
+    if (typeof value === "string") {
+      const option = (this.options as any).options?.find(
+        (opt) => opt.id === value,
+      );
+      return option?.name ?? "";
     }
 
     if (Array.isArray(value)) {
       const names = value
         .map((id) => {
-          const option = ((this.options as any).options)?.find((opt) => opt.id === id);
+          const option = (this.options as any).options?.find(
+            (opt) => opt.id === id,
+          );
           return option?.name;
         })
         .filter(Boolean);
-      return names.join(', ');
+      return names.join(", ");
     }
 
-    return '';
+    return "";
   }
 
   getEmptyValue(): null {
@@ -69,12 +75,12 @@ export class SelectField extends Field {
       return null;
     }
 
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       return value;
     }
 
     if (Array.isArray(value)) {
-      return value.filter((id) => typeof id === 'string');
+      return value.filter((id) => typeof id === "string");
     }
 
     return null;
@@ -85,7 +91,7 @@ export class SelectField extends Field {
       return null;
     }
 
-    if (typeof cellValue === 'string') {
+    if (typeof cellValue === "string") {
       return cellValue;
     }
 
@@ -100,7 +106,7 @@ export class SelectField extends Field {
    * Get option by ID
    */
   getOption(id: string): ISelectOption | undefined {
-    return ((this.options as any).options)?.find((opt) => opt.id === id);
+    return (this.options as any).options?.find((opt) => opt.id === id);
   }
 
   /**
@@ -112,5 +118,3 @@ export class SelectField extends Field {
       .filter((opt): opt is ISelectOption => opt !== undefined);
   }
 }
-
-

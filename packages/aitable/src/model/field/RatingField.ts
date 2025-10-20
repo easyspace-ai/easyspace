@@ -3,10 +3,13 @@
  * Handles star rating fields with strict typing
  */
 
-import { Field, type StrictFieldConfig } from './Field';
-import { FIELD_TYPES } from '../../types/core/field-types';
-import type { RatingFieldOptions } from '../../types/core/field-options';
-import type { GetCellValue, GetDisplayValue } from '../../types/core/cell-values';
+import { Field, type StrictFieldConfig } from "./Field";
+import { FIELD_TYPES } from "../../types/core/field-types";
+import type { RatingFieldOptions } from "../../types/core/field-options";
+import type {
+  GetCellValue,
+  GetDisplayValue,
+} from "../../types/core/cell-values";
 
 /**
  * Rating field type
@@ -38,7 +41,7 @@ export class RatingField extends Field<RatingFieldType> {
       return true;
     }
 
-    if (typeof value !== 'number') {
+    if (typeof value !== "number") {
       return false;
     }
 
@@ -46,16 +49,18 @@ export class RatingField extends Field<RatingFieldType> {
     return value >= 0 && value <= max && Number.isInteger(value);
   }
 
-  format(value: GetCellValue<RatingFieldType>): GetDisplayValue<RatingFieldType> {
+  format(
+    value: GetCellValue<RatingFieldType>,
+  ): GetDisplayValue<RatingFieldType> {
     if (value === null || value === undefined) {
-      return '';
+      return "";
     }
 
     const max = this.ratingOptions.max ?? 5;
     const icon = this.getIcon();
     const filled = icon.repeat(value);
-    const empty = '☆'.repeat(Math.max(0, max - value));
-    
+    const empty = "☆".repeat(Math.max(0, max - value));
+
     return filled + empty;
   }
 
@@ -66,9 +71,9 @@ export class RatingField extends Field<RatingFieldType> {
 
     let rating: number;
 
-    if (typeof value === 'number') {
+    if (typeof value === "number") {
       rating = value;
-    } else if (typeof value === 'string') {
+    } else if (typeof value === "string") {
       rating = parseInt(value, 10);
     } else {
       return null;
@@ -103,14 +108,13 @@ export class RatingField extends Field<RatingFieldType> {
    */
   private getIcon(): string {
     const iconMap = {
-      star: '★',
-      heart: '♥',
-      thumbs: '👍',
-      fire: '🔥',
-      smile: '😊',
+      star: "★",
+      heart: "♥",
+      thumbs: "👍",
+      fire: "🔥",
+      smile: "😊",
     };
 
-    return iconMap[this.ratingOptions.icon ?? 'star'] ?? '★';
+    return iconMap[this.ratingOptions.icon ?? "star"] ?? "★";
   }
 }
-

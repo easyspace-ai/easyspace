@@ -12,14 +12,14 @@ export default defineConfig({
     preserveSymlinks: true,
     alias: {
       // 使用源码直接开发（热更新）
-      '@luckdb/aitable': path.resolve(__dirname, '../src/index.ts'),
-      '@luckdb/sdk': path.resolve(__dirname, '../../sdk/src/index.ts'),
+      '@easyspace/aitable': path.resolve(__dirname, '../src/index.ts'),
+      '@easyspace/sdk': path.resolve(__dirname, '../../sdk/src/index.ts'),
       // CSS 文件别名
-      '@luckdb/aitable/src/styles/index.css': path.resolve(__dirname, '../src/styles/index.css'),
+      '@easyspace/aitable/src/styles/index.css': path.resolve(__dirname, '../src/styles/index.css'),
     },
   },
   optimizeDeps: {
-    exclude: ['@luckdb/aitable', '@luckdb/sdk'],
+    exclude: ['@easyspace/aitable', '@easyspace/sdk'],
   },
   define: {
     global: 'globalThis',

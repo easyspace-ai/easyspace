@@ -3,7 +3,7 @@
  * Using inline SVG for basic icons
  */
 
-import type { SVGProps } from 'react';
+import type { SVGProps } from "react";
 
 export interface IconProps extends SVGProps<SVGSVGElement> {
   className?: string;

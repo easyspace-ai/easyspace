@@ -1,372 +1,296 @@
 /**
- * ShareDB 操作构建器
+ * YJS 操作构建器
  * 提供便捷的方法来构建各种类型的操作
  */
 
-import type { OTOperation } from './sharedb-client.js';
+import type { YjsOperation } from './yjs-client.js';
 
 /**
  * 操作构建器类
- * 提供静态方法来构建不同类型的 ShareDB 操作
+ * 提供静态方法来构建不同类型的 YJS 操作
  */
 export class OperationBuilder {
   /**
    * 设置记录字段值
    */
-  static setRecordField(fieldId: string, value: any): OTOperation {
+  static setRecordField(fieldName: string, value: any): YjsOperation {
     return {
-      p: ['fields', fieldId],
-      oi: value,
+      p: ['fields', fieldName],
+      oi: value
     };
   }
 
   /**
    * 删除记录字段
    */
-  static deleteRecordField(fieldId: string): OTOperation {
+  static deleteRecordField(fieldName: string): YjsOperation {
     return {
-      p: ['fields', fieldId],
-      od: null,
+      p: ['fields', fieldName],
+      od: true
     };
   }
 
   /**
-   * 更新记录字段值（先删除再插入）
+   * 设置嵌套属性
    */
-  static updateRecordField(fieldId: string, oldValue: any, newValue: any): OTOperation {
-    return {
-      p: ['fields', fieldId],
-      od: oldValue,
-      oi: newValue,
-    };
-  }
-
-  /**
-   * 设置字段属性
-   */
-  static setFieldProperty(key: string, value: any): OTOperation {
-    return {
-      p: [key],
-      oi: value,
-    };
-  }
-
-  /**
-   * 删除字段属性
-   */
-  static deleteFieldProperty(key: string): OTOperation {
-    return {
-      p: [key],
-      od: null,
-    };
-  }
-
-  /**
-   * 更新字段属性
-   */
-  static updateFieldProperty(key: string, oldValue: any, newValue: any): OTOperation {
-    return {
-      p: [key],
-      od: oldValue,
-      oi: newValue,
-    };
-  }
-
-  /**
-   * 设置视图属性
-   */
-  static setViewProperty(key: string, value: any): OTOperation {
-    return {
-      p: [key],
-      oi: value,
-    };
-  }
-
-  /**
-   * 删除视图属性
-   */
-  static deleteViewProperty(key: string): OTOperation {
-    return {
-      p: [key],
-      od: null,
-    };
-  }
-
-  /**
-   * 更新视图属性
-   */
-  static updateViewProperty(key: string, oldValue: any, newValue: any): OTOperation {
-    return {
-      p: [key],
-      od: oldValue,
-      oi: newValue,
-    };
-  }
-
-  /**
-   * 设置表格属性
-   */
-  static setTableProperty(key: string, value: any): OTOperation {
-    return {
-      p: [key],
-      oi: value,
-    };
-  }
-
-  /**
-   * 删除表格属性
-   */
-  static deleteTableProperty(key: string): OTOperation {
-    return {
-      p: [key],
-      od: null,
-    };
-  }
-
-  /**
-   * 更新表格属性
-   */
-  static updateTableProperty(key: string, oldValue: any, newValue: any): OTOperation {
-    return {
-      p: [key],
-      od: oldValue,
-      oi: newValue,
-    };
-  }
-
-  /**
-   * 在数组中插入元素
-   */
-  static insertArrayElement(path: (string | number)[], index: number, value: any): OTOperation {
-    return {
-      p: [...path, index],
-      oi: value,
-    };
-  }
-
-  /**
-   * 从数组中删除元素
-   */
-  static deleteArrayElement(path: (string | number)[], index: number, value: any): OTOperation {
-    return {
-      p: [...path, index],
-      od: value,
-    };
-  }
-
-  /**
-   * 移动数组元素
-   */
-  static moveArrayElement(
-    path: (string | number)[],
-    fromIndex: number,
-    toIndex: number,
-    value: any
-  ): OTOperation[] {
-    return [
-      {
-        p: [...path, fromIndex],
-        od: value,
-      },
-      {
-        p: [...path, toIndex],
-        oi: value,
-      },
-    ];
-  }
-
-  /**
-   * 设置嵌套对象属性
-   */
-  static setNestedProperty(path: (string | number)[], value: any): OTOperation {
+  static setNestedProperty(path: (string | number)[], value: any): YjsOperation {
     return {
       p: path,
-      oi: value,
+      oi: value
     };
   }
 
   /**
-   * 删除嵌套对象属性
+   * 删除嵌套属性
    */
-  static deleteNestedProperty(path: (string | number)[]): OTOperation {
+  static deleteNestedProperty(path: (string | number)[]): YjsOperation {
     return {
       p: path,
-      od: null,
+      od: true
     };
   }
 
   /**
-   * 更新嵌套对象属性
+   * 插入数组元素
    */
-  static updateNestedProperty(
-    path: (string | number)[],
-    oldValue: any,
-    newValue: any
-  ): OTOperation {
+  static insertArrayElement(arrayPath: (string | number)[], index: number, value: any): YjsOperation {
     return {
-      p: path,
-      od: oldValue,
-      oi: newValue,
+      p: [...arrayPath, index],
+      li: value
     };
   }
 
   /**
-   * 批量设置记录字段
+   * 删除数组元素
    */
-  static batchSetRecordFields(fields: Record<string, any>): OTOperation[] {
-    return Object.entries(fields).map(([fieldId, value]) => this.setRecordField(fieldId, value));
+  static deleteArrayElement(arrayPath: (string | number)[], index: number): YjsOperation {
+    return {
+      p: [...arrayPath, index],
+      ld: true
+    };
   }
 
   /**
-   * 批量更新记录字段
+   * 条件操作
    */
-  static batchUpdateRecordFields(
-    updates: Record<string, { oldValue: any; newValue: any }>
-  ): OTOperation[] {
-    return Object.entries(updates).map(([fieldId, { oldValue, newValue }]) =>
-      this.updateRecordField(fieldId, oldValue, newValue)
-    );
+  static conditional(condition: boolean, trueOp: YjsOperation, falseOp: YjsOperation): YjsOperation {
+    return condition ? trueOp : falseOp;
   }
 
   /**
-   * 批量删除记录字段
+   * 组合多个操作
    */
-  static batchDeleteRecordFields(fieldIds: string[]): OTOperation[] {
-    return fieldIds.map((fieldId) => this.deleteRecordField(fieldId));
-  }
-
-  /**
-   * 设置记录名称
-   */
-  static setRecordName(name: string): OTOperation {
-    return this.setRecordField('name', name);
-  }
-
-  /**
-   * 设置记录描述
-   */
-  static setRecordDescription(description: string): OTOperation {
-    return this.setRecordField('description', description);
-  }
-
-  /**
-   * 设置字段名称
-   */
-  static setFieldName(name: string): OTOperation {
-    return this.setFieldProperty('name', name);
-  }
-
-  /**
-   * 设置字段类型
-   */
-  static setFieldType(type: string): OTOperation {
-    return this.setFieldProperty('type', type);
-  }
-
-  /**
-   * 设置字段选项
-   */
-  static setFieldOptions(options: any): OTOperation {
-    return this.setFieldProperty('options', options);
-  }
-
-  /**
-   * 设置视图名称
-   */
-  static setViewName(name: string): OTOperation {
-    return this.setViewProperty('name', name);
-  }
-
-  /**
-   * 设置视图类型
-   */
-  static setViewType(type: string): OTOperation {
-    return this.setViewProperty('type', type);
-  }
-
-  /**
-   * 设置视图配置
-   */
-  static setViewConfig(config: any): OTOperation {
-    return this.setViewProperty('config', config);
-  }
-
-  /**
-   * 设置视图过滤器
-   */
-  static setViewFilter(filter: any): OTOperation {
-    return this.setViewProperty('filter', filter);
-  }
-
-  /**
-   * 设置视图排序
-   */
-  static setViewSort(sort: any): OTOperation {
-    return this.setViewProperty('sort', sort);
-  }
-
-  /**
-   * 设置视图分组
-   */
-  static setViewGroup(group: any): OTOperation {
-    return this.setViewProperty('group', group);
-  }
-
-  /**
-   * 设置表格名称
-   */
-  static setTableName(name: string): OTOperation {
-    return this.setTableProperty('name', name);
-  }
-
-  /**
-   * 设置表格描述
-   */
-  static setTableDescription(description: string): OTOperation {
-    return this.setTableProperty('description', description);
-  }
-
-  /**
-   * 设置表格图标
-   */
-  static setTableIcon(icon: string): OTOperation {
-    return this.setTableProperty('icon', icon);
-  }
-
-  /**
-   * 设置表格颜色
-   */
-  static setTableColor(color: string): OTOperation {
-    return this.setTableProperty('color', color);
-  }
-
-  /**
-   * 创建操作组合
-   */
-  static combine(...operations: OTOperation[]): OTOperation[] {
+  static combine(...operations: YjsOperation[]): YjsOperation[] {
     return operations;
   }
 
   /**
-   * 创建条件操作
+   * 设置对象属性
    */
-  static conditional(
-    condition: boolean,
-    trueOperation: OTOperation,
-    falseOperation?: OTOperation
-  ): OTOperation[] {
-    if (condition) {
-      return [trueOperation];
-    } else if (falseOperation) {
-      return [falseOperation];
-    }
-    return [];
+  static setObjectProperty(objectPath: (string | number)[], property: string, value: any): YjsOperation {
+    return {
+      p: [...objectPath, property],
+      oi: value
+    };
   }
 
   /**
-   * 创建空操作（用于占位）
+   * 删除对象属性
    */
-  static noop(): OTOperation[] {
-    return [];
+  static deleteObjectProperty(objectPath: (string | number)[], property: string): YjsOperation {
+    return {
+      p: [...objectPath, property],
+      od: true
+    };
+  }
+
+  /**
+   * 设置数组元素
+   */
+  static setArrayElement(arrayPath: (string | number)[], index: number, value: any): YjsOperation {
+    return {
+      p: [...arrayPath, index],
+      oi: value
+    };
+  }
+
+  /**
+   * 删除数组元素
+   */
+  static deleteArrayElementByIndex(arrayPath: (string | number)[], index: number): YjsOperation {
+    return {
+      p: [...arrayPath, index],
+      ld: true
+    };
+  }
+
+  /**
+   * 设置根属性
+   */
+  static setRootProperty(property: string, value: any): YjsOperation {
+    return {
+      p: [property],
+      oi: value
+    };
+  }
+
+  /**
+   * 删除根属性
+   */
+  static deleteRootProperty(property: string): YjsOperation {
+    return {
+      p: [property],
+      od: true
+    };
+  }
+
+  /**
+   * 设置元数据
+   */
+  static setMetadata(metadata: Record<string, any>): YjsOperation {
+    return {
+      p: ['metadata'],
+      oi: metadata
+    };
+  }
+
+  /**
+   * 更新元数据属性
+   */
+  static updateMetadataProperty(key: string, value: any): YjsOperation {
+    return {
+      p: ['metadata', key],
+      oi: value
+    };
+  }
+
+  /**
+   * 删除元数据属性
+   */
+  static deleteMetadataProperty(key: string): YjsOperation {
+    return {
+      p: ['metadata', key],
+      od: true
+    };
+  }
+
+  /**
+   * 设置时间戳
+   */
+  static setTimestamp(timestamp: string | number): YjsOperation {
+    return {
+      p: ['timestamp'],
+      oi: timestamp
+    };
+  }
+
+  /**
+   * 设置版本
+   */
+  static setVersion(version: number): YjsOperation {
+    return {
+      p: ['version'],
+      oi: version
+    };
+  }
+
+  /**
+   * 设置状态
+   */
+  static setStatus(status: string): YjsOperation {
+    return {
+      p: ['status'],
+      oi: status
+    };
+  }
+
+  /**
+   * 设置标签
+   */
+  static setTags(tags: string[]): YjsOperation {
+    return {
+      p: ['tags'],
+      oi: tags
+    };
+  }
+
+  /**
+   * 添加标签
+   */
+  static addTag(tag: string): YjsOperation {
+    return {
+      p: ['tags', -1], // -1 表示添加到末尾
+      li: tag
+    };
+  }
+
+  /**
+   * 删除标签
+   */
+  static removeTag(tag: string): YjsOperation {
+    return {
+      p: ['tags'],
+      od: tag
+    };
+  }
+
+  /**
+   * 设置配置
+   */
+  static setConfig(config: Record<string, any>): YjsOperation {
+    return {
+      p: ['config'],
+      oi: config
+    };
+  }
+
+  /**
+   * 更新配置属性
+   */
+  static updateConfigProperty(key: string, value: any): YjsOperation {
+    return {
+      p: ['config', key],
+      oi: value
+    };
+  }
+
+  /**
+   * 删除配置属性
+   */
+  static deleteConfigProperty(key: string): YjsOperation {
+    return {
+      p: ['config', key],
+      od: true
+    };
+  }
+
+  /**
+   * 设置权限
+   */
+  static setPermissions(permissions: Record<string, any>): YjsOperation {
+    return {
+      p: ['permissions'],
+      oi: permissions
+    };
+  }
+
+  /**
+   * 更新权限
+   */
+  static updatePermission(userId: string, permission: string): YjsOperation {
+    return {
+      p: ['permissions', userId],
+      oi: permission
+    };
+  }
+
+  /**
+   * 删除权限
+   */
+  static deletePermission(userId: string): YjsOperation {
+    return {
+      p: ['permissions', userId],
+      od: true
+    };
   }
 }

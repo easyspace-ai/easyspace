@@ -3,12 +3,12 @@
  * 管理多个过滤器的组合和执行
  */
 
-import type { Field } from '../field/Field';
-import type { RecordModel } from '../record/Record';
-import type { BaseFilter, IFilterConfig } from './BaseFilter';
-import { createFilterInstance } from './factory';
+import type { Field } from "../field/Field";
+import type { RecordModel } from "../record/Record";
+import type { BaseFilter, IFilterConfig } from "./BaseFilter";
+import { createFilterInstance } from "./factory";
 
-export type FilterConjunction = 'and' | 'or';
+export type FilterConjunction = "and" | "or";
 
 export interface IFilterGroup {
   conjunction: FilterConjunction;
@@ -27,7 +27,7 @@ export class FilterManager {
 
   constructor(filterGroup: IFilterGroup, fields: Field[]) {
     this.filterGroup = filterGroup;
-    this.fields = new Map(fields.map(f => [f.id, f]));
+    this.fields = new Map(fields.map((f) => [f.id, f]));
   }
 
   /**
@@ -42,12 +42,12 @@ export class FilterManager {
 
     const filterInstances = this.createFilterInstances(filters);
 
-    if (conjunction === 'and') {
+    if (conjunction === "and") {
       // AND: 所有过滤器都必须匹配
-      return filterInstances.every(filter => filter.match(record));
+      return filterInstances.every((filter) => filter.match(record));
     } else {
       // OR: 至少一个过滤器匹配
-      return filterInstances.some(filter => filter.match(record));
+      return filterInstances.some((filter) => filter.match(record));
     }
   }
 
@@ -59,7 +59,7 @@ export class FilterManager {
       return records; // 没有过滤器，返回所有记录
     }
 
-    return records.filter(record => this.match(record));
+    return records.filter((record) => this.match(record));
   }
 
   /**
@@ -69,13 +69,13 @@ export class FilterManager {
     const { conjunction, filters } = this.filterGroup;
 
     if (filters.length === 0) {
-      return '';
+      return "";
     }
 
     const filterInstances = this.createFilterInstances(filters);
-    const texts = filterInstances.map(f => f.getDisplayText());
+    const texts = filterInstances.map((f) => f.getDisplayText());
 
-    const conjunctionText = conjunction === 'and' ? ' 且 ' : ' 或 ';
+    const conjunctionText = conjunction === "and" ? " 且 " : " 或 ";
     return texts.join(conjunctionText);
   }
 
@@ -90,14 +90,16 @@ export class FilterManager {
    * 移除过滤器
    */
   removeFilter(filterId: string): void {
-    this.filterGroup.filters = this.filterGroup.filters.filter(f => f.id !== filterId);
+    this.filterGroup.filters = this.filterGroup.filters.filter(
+      (f) => f.id !== filterId,
+    );
   }
 
   /**
    * 更新过滤器
    */
   updateFilter(filterId: string, config: Partial<IFilterConfig>): void {
-    const filter = this.filterGroup.filters.find(f => f.id === filterId);
+    const filter = this.filterGroup.filters.find((f) => f.id === filterId);
     if (filter) {
       filter.config = { ...filter.config, ...config };
     }
@@ -128,8 +130,10 @@ export class FilterManager {
    * 验证所有过滤器
    */
   validate(): boolean {
-    const filterInstances = this.createFilterInstances(this.filterGroup.filters);
-    return filterInstances.every(filter => filter.validate());
+    const filterInstances = this.createFilterInstances(
+      this.filterGroup.filters,
+    );
+    return filterInstances.every((filter) => filter.validate());
   }
 
   /**
@@ -137,7 +141,7 @@ export class FilterManager {
    */
   private createFilterInstances(filters: IFilterItem[]): BaseFilter[] {
     return filters
-      .map(filterItem => {
+      .map((filterItem) => {
         const field = this.fields.get(filterItem.fieldId);
         if (!field) {
           console.warn(`Field ${filterItem.fieldId} not found`);
@@ -148,5 +152,3 @@ export class FilterManager {
       .filter((filter): filter is BaseFilter => filter !== null);
   }
 }
-
-

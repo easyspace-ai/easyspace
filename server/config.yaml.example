@@ -75,11 +75,7 @@ rateLimit:
   requests: 100  # 每分钟请求数
   burst: 10
 
-websocket:
-  enabled: true
-  maxConnections: 1000
-  pingInterval: 30s
-  pongWait: 60s
+# WebSocket 配置已移除，现在使用 SSE 和 YJS 进行实时通信
 
 # AI 配置（可选）
 ai:

@@ -1,5 +1,10 @@
-import type { IIndicesMap, ICoordinate, ICellMetaData, ICellMetaDataMap } from './interface';
-import { ItemType } from './interface';
+import type {
+  IIndicesMap,
+  ICoordinate,
+  ICellMetaData,
+  ICellMetaDataMap,
+} from "./interface";
+import { ItemType } from "./interface";
 
 export class CoordinateManager implements ICoordinate {
   protected defaultRowHeight: number;
@@ -92,12 +97,18 @@ export class CoordinateManager implements ICoordinate {
   }
 
   public get totalWidth() {
-    const { offset, size } = this.getCellMetaData(this.columnCount - 1, ItemType.Column);
+    const { offset, size } = this.getCellMetaData(
+      this.columnCount - 1,
+      ItemType.Column,
+    );
     return offset + size;
   }
 
   public get totalHeight() {
-    const { offset, size } = this.getCellMetaData(this.rowCount - 1, ItemType.Row);
+    const { offset, size } = this.getCellMetaData(
+      this.rowCount - 1,
+      ItemType.Row,
+    );
     return offset + size;
   }
 
@@ -132,7 +143,9 @@ export class CoordinateManager implements ICoordinate {
       }
 
       for (let i = lastMeasuredIndex + 1; i <= index; i++) {
-        const size = (isColumnType ? this.columnWidthMap[i] : this.rowHeightMap[i]) ?? itemSize;
+        const size =
+          (isColumnType ? this.columnWidthMap[i] : this.rowHeightMap[i]) ??
+          itemSize;
 
         cellMetadataMap[i] = {
           offset,
@@ -149,11 +162,19 @@ export class CoordinateManager implements ICoordinate {
     return cellMetadataMap[index] || { size: 0, offset: 0 };
   }
 
-  private findNearestCellIndexLinear(index: number, offset: number, itemType: ItemType) {
-    const itemCount = itemType === ItemType.Column ? this.columnCount : this.rowCount;
+  private findNearestCellIndexLinear(
+    index: number,
+    offset: number,
+    itemType: ItemType,
+  ) {
+    const itemCount =
+      itemType === ItemType.Column ? this.columnCount : this.rowCount;
     let interval = 1;
 
-    while (index < itemCount && this.getCellMetaData(index, itemType).offset < offset) {
+    while (
+      index < itemCount &&
+      this.getCellMetaData(index, itemType).offset < offset
+    ) {
       index += interval;
       interval *= 2;
     }
@@ -162,7 +183,7 @@ export class CoordinateManager implements ICoordinate {
       offset,
       Math.floor(index / 2),
       Math.min(index, itemCount - 1),
-      itemType
+      itemType,
     );
   }
 
@@ -170,7 +191,7 @@ export class CoordinateManager implements ICoordinate {
     offset: number,
     low: number,
     high: number,
-    itemType: ItemType
+    itemType: ItemType,
   ) {
     while (low <= high) {
       const middle = low + Math.floor((high - low) / 2);
@@ -197,12 +218,17 @@ export class CoordinateManager implements ICoordinate {
       itemMetadataMap = this.rowMetaDataMap;
       lastIndex = this.lastRowIndex;
     }
-    const lastMeasuredItemOffset = lastIndex > 0 ? itemMetadataMap[lastIndex].offset : 0;
+    const lastMeasuredItemOffset =
+      lastIndex > 0 ? itemMetadataMap[lastIndex].offset : 0;
 
     if (lastMeasuredItemOffset >= offset) {
       return this.findNearestCellIndexBinary(offset, 0, lastIndex, itemType);
     }
-    return this.findNearestCellIndexLinear(Math.max(0, lastIndex), offset, itemType);
+    return this.findNearestCellIndexLinear(
+      Math.max(0, lastIndex),
+      offset,
+      itemType,
+    );
   }
 
   public getRowStartIndex(scrollTop: number) {
@@ -256,7 +282,7 @@ export class CoordinateManager implements ICoordinate {
     columnCount,
     columnInitSize = 0,
     columnWidthMap = {},
-  }: Pick<ICoordinate, 'columnCount' | 'columnInitSize' | 'columnWidthMap'>) {
+  }: Pick<ICoordinate, "columnCount" | "columnInitSize" | "columnWidthMap">) {
     this.columnCount = columnCount;
     this.columnInitSize = columnInitSize;
     this.columnWidthMap = columnWidthMap;

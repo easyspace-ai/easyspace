@@ -3,9 +3,9 @@
  * 布尔字段过滤器
  */
 
-import { BaseFilter, type IFilterConfig } from './BaseFilter';
-import type { Field } from '../field/Field';
-import type { RecordModel } from '../record/Record';
+import { BaseFilter, type IFilterConfig } from "./BaseFilter";
+import type { Field } from "../field/Field";
+import type { RecordModel } from "../record/Record";
 
 export class BooleanFilter extends BaseFilter {
   constructor(field: Field, config: IFilterConfig) {
@@ -16,13 +16,13 @@ export class BooleanFilter extends BaseFilter {
     const { operator } = this.config;
 
     switch (operator) {
-      case 'isEmpty':
+      case "isEmpty":
         return this.matchIsEmpty(record);
-      case 'isNotEmpty':
+      case "isNotEmpty":
         return this.matchIsNotEmpty(record);
-      case 'is':
+      case "is":
         return this.matchIs(record);
-      case 'isNot':
+      case "isNot":
         return !this.matchIs(record);
       default:
         return false;
@@ -34,29 +34,27 @@ export class BooleanFilter extends BaseFilter {
     const fieldName = this.field.name;
 
     switch (operator) {
-      case 'isEmpty':
+      case "isEmpty":
         return `${fieldName} 为空`;
-      case 'isNotEmpty':
+      case "isNotEmpty":
         return `${fieldName} 不为空`;
-      case 'is':
-        return `${fieldName} 是 ${value ? '是' : '否'}`;
-      case 'isNot':
-        return `${fieldName} 不是 ${value ? '是' : '否'}`;
+      case "is":
+        return `${fieldName} 是 ${value ? "是" : "否"}`;
+      case "isNot":
+        return `${fieldName} 不是 ${value ? "是" : "否"}`;
       default:
-        return '';
+        return "";
     }
   }
 
   private matchIs(record: RecordModel): boolean {
     const value = this.getValue(record);
     const filterValue = this.config.value;
-    
+
     // 转换为布尔值
     const boolValue = Boolean(value);
     const filterBoolValue = Boolean(filterValue);
-    
+
     return boolValue === filterBoolValue;
   }
 }
-
-

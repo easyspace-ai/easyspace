@@ -1,6 +1,6 @@
-import { DragRegionType, RegionType } from '../interface';
+import { DragRegionType, RegionType } from "../interface";
 
-export const GRID_CONTAINER_ATTR = 'data-t-grid-container';
+export const GRID_CONTAINER_ATTR = "data-t-grid-container";
 
 export const GRID_DEFAULT = {
   // Row

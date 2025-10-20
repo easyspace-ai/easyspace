@@ -1,10 +1,10 @@
-import type { IGridTheme } from '../../configs';
-import type { GridInnerIcon, ISpriteProps } from './sprites';
-import { sprites } from './sprites';
+import type { IGridTheme } from "../../configs";
+import type { GridInnerIcon, ISpriteProps } from "./sprites";
+import { sprites } from "./sprites";
 
 export type ISprite = (props: ISpriteProps) => string;
 export type ISpriteMap = Record<string | GridInnerIcon, ISprite>;
-export type ISpriteVariant = 'normal' | 'selected';
+export type ISpriteVariant = "normal" | "selected";
 
 interface ISpriteDrawerProps {
   x: number;
@@ -17,9 +17,14 @@ interface ISpriteDrawerProps {
   alpha?: number;
 }
 
-const getColors = (variant: ISpriteVariant, theme: IGridTheme): [string, string] => {
+const getColors = (
+  variant: ISpriteVariant,
+  theme: IGridTheme,
+): [string, string] => {
   const { iconBgCommon, iconBgSelected, iconFgCommon, iconFgSelected } = theme;
-  return variant === 'selected' ? [iconFgSelected, iconBgSelected] : [iconFgCommon, iconBgCommon];
+  return variant === "selected"
+    ? [iconFgSelected, iconBgSelected]
+    : [iconFgCommon, iconBgCommon];
 };
 
 export class SpriteManager {
@@ -29,7 +34,7 @@ export class SpriteManager {
 
   constructor(
     icons?: ISpriteMap,
-    private onSettled?: () => void
+    private onSettled?: () => void,
   ) {
     this.icons = {
       ...sprites,
@@ -39,7 +44,16 @@ export class SpriteManager {
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   public drawSprite(ctx: CanvasRenderingContext2D, props: ISpriteDrawerProps) {
-    const { sprite, variant = 'normal', x, y, size, alpha = 1, theme, colors } = props;
+    const {
+      sprite,
+      variant = "normal",
+      x,
+      y,
+      size,
+      alpha = 1,
+      theme,
+      colors,
+    } = props;
     const [fgColor, bgColor] = colors ?? getColors(variant, theme);
     const rSize = size * Math.ceil(window.devicePixelRatio);
     const key = `${bgColor}_${fgColor}_${rSize}_${sprite}`;
@@ -48,21 +62,27 @@ export class SpriteManager {
     if (spriteCanvas === undefined) {
       const spriteCb = this.icons[sprite];
 
-      if (spriteCb === undefined) {return;}
+      if (spriteCb === undefined) {
+        return;
+      }
 
-      spriteCanvas = document.createElement('canvas');
-      const spriteCtx = spriteCanvas.getContext('2d');
+      spriteCanvas = document.createElement("canvas");
+      const spriteCtx = spriteCanvas.getContext("2d");
 
-      if (spriteCtx === null) {return;}
+      if (spriteCtx === null) {
+        return;
+      }
 
       const imgSource = new Image();
       imgSource.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-        spriteCb({ fgColor, bgColor })
+        spriteCb({ fgColor, bgColor }),
       )}`;
       this.spriteMap.set(key, spriteCanvas);
       const promise: Promise<void> | undefined = imgSource.decode();
 
-      if (promise === undefined) {return;}
+      if (promise === undefined) {
+        return;
+      }
 
       this.inFlight++;
       promise

@@ -2,5 +2,4 @@
  * History Context Export
  */
 
-export * from './HistoryContext';
-
+export * from "./HistoryContext";

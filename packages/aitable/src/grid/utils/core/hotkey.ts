@@ -1,6 +1,6 @@
 // Avoid const enum under isolatedModules: re-declare minimal used codes
 export const Key = {
-  Shift: 'Shift',
+  Shift: "Shift",
 } as const;
 
 export const KeyCode = {
@@ -23,7 +23,9 @@ export const isPrintableKey = (event: KeyboardEvent) => {
   const { keyCode } = event;
   const { metaKey, ctrlKey } = event;
 
-  if (metaKey || ctrlKey || keyCode === KeyCode.Space) {return false;}
+  if (metaKey || ctrlKey || keyCode === KeyCode.Space) {
+    return false;
+  }
   return (
     (keyCode >= KeyCode.A && keyCode <= KeyCode.Z) ||
     (keyCode >= KeyCode.ClosedParen && keyCode <= KeyCode.OpenParen) ||
@@ -51,7 +53,7 @@ export const isNumberKey = (keyCode: number) => {
 export const isUndoKey = (event: KeyboardEvent) => {
   const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
   const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
-  return isCtrlOrCmd && event.key === 'z' && !event.shiftKey;
+  return isCtrlOrCmd && event.key === "z" && !event.shiftKey;
 };
 
 /**
@@ -60,7 +62,7 @@ export const isUndoKey = (event: KeyboardEvent) => {
 export const isRedoKey = (event: KeyboardEvent) => {
   const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
   const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
-  return isCtrlOrCmd && event.key === 'z' && event.shiftKey;
+  return isCtrlOrCmd && event.key === "z" && event.shiftKey;
 };
 
 /**
@@ -69,7 +71,7 @@ export const isRedoKey = (event: KeyboardEvent) => {
 export const isCopyKey = (event: KeyboardEvent) => {
   const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
   const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
-  return isCtrlOrCmd && event.key === 'c';
+  return isCtrlOrCmd && event.key === "c";
 };
 
 /**
@@ -78,7 +80,7 @@ export const isCopyKey = (event: KeyboardEvent) => {
 export const isPasteKey = (event: KeyboardEvent) => {
   const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
   const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
-  return isCtrlOrCmd && event.key === 'v';
+  return isCtrlOrCmd && event.key === "v";
 };
 
 /**
@@ -87,7 +89,7 @@ export const isPasteKey = (event: KeyboardEvent) => {
 export const isCutKey = (event: KeyboardEvent) => {
   const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
   const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
-  return isCtrlOrCmd && event.key === 'x';
+  return isCtrlOrCmd && event.key === "x";
 };
 
 /**
@@ -96,5 +98,5 @@ export const isCutKey = (event: KeyboardEvent) => {
 export const isSelectAllKey = (event: KeyboardEvent) => {
   const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
   const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
-  return isCtrlOrCmd && event.key === 'a';
+  return isCtrlOrCmd && event.key === "a";
 };

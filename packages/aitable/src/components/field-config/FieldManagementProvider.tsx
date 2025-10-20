@@ -4,11 +4,17 @@
  * 集成字段编辑和删除功能，提供统一的状态管理
  */
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { EnhancedEditFieldDialog } from './EnhancedEditFieldDialog';
-import { EnhancedDeleteConfirmDialog } from './EnhancedDeleteConfirmDialog';
-import { useField } from '../../context/field/FieldContext';
-import type { FieldConfig } from './EditFieldDialog';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  ReactNode,
+} from "react";
+import { EnhancedEditFieldDialog } from "./EnhancedEditFieldDialog";
+import { EnhancedDeleteConfirmDialog } from "./EnhancedDeleteConfirmDialog";
+import { useField } from "../../context/field/FieldContext";
+import type { FieldConfig } from "./EditFieldDialog";
 
 interface FieldManagementContextType {
   openEditDialog: (field: FieldConfig) => void;
@@ -16,12 +22,16 @@ interface FieldManagementContextType {
   closeDialogs: () => void;
 }
 
-const FieldManagementContext = createContext<FieldManagementContextType | null>(null);
+const FieldManagementContext = createContext<FieldManagementContextType | null>(
+  null,
+);
 
 export function useFieldManagement() {
   const context = useContext(FieldManagementContext);
   if (!context) {
-    throw new Error('useFieldManagement must be used within FieldManagementProvider');
+    throw new Error(
+      "useFieldManagement must be used within FieldManagementProvider",
+    );
   }
   return context;
 }
@@ -30,7 +40,7 @@ interface FieldManagementProviderProps {
   children: ReactNode;
   onFieldUpdated?: (field: FieldConfig) => void;
   onFieldDeleted?: (fieldId: string) => void;
-  onError?: (error: Error, operation: 'edit' | 'delete') => void;
+  onError?: (error: Error, operation: "edit" | "delete") => void;
 }
 
 export function FieldManagementProvider({
@@ -90,15 +100,15 @@ export function FieldManagementProvider({
       onFieldUpdated?.(field);
       closeDialogs();
     },
-    [onFieldUpdated, closeDialogs]
+    [onFieldUpdated, closeDialogs],
   );
 
   // 处理字段编辑错误
   const handleEditError = useCallback(
     (error: Error) => {
-      onError?.(error, 'edit');
+      onError?.(error, "edit");
     },
-    [onError]
+    [onError],
   );
 
   // 处理字段删除
@@ -112,15 +122,15 @@ export function FieldManagementProvider({
         throw error; // 让 EnhancedDeleteConfirmDialog 处理错误显示
       }
     },
-    [deleteField, onFieldDeleted, closeDialogs]
+    [deleteField, onFieldDeleted, closeDialogs],
   );
 
   // 处理字段删除错误
   const handleDeleteError = useCallback(
     (error: Error) => {
-      onError?.(error, 'delete');
+      onError?.(error, "delete");
     },
-    [onError]
+    [onError],
   );
 
   const contextValue: FieldManagementContextType = {

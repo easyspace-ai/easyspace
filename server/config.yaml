@@ -46,9 +46,9 @@ storage:
   cdn_domain: ''
 
 logger:
-  level: 'info'
-  format: 'json'
-  output_path: 'stdout'
+  level: 'debug'
+  format: 'console'
+  output_path: 'logs/app.log'
 
 # SQL日志配置 - 单独记录到文件，纯文本格式方便复制
 sql_logger:

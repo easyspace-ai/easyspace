@@ -1,5 +1,5 @@
-import type { Dispatch, FC, SetStateAction } from 'react';
-import { useRef } from 'react';
+import type { Dispatch, FC, SetStateAction } from "react";
+import { useRef } from "react";
 import {
   DEFAULT_COLUMN_RESIZE_STATE,
   DEFAULT_DRAG_STATE,
@@ -7,10 +7,10 @@ import {
   DEFAULT_MOUSE_STATE,
   GRID_DEFAULT,
   type IGridTheme,
-} from '../configs';
-import type { IGridProps } from './Grid';
-import { useSelection, useVisibleRegion } from '../hooks/primitive';
-import { LinearRowType, RegionType, SelectionRegionType } from '../types/grid';
+} from "../configs";
+import type { IGridProps } from "./Grid";
+import { useSelection, useVisibleRegion } from "../hooks/primitive";
+import { LinearRowType, RegionType, SelectionRegionType } from "../types/grid";
 import type {
   ICellItem,
   ICellRegionWithData,
@@ -20,30 +20,39 @@ import type {
   IRange,
   IRowControlItem,
   IScrollState,
-} from '../types/grid';
-import type { CoordinateManager, ImageManager, SpriteManager } from '../managers';
-import { emptySelection } from '../managers';
-import { CellRegionType, CellType, getCellRenderer, ICellClickProps } from '../renderers';
-import { RenderLayer } from './RenderLayer';
-import { getColumnStatisticData, inRange } from '../utils/core';
+} from "../types/grid";
+import type {
+  CoordinateManager,
+  ImageManager,
+  SpriteManager,
+} from "../managers";
+import { emptySelection } from "../managers";
+import {
+  CellRegionType,
+  CellType,
+  getCellRenderer,
+  ICellClickProps,
+} from "../renderers";
+import { RenderLayer } from "./RenderLayer";
+import { getColumnStatisticData, inRange } from "../utils/core";
 
 export interface ITouchLayerProps
   extends Omit<
     IGridProps,
-    | 'style'
-    | 'rowCount'
-    | 'rowHeight'
-    | 'smoothScrollX'
-    | 'smoothScrollY'
-    | 'freezeColumnCount'
-    | 'onCopy'
-    | 'onPaste'
-    | 'onRowOrdered'
-    | 'onColumnResize'
-    | 'onColumnOrdered'
-    | 'onColumnHeaderDblClick'
-    | 'onColumnHeaderMenuClick'
-    | 'onVisibleRegionChanged'
+    | "style"
+    | "rowCount"
+    | "rowHeight"
+    | "smoothScrollX"
+    | "smoothScrollY"
+    | "freezeColumnCount"
+    | "onCopy"
+    | "onPaste"
+    | "onRowOrdered"
+    | "onColumnResize"
+    | "onColumnOrdered"
+    | "onColumnHeaderDblClick"
+    | "onColumnHeaderMenuClick"
+    | "onVisibleRegionChanged"
   > {
   theme: IGridTheme;
   width: number;
@@ -64,7 +73,6 @@ export interface ITouchLayerProps
 const { columnAppendBtnWidth, columnHeadHeight } = GRID_DEFAULT;
 
 export const TouchLayer: FC<ITouchLayerProps> = (props) => {
-
   const {
     width,
     height,
@@ -112,7 +120,11 @@ export const TouchLayer: FC<ITouchLayerProps> = (props) => {
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const visibleRegion = useVisibleRegion(coordInstance, scrollState, forceRenderFlag);
+  const visibleRegion = useVisibleRegion(
+    coordInstance,
+    scrollState,
+    forceRenderFlag,
+  );
 
   const { selection, setSelection } = useSelection({
     coordInstance,
@@ -123,11 +135,16 @@ export const TouchLayer: FC<ITouchLayerProps> = (props) => {
 
   const getRangeByPosition = (x: number, y: number) => {
     const rowIndex =
-      y < 0 ? -Infinity : y <= rowInitSize ? -1 : coordInstance.getRowStartIndex(scrollTop + y);
+      y < 0
+        ? -Infinity
+        : y <= rowInitSize
+          ? -1
+          : coordInstance.getRowStartIndex(scrollTop + y);
     const columnIndex =
       x < 0
         ? -Infinity
-        : scrollLeft + x > totalWidth && scrollLeft + x < totalWidth + columnAppendBtnWidth
+        : scrollLeft + x > totalWidth &&
+            scrollLeft + x < totalWidth + columnAppendBtnWidth
           ? -2
           : x <= freezeRegionWidth
             ? x <= columnInitSize
@@ -178,13 +195,23 @@ export const TouchLayer: FC<ITouchLayerProps> = (props) => {
     }
 
     // Tap the append column button
-    if (hasAppendColumn && rowIndex !== undefined && rowIndex >= -1 && columnIndex === -2) {
+    if (
+      hasAppendColumn &&
+      rowIndex !== undefined &&
+      rowIndex >= -1 &&
+      columnIndex === -2
+    ) {
       onTapStyleEffect({ ...posInfo, type: RegionType.AppendColumn });
       return onColumnAppend?.();
     }
 
     // Tap the append row button
-    if (hasAppendRow && rowIndex === rowCount - 1 && columnIndex !== undefined && columnIndex >= -1) {
+    if (
+      hasAppendRow &&
+      rowIndex === rowCount - 1 &&
+      columnIndex !== undefined &&
+      columnIndex >= -1
+    ) {
       onTapStyleEffect({ ...posInfo, type: RegionType.AppendRow });
       return onRowAppend?.();
     }
@@ -195,7 +222,9 @@ export const TouchLayer: FC<ITouchLayerProps> = (props) => {
 
       if (linearRow.type === LinearRowType.Group && x < rowInitSize) {
         const { id } = linearRow;
-        if (collapsedGroupIds == null) {return onCollapsedGroupChanged?.(new Set([id]));}
+        if (collapsedGroupIds == null) {
+          return onCollapsedGroupChanged?.(new Set([id]));
+        }
         if (collapsedGroupIds.has(id)) {
           const newCollapsedGroupIds = new Set(collapsedGroupIds);
           newCollapsedGroupIds.delete(id);
@@ -227,9 +256,10 @@ export const TouchLayer: FC<ITouchLayerProps> = (props) => {
               height: coordInstance.getRowHeight(rowIndex) ?? 0,
               theme,
               hoverCellPosition: {
-                x: columnIndex < coordInstance.freezeColumnCount
-                  ? x - offsetX
-                  : x - offsetX + scrollLeft,
+                x:
+                  columnIndex < coordInstance.freezeColumnCount
+                    ? x - offsetX
+                    : x - offsetX + scrollLeft,
                 y: y - (coordInstance.getRowOffset(rowIndex) ?? 0) + scrollTop,
               },
               activeCellBound: undefined,
@@ -238,22 +268,24 @@ export const TouchLayer: FC<ITouchLayerProps> = (props) => {
             (props: ICellClickProps) => {
               // Callback from cell renderer
               // Handle cell click region types here if needed
-            }
+            },
           );
         }
       }
 
       const range = [0, rowIndex];
       setActiveCell(range as IRange);
-      setSelection(selection.set(SelectionRegionType.Cells, [range, range] as IRange[]));
+      setSelection(
+        selection.set(SelectionRegionType.Cells, [range, range] as IRange[]),
+      );
       onTapStyleEffect({ ...posInfo, type: RegionType.Cell });
       onRowExpand?.(linearRow.realIndex);
     }
   };
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       style={{ width, height }}
       onTouchEnd={(e) => {
         // 简单的触摸事件处理，替代 react-hammerjs
@@ -262,10 +294,10 @@ export const TouchLayer: FC<ITouchLayerProps> = (props) => {
           const rect = e.currentTarget.getBoundingClientRect();
           const x = touch.clientX - rect.left;
           const y = touch.clientY - rect.top;
-          
+
           // 创建一个模拟的 HammerInput 对象
           const mockEvent = {
-            changedPointers: [{ offsetX: x, layerX: x, offsetY: y, layerY: y }]
+            changedPointers: [{ offsetX: x, layerX: x, offsetY: y, layerY: y }],
           };
           onTap(mockEvent as any);
         }
@@ -275,9 +307,9 @@ export const TouchLayer: FC<ITouchLayerProps> = (props) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        
+
         const mockEvent = {
-          changedPointers: [{ offsetX: x, layerX: x, offsetY: y, layerY: y }]
+          changedPointers: [{ offsetX: x, layerX: x, offsetY: y, layerY: y }],
         };
         onTap(mockEvent as any);
       }}

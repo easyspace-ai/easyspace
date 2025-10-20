@@ -1,6 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { tokens, transitions, elevation } from '../../grid/design-system';
-import { X, Save, Eye, EyeOff, Settings, Palette, Hash, Calendar, CheckSquare } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { tokens, transitions, elevation } from "../../grid/design-system";
+import {
+  X,
+  Save,
+  Eye,
+  EyeOff,
+  Settings,
+  Palette,
+  Hash,
+  Calendar,
+  CheckSquare,
+} from "lucide-react";
 
 export interface FieldConfig {
   id: string;
@@ -26,9 +36,16 @@ export interface EditFieldDialogProps {
   onSave: (fieldId: string, updates: Partial<FieldConfig>) => void;
 }
 
-export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDialogProps) {
+export function EditFieldDialog({
+  isOpen,
+  field,
+  onClose,
+  onSave,
+}: EditFieldDialogProps) {
   const [formData, setFormData] = useState<Partial<FieldConfig>>({});
-  const [activeTab, setActiveTab] = useState<'basic' | 'options' | 'validation'>('basic');
+  const [activeTab, setActiveTab] = useState<
+    "basic" | "options" | "validation"
+  >("basic");
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -56,17 +73,17 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
       await onSave(field.id, formData);
       onClose();
     } catch (error: any) {
-      console.error('❌ 字段保存失败:', error);
-      setSaveError(error.message || '保存失败，请重试');
+      console.error("❌ 字段保存失败:", error);
+      setSaveError(error.message || "保存失败，请重试");
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && e.ctrlKey) {
+    if (e.key === "Enter" && e.ctrlKey) {
       handleSave();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       onClose();
     }
   };
@@ -76,7 +93,7 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
   };
 
   const addOption = () => {
-    const newOptions = [...(formData.options || []), ''];
+    const newOptions = [...(formData.options || []), ""];
     updateFormData({ options: newOptions });
   };
 
@@ -94,9 +111,9 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
   if (!isOpen || !field) return null;
 
   const tabs = [
-    { id: 'basic', label: '基础设置', icon: Settings },
-    { id: 'options', label: '选项配置', icon: Palette },
-    { id: 'validation', label: '验证规则', icon: CheckSquare },
+    { id: "basic", label: "基础设置", icon: Settings },
+    { id: "options", label: "选项配置", icon: Palette },
+    { id: "validation", label: "验证规则", icon: CheckSquare },
   ];
 
   return (
@@ -104,12 +121,12 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
       {/* 背景遮罩 */}
       <div
         style={{
-          position: 'fixed',
+          position: "fixed",
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
           zIndex: 70,
         }}
         onClick={onClose}
@@ -118,33 +135,33 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
       {/* 对话框 */}
       <div
         style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '500px',
-          maxHeight: '80vh',
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "500px",
+          maxHeight: "80vh",
           backgroundColor: tokens.colors.surface.base,
           border: `1px solid ${tokens.colors.border.subtle}`,
-          borderRadius: '12px',
+          borderRadius: "12px",
           boxShadow: elevation.xl,
           zIndex: 71,
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         {/* 对话框标题 */}
         <div
           style={{
-            padding: '20px 24px 0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            padding: "20px 24px 0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
           <h2
             style={{
-              fontSize: '18px',
+              fontSize: "18px",
               fontWeight: 600,
               color: tokens.colors.text.primary,
               margin: 0,
@@ -155,18 +172,19 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
           <button
             onClick={onClose}
             style={{
-              padding: '4px',
-              backgroundColor: 'transparent',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
+              padding: "4px",
+              backgroundColor: "transparent",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
               transition: transitions.presets.all,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
+              e.currentTarget.style.backgroundColor =
+                tokens.colors.surface.hover;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.backgroundColor = "transparent";
             }}
           >
             <X size={20} style={{ color: tokens.colors.text.secondary }} />
@@ -176,10 +194,10 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
         {/* 标签页导航 */}
         <div
           style={{
-            padding: '16px 24px 0',
+            padding: "16px 24px 0",
             borderBottom: `1px solid ${tokens.colors.border.subtle}`,
-            display: 'flex',
-            gap: '24px',
+            display: "flex",
+            gap: "24px",
           }}
         >
           {tabs.map((tab) => {
@@ -191,17 +209,19 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 style={{
-                  padding: '8px 0',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  borderBottom: `2px solid ${isActive ? tokens.colors.border.accent : 'transparent'}`,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '14px',
+                  padding: "8px 0",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  borderBottom: `2px solid ${isActive ? tokens.colors.border.accent : "transparent"}`,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: "14px",
                   fontWeight: isActive ? 500 : 400,
-                  color: isActive ? tokens.colors.text.accent : tokens.colors.text.secondary,
+                  color: isActive
+                    ? tokens.colors.text.accent
+                    : tokens.colors.text.secondary,
                   transition: transitions.presets.all,
                 }}
                 onMouseEnter={(e) => {
@@ -223,116 +243,132 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
         </div>
 
         {/* 对话框内容 */}
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          {activeTab === 'basic' && (
-            <div style={{ padding: '24px' }}>
+        <div style={{ flex: 1, overflowY: "auto" }}>
+          {activeTab === "basic" && (
+            <div style={{ padding: "24px" }}>
               {/* 字段名称 */}
-              <div style={{ marginBottom: '20px' }}>
+              <div style={{ marginBottom: "20px" }}>
                 <label
                   style={{
-                    display: 'block',
-                    fontSize: '14px',
+                    display: "block",
+                    fontSize: "14px",
                     fontWeight: 500,
                     color: tokens.colors.text.primary,
-                    marginBottom: '8px',
+                    marginBottom: "8px",
                   }}
                 >
                   字段名称
                 </label>
                 <input
                   type="text"
-                  value={formData.name || ''}
+                  value={formData.name || ""}
                   onChange={(e) => updateFormData({ name: e.target.value })}
                   onKeyDown={handleKeyPress}
                   style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    fontSize: '14px',
+                    width: "100%",
+                    padding: "12px 16px",
+                    fontSize: "14px",
                     color: tokens.colors.text.primary,
                     backgroundColor: tokens.colors.surface.base,
                     border: `1px solid ${tokens.colors.border.subtle}`,
-                    borderRadius: '8px',
-                    outline: 'none',
+                    borderRadius: "8px",
+                    outline: "none",
                     transition: transitions.presets.all,
-                    boxSizing: 'border-box',
+                    boxSizing: "border-box",
                   }}
                 />
               </div>
 
               {/* 字段描述 */}
-              <div style={{ marginBottom: '20px' }}>
+              <div style={{ marginBottom: "20px" }}>
                 <label
                   style={{
-                    display: 'block',
-                    fontSize: '14px',
+                    display: "block",
+                    fontSize: "14px",
                     fontWeight: 500,
                     color: tokens.colors.text.primary,
-                    marginBottom: '8px',
+                    marginBottom: "8px",
                   }}
                 >
                   字段描述
                 </label>
                 <textarea
-                  value={formData.description || ''}
-                  onChange={(e) => updateFormData({ description: e.target.value })}
+                  value={formData.description || ""}
+                  onChange={(e) =>
+                    updateFormData({ description: e.target.value })
+                  }
                   placeholder="可选，描述字段用途"
                   rows={3}
                   style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    fontSize: '14px',
+                    width: "100%",
+                    padding: "12px 16px",
+                    fontSize: "14px",
                     color: tokens.colors.text.primary,
                     backgroundColor: tokens.colors.surface.base,
                     border: `1px solid ${tokens.colors.border.subtle}`,
-                    borderRadius: '8px',
-                    outline: 'none',
-                    resize: 'vertical',
+                    borderRadius: "8px",
+                    outline: "none",
+                    resize: "vertical",
                     transition: transitions.presets.all,
-                    boxSizing: 'border-box',
-                    fontFamily: 'inherit',
+                    boxSizing: "border-box",
+                    fontFamily: "inherit",
                   }}
                 />
               </div>
 
               {/* 字段选项 */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                }}
+              >
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "12px" }}
+                >
                   <label
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      fontSize: '14px',
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      fontSize: "14px",
                       color: tokens.colors.text.primary,
-                      cursor: 'pointer',
+                      cursor: "pointer",
                     }}
                   >
                     <input
                       type="checkbox"
                       checked={formData.required || false}
-                      onChange={(e) => updateFormData({ required: e.target.checked })}
-                      style={{ cursor: 'pointer' }}
+                      onChange={(e) =>
+                        updateFormData({ required: e.target.checked })
+                      }
+                      style={{ cursor: "pointer" }}
                     />
                     必填字段
                   </label>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "12px" }}
+                >
                   <label
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      fontSize: '14px',
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      fontSize: "14px",
                       color: tokens.colors.text.primary,
-                      cursor: 'pointer',
+                      cursor: "pointer",
                     }}
                   >
                     <input
                       type="checkbox"
                       checked={formData.visible !== false}
-                      onChange={(e) => updateFormData({ visible: e.target.checked })}
-                      style={{ cursor: 'pointer' }}
+                      onChange={(e) =>
+                        updateFormData({ visible: e.target.checked })
+                      }
+                      style={{ cursor: "pointer" }}
                     />
                     {formData.visible !== false ? (
                       <>
@@ -351,53 +387,66 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
             </div>
           )}
 
-          {activeTab === 'options' && (
-            <div style={{ padding: '24px' }}>
-              {['singleSelect', 'multipleSelect'].includes(field.type) && (
+          {activeTab === "options" && (
+            <div style={{ padding: "24px" }}>
+              {["singleSelect", "multipleSelect"].includes(field.type) && (
                 <>
-                  <div style={{ marginBottom: '16px' }}>
+                  <div style={{ marginBottom: "16px" }}>
                     <label
                       style={{
-                        display: 'block',
-                        fontSize: '14px',
+                        display: "block",
+                        fontSize: "14px",
                         fontWeight: 500,
                         color: tokens.colors.text.primary,
-                        marginBottom: '8px',
+                        marginBottom: "8px",
                       }}
                     >
                       选项列表
                     </label>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "8px",
+                      }}
+                    >
                       {(formData.options || []).map((option, index) => (
                         <div
                           key={index}
-                          style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
+                          style={{
+                            display: "flex",
+                            gap: "8px",
+                            alignItems: "center",
+                          }}
                         >
                           <input
                             type="text"
                             value={option}
-                            onChange={(e) => updateOption(index, e.target.value)}
+                            onChange={(e) =>
+                              updateOption(index, e.target.value)
+                            }
                             placeholder={`选项 ${index + 1}`}
                             style={{
                               flex: 1,
-                              padding: '8px 12px',
-                              fontSize: '14px',
+                              padding: "8px 12px",
+                              fontSize: "14px",
                               color: tokens.colors.text.primary,
                               backgroundColor: tokens.colors.surface.base,
                               border: `1px solid ${tokens.colors.border.subtle}`,
-                              borderRadius: '6px',
-                              outline: 'none',
+                              borderRadius: "6px",
+                              outline: "none",
                               transition: transitions.presets.all,
                             }}
                           />
                           <button
                             onClick={() => removeOption(index)}
                             style={{
-                              padding: '8px',
-                              backgroundColor: tokens.colors.surface.destructive,
-                              border: 'none',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
+                              padding: "8px",
+                              backgroundColor:
+                                tokens.colors.surface.destructive,
+                              border: "none",
+                              borderRadius: "6px",
+                              cursor: "pointer",
                               transition: transitions.presets.all,
                             }}
                             onMouseEnter={(e) => {
@@ -409,28 +458,33 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
                                 tokens.colors.surface.destructive;
                             }}
                           >
-                            <X size={14} style={{ color: tokens.colors.text.inverse }} />
+                            <X
+                              size={14}
+                              style={{ color: tokens.colors.text.inverse }}
+                            />
                           </button>
                         </div>
                       ))}
                       <button
                         onClick={addOption}
                         style={{
-                          padding: '8px 12px',
-                          fontSize: '14px',
+                          padding: "8px 12px",
+                          fontSize: "14px",
                           color: tokens.colors.text.accent,
                           backgroundColor: tokens.colors.surface.accent,
                           border: `1px solid ${tokens.colors.border.accent}`,
-                          borderRadius: '6px',
-                          cursor: 'pointer',
+                          borderRadius: "6px",
+                          cursor: "pointer",
                           transition: transitions.presets.all,
-                          alignSelf: 'flex-start',
+                          alignSelf: "flex-start",
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = tokens.colors.surface.accent;
+                          e.currentTarget.style.backgroundColor =
+                            tokens.colors.surface.accent;
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = tokens.colors.surface.accent;
+                          e.currentTarget.style.backgroundColor =
+                            tokens.colors.surface.accent;
                         }}
                       >
                         + 添加选项
@@ -444,135 +498,141 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
               <div>
                 <label
                   style={{
-                    display: 'block',
-                    fontSize: '14px',
+                    display: "block",
+                    fontSize: "14px",
                     fontWeight: 500,
                     color: tokens.colors.text.primary,
-                    marginBottom: '8px',
+                    marginBottom: "8px",
                   }}
                 >
                   默认值
                 </label>
                 <input
                   type="text"
-                  value={formData.defaultValue || ''}
-                  onChange={(e) => updateFormData({ defaultValue: e.target.value })}
+                  value={formData.defaultValue || ""}
+                  onChange={(e) =>
+                    updateFormData({ defaultValue: e.target.value })
+                  }
                   placeholder="可选，设置字段默认值"
                   style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    fontSize: '14px',
+                    width: "100%",
+                    padding: "12px 16px",
+                    fontSize: "14px",
                     color: tokens.colors.text.primary,
                     backgroundColor: tokens.colors.surface.base,
                     border: `1px solid ${tokens.colors.border.subtle}`,
-                    borderRadius: '8px',
-                    outline: 'none',
+                    borderRadius: "8px",
+                    outline: "none",
                     transition: transitions.presets.all,
-                    boxSizing: 'border-box',
+                    boxSizing: "border-box",
                   }}
                 />
               </div>
             </div>
           )}
 
-          {activeTab === 'validation' && (
-            <div style={{ padding: '24px' }}>
-              {field.type === 'number' && (
+          {activeTab === "validation" && (
+            <div style={{ padding: "24px" }}>
+              {field.type === "number" && (
                 <>
-                  <div style={{ marginBottom: '20px' }}>
+                  <div style={{ marginBottom: "20px" }}>
                     <label
                       style={{
-                        display: 'block',
-                        fontSize: '14px',
+                        display: "block",
+                        fontSize: "14px",
                         fontWeight: 500,
                         color: tokens.colors.text.primary,
-                        marginBottom: '8px',
+                        marginBottom: "8px",
                       }}
                     >
                       最小值
                     </label>
                     <input
                       type="number"
-                      value={formData.validation?.min || ''}
+                      value={formData.validation?.min || ""}
                       onChange={(e) =>
                         updateFormData({
                           validation: {
                             ...formData.validation,
-                            min: e.target.value ? Number(e.target.value) : undefined,
+                            min: e.target.value
+                              ? Number(e.target.value)
+                              : undefined,
                           },
                         })
                       }
                       style={{
-                        width: '100%',
-                        padding: '12px 16px',
-                        fontSize: '14px',
+                        width: "100%",
+                        padding: "12px 16px",
+                        fontSize: "14px",
                         color: tokens.colors.text.primary,
                         backgroundColor: tokens.colors.surface.base,
                         border: `1px solid ${tokens.colors.border.subtle}`,
-                        borderRadius: '8px',
-                        outline: 'none',
+                        borderRadius: "8px",
+                        outline: "none",
                         transition: transitions.presets.all,
-                        boxSizing: 'border-box',
+                        boxSizing: "border-box",
                       }}
                     />
                   </div>
 
-                  <div style={{ marginBottom: '20px' }}>
+                  <div style={{ marginBottom: "20px" }}>
                     <label
                       style={{
-                        display: 'block',
-                        fontSize: '14px',
+                        display: "block",
+                        fontSize: "14px",
                         fontWeight: 500,
                         color: tokens.colors.text.primary,
-                        marginBottom: '8px',
+                        marginBottom: "8px",
                       }}
                     >
                       最大值
                     </label>
                     <input
                       type="number"
-                      value={formData.validation?.max || ''}
+                      value={formData.validation?.max || ""}
                       onChange={(e) =>
                         updateFormData({
                           validation: {
                             ...formData.validation,
-                            max: e.target.value ? Number(e.target.value) : undefined,
+                            max: e.target.value
+                              ? Number(e.target.value)
+                              : undefined,
                           },
                         })
                       }
                       style={{
-                        width: '100%',
-                        padding: '12px 16px',
-                        fontSize: '14px',
+                        width: "100%",
+                        padding: "12px 16px",
+                        fontSize: "14px",
                         color: tokens.colors.text.primary,
                         backgroundColor: tokens.colors.surface.base,
                         border: `1px solid ${tokens.colors.border.subtle}`,
-                        borderRadius: '8px',
-                        outline: 'none',
+                        borderRadius: "8px",
+                        outline: "none",
                         transition: transitions.presets.all,
-                        boxSizing: 'border-box',
+                        boxSizing: "border-box",
                       }}
                     />
                   </div>
                 </>
               )}
 
-              {field.type === 'text' && (
+              {field.type === "text" && (
                 <div>
                   <label
                     style={{
-                      display: 'block',
-                      fontSize: '14px',
+                      display: "block",
+                      fontSize: "14px",
                       fontWeight: 500,
                       color: tokens.colors.text.primary,
-                      marginBottom: '8px',
+                      marginBottom: "8px",
                     }}
                   >
                     正则表达式验证
                   </label>
                   <input
                     type="text"
-                    value={formData.validation?.pattern || ''}
+                    value={formData.validation?.pattern || ""}
                     onChange={(e) =>
                       updateFormData({
                         validation: {
@@ -583,16 +643,16 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
                     }
                     placeholder="例如：^[a-zA-Z0-9]+$"
                     style={{
-                      width: '100%',
-                      padding: '12px 16px',
-                      fontSize: '14px',
+                      width: "100%",
+                      padding: "12px 16px",
+                      fontSize: "14px",
                       color: tokens.colors.text.primary,
                       backgroundColor: tokens.colors.surface.base,
                       border: `1px solid ${tokens.colors.border.subtle}`,
-                      borderRadius: '8px',
-                      outline: 'none',
+                      borderRadius: "8px",
+                      outline: "none",
                       transition: transitions.presets.all,
-                      boxSizing: 'border-box',
+                      boxSizing: "border-box",
                     }}
                   />
                 </div>
@@ -605,22 +665,22 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
         {saveError && (
           <div
             style={{
-              padding: '12px 24px',
-              backgroundColor: '#fef2f2',
-              borderTop: '1px solid #fecaca',
-              borderBottom: '1px solid #fecaca',
+              padding: "12px 24px",
+              backgroundColor: "#fef2f2",
+              borderTop: "1px solid #fecaca",
+              borderBottom: "1px solid #fecaca",
             }}
           >
             <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                color: '#dc2626',
-                fontSize: '14px',
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                color: "#dc2626",
+                fontSize: "14px",
               }}
             >
-              <span style={{ fontSize: '16px' }}>⚠️</span>
+              <span style={{ fontSize: "16px" }}>⚠️</span>
               <span>{saveError}</span>
             </div>
           </div>
@@ -629,31 +689,32 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
         {/* 对话框底部按钮 */}
         <div
           style={{
-            padding: '16px 24px',
+            padding: "16px 24px",
             borderTop: `1px solid ${tokens.colors.border.subtle}`,
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '12px',
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "12px",
           }}
         >
           <button
             onClick={onClose}
             style={{
-              padding: '8px 16px',
-              fontSize: '14px',
+              padding: "8px 16px",
+              fontSize: "14px",
               fontWeight: 500,
               color: tokens.colors.text.secondary,
-              backgroundColor: 'transparent',
+              backgroundColor: "transparent",
               border: `1px solid ${tokens.colors.border.subtle}`,
-              borderRadius: '6px',
-              cursor: 'pointer',
+              borderRadius: "6px",
+              cursor: "pointer",
               transition: transitions.presets.all,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = tokens.colors.surface.hover;
+              e.currentTarget.style.backgroundColor =
+                tokens.colors.surface.hover;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.backgroundColor = "transparent";
             }}
           >
             取消
@@ -662,8 +723,8 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
             onClick={handleSave}
             disabled={!formData.name?.trim() || isSaving}
             style={{
-              padding: '8px 16px',
-              fontSize: '14px',
+              padding: "8px 16px",
+              fontSize: "14px",
               fontWeight: 500,
               color:
                 formData.name?.trim() && !isSaving
@@ -673,23 +734,26 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
                 formData.name?.trim() && !isSaving
                   ? tokens.colors.primary[600]
                   : tokens.colors.surface.disabled,
-              border: 'none',
-              borderRadius: '6px',
-              cursor: formData.name?.trim() && !isSaving ? 'pointer' : 'not-allowed',
+              border: "none",
+              borderRadius: "6px",
+              cursor:
+                formData.name?.trim() && !isSaving ? "pointer" : "not-allowed",
               transition: transitions.presets.all,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
               opacity: isSaving ? 0.7 : 1,
             }}
             onMouseEnter={(e) => {
               if (formData.name?.trim() && !isSaving) {
-                e.currentTarget.style.backgroundColor = tokens.colors.primary[700];
+                e.currentTarget.style.backgroundColor =
+                  tokens.colors.primary[700];
               }
             }}
             onMouseLeave={(e) => {
               if (formData.name?.trim() && !isSaving) {
-                e.currentTarget.style.backgroundColor = tokens.colors.primary[600];
+                e.currentTarget.style.backgroundColor =
+                  tokens.colors.primary[600];
               }
             }}
           >
@@ -697,12 +761,12 @@ export function EditFieldDialog({ isOpen, field, onClose, onSave }: EditFieldDia
               <>
                 <div
                   style={{
-                    width: '16px',
-                    height: '16px',
-                    border: '2px solid transparent',
-                    borderTop: '2px solid currentColor',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite',
+                    width: "16px",
+                    height: "16px",
+                    border: "2px solid transparent",
+                    borderTop: "2px solid currentColor",
+                    borderRadius: "50%",
+                    animation: "spin 1s linear infinite",
                   }}
                 />
                 保存中...

@@ -1,19 +1,27 @@
-import { useState } from 'react';
-import { DEFAULT_FREEZE_COLUMN_STATE } from '../../configs';
-import { RegionType } from '../../types/grid';
-import type { IScrollState, IColumnFreezeState, IMouseState } from '../../types/grid';
-import type { CoordinateManager } from '../../managers';
-import { inRange } from '../../utils/core';
+import { useState } from "react";
+import { DEFAULT_FREEZE_COLUMN_STATE } from "../../configs";
+import { RegionType } from "../../types/grid";
+import type {
+  IScrollState,
+  IColumnFreezeState,
+  IMouseState,
+} from "../../types/grid";
+import type { CoordinateManager } from "../../managers";
+import { inRange } from "../../utils/core";
 
-export const useColumnFreeze = (coordInstance: CoordinateManager, scrollState: IScrollState) => {
-  const [columnFreezeState, setColumnFreezeState] = useState<IColumnFreezeState>(
-    DEFAULT_FREEZE_COLUMN_STATE
-  );
+export const useColumnFreeze = (
+  coordInstance: CoordinateManager,
+  scrollState: IScrollState,
+) => {
+  const [columnFreezeState, setColumnFreezeState] =
+    useState<IColumnFreezeState>(DEFAULT_FREEZE_COLUMN_STATE);
 
   const onColumnFreezeStart = (mouseState: IMouseState) => {
     const { type } = mouseState;
 
-    if (type !== RegionType.ColumnFreezeHandler) {return;}
+    if (type !== RegionType.ColumnFreezeHandler) {
+      return;
+    }
 
     const { freezeColumnCount } = coordInstance;
     setColumnFreezeState({
@@ -26,14 +34,23 @@ export const useColumnFreeze = (coordInstance: CoordinateManager, scrollState: I
   const onColumnFreezeMove = (mouseState: IMouseState) => {
     const { sourceIndex, isFreezing } = columnFreezeState;
 
-    if (!isFreezing) {return;}
+    if (!isFreezing) {
+      return;
+    }
 
     const { scrollLeft } = scrollState;
     const { columnIndex, x } = mouseState;
     const { columnCount } = coordInstance;
     const columnWidth = coordInstance.getColumnWidth(columnIndex);
-    const columnOffsetX = coordInstance.getColumnRelativeOffset(columnIndex, scrollLeft);
-    const targetIndex = inRange(x, columnOffsetX, columnOffsetX + columnWidth / 2)
+    const columnOffsetX = coordInstance.getColumnRelativeOffset(
+      columnIndex,
+      scrollLeft,
+    );
+    const targetIndex = inRange(
+      x,
+      columnOffsetX,
+      columnOffsetX + columnWidth / 2,
+    )
       ? columnIndex - 1
       : columnIndex;
 
@@ -46,7 +63,9 @@ export const useColumnFreeze = (coordInstance: CoordinateManager, scrollState: I
 
   const onColumnFreezeEnd = (callbackFn?: (columnCount: number) => void) => {
     const { targetIndex, isFreezing } = columnFreezeState;
-    if (!isFreezing) {return;}
+    if (!isFreezing) {
+      return;
+    }
     setColumnFreezeState(() => DEFAULT_FREEZE_COLUMN_STATE);
     callbackFn?.(Math.max(targetIndex + 1, 0));
   };

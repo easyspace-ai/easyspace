@@ -3,9 +3,9 @@
  * 评分字段过滤器
  */
 
-import { BaseFilter, type IFilterConfig } from './BaseFilter';
-import type { Field } from '../field/Field';
-import type { RecordModel } from '../record/Record';
+import { BaseFilter, type IFilterConfig } from "./BaseFilter";
+import type { Field } from "../field/Field";
+import type { RecordModel } from "../record/Record";
 
 export class RatingFilter extends BaseFilter {
   constructor(field: Field, config: IFilterConfig) {
@@ -16,21 +16,21 @@ export class RatingFilter extends BaseFilter {
     const { operator } = this.config;
 
     switch (operator) {
-      case 'isEmpty':
+      case "isEmpty":
         return this.matchIsEmpty(record);
-      case 'isNotEmpty':
+      case "isNotEmpty":
         return this.matchIsNotEmpty(record);
-      case 'equal':
+      case "equal":
         return this.matchEqual(record);
-      case 'notEqual':
+      case "notEqual":
         return !this.matchEqual(record);
-      case 'greaterThan':
+      case "greaterThan":
         return this.matchGreaterThan(record);
-      case 'greaterThanOrEqual':
+      case "greaterThanOrEqual":
         return this.matchGreaterThanOrEqual(record);
-      case 'lessThan':
+      case "lessThan":
         return this.matchLessThan(record);
-      case 'lessThanOrEqual':
+      case "lessThanOrEqual":
         return this.matchLessThanOrEqual(record);
       default:
         return false;
@@ -42,79 +42,89 @@ export class RatingFilter extends BaseFilter {
     const fieldName = this.field.name;
 
     switch (operator) {
-      case 'isEmpty':
+      case "isEmpty":
         return `${fieldName} 为空`;
-      case 'isNotEmpty':
+      case "isNotEmpty":
         return `${fieldName} 不为空`;
-      case 'equal':
+      case "equal":
         return `${fieldName} = ${value}`;
-      case 'notEqual':
+      case "notEqual":
         return `${fieldName} ≠ ${value}`;
-      case 'greaterThan':
+      case "greaterThan":
         return `${fieldName} > ${value}`;
-      case 'greaterThanOrEqual':
+      case "greaterThanOrEqual":
         return `${fieldName} ≥ ${value}`;
-      case 'lessThan':
+      case "lessThan":
         return `${fieldName} < ${value}`;
-      case 'lessThanOrEqual':
+      case "lessThanOrEqual":
         return `${fieldName} ≤ ${value}`;
       default:
-        return '';
+        return "";
     }
   }
 
   private getRatingValue(record: RecordModel): number | null {
     const value = this.getValue(record);
-    if (this.isEmpty(value)) {return null;}
-    
-    const num = typeof value === 'number' ? value : parseFloat(String(value));
+    if (this.isEmpty(value)) {
+      return null;
+    }
+
+    const num = typeof value === "number" ? value : parseFloat(String(value));
     return isNaN(num) ? null : num;
   }
 
   private matchEqual(record: RecordModel): boolean {
     const value = this.getRatingValue(record);
     const filterValue = Number(this.config.value);
-    
-    if (value === null) {return false;}
-    
+
+    if (value === null) {
+      return false;
+    }
+
     return value === filterValue;
   }
 
   private matchGreaterThan(record: RecordModel): boolean {
     const value = this.getRatingValue(record);
     const filterValue = Number(this.config.value);
-    
-    if (value === null) {return false;}
-    
+
+    if (value === null) {
+      return false;
+    }
+
     return value > filterValue;
   }
 
   private matchGreaterThanOrEqual(record: RecordModel): boolean {
     const value = this.getRatingValue(record);
     const filterValue = Number(this.config.value);
-    
-    if (value === null) {return false;}
-    
+
+    if (value === null) {
+      return false;
+    }
+
     return value >= filterValue;
   }
 
   private matchLessThan(record: RecordModel): boolean {
     const value = this.getRatingValue(record);
     const filterValue = Number(this.config.value);
-    
-    if (value === null) {return false;}
-    
+
+    if (value === null) {
+      return false;
+    }
+
     return value < filterValue;
   }
 
   private matchLessThanOrEqual(record: RecordModel): boolean {
     const value = this.getRatingValue(record);
     const filterValue = Number(this.config.value);
-    
-    if (value === null) {return false;}
-    
+
+    if (value === null) {
+      return false;
+    }
+
     return value <= filterValue;
   }
 }
-
-

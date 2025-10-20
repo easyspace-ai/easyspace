@@ -18,7 +18,6 @@ type Config struct {
 	Logger    LoggerConfig    `mapstructure:"logger"`
 	SQLLogger SQLLoggerConfig `mapstructure:"sql_logger"`
 	Queue     QueueConfig     `mapstructure:"queue"`
-	WebSocket WebSocketConfig `mapstructure:"websocket"`
 	JSVM      JSVMConfig      `mapstructure:"jsvm"`
 	AI        AIConfig        `mapstructure:"ai"`
 	MCP       MCPConfig       `mapstructure:"mcp"`
@@ -121,16 +120,6 @@ type QueueConfig struct {
 	QueueCritical string `mapstructure:"queue_critical"`
 	QueueDefault  string `mapstructure:"queue_default"`
 	QueueLow      string `mapstructure:"queue_low"`
-}
-
-// WebSocketConfig WebSocket配置
-type WebSocketConfig struct {
-	EnableRedisPubSub bool          `mapstructure:"enable_redis_pubsub"`
-	RedisPrefix       string        `mapstructure:"redis_prefix"`
-	HeartbeatInterval time.Duration `mapstructure:"heartbeat_interval"`
-	ConnectionTimeout time.Duration `mapstructure:"connection_timeout"`
-	MaxConnections    int           `mapstructure:"max_connections"`
-	EnablePresence    bool          `mapstructure:"enable_presence"`
 }
 
 // JSVMConfig JavaScript 虚拟机配置
@@ -244,14 +233,6 @@ func setDefaults() {
 	viper.SetDefault("queue.queue_critical", "critical")
 	viper.SetDefault("queue.queue_default", "default")
 	viper.SetDefault("queue.queue_low", "low")
-
-	// WebSocket defaults
-	viper.SetDefault("websocket.enable_redis_pubsub", true)
-	viper.SetDefault("websocket.redis_prefix", "luckdb:ws")
-	viper.SetDefault("websocket.heartbeat_interval", "30s")
-	viper.SetDefault("websocket.connection_timeout", "60s")
-	viper.SetDefault("websocket.max_connections", 1000)
-	viper.SetDefault("websocket.enable_presence", true)
 
 	// JSVM defaults
 	viper.SetDefault("jsvm.enabled", true)

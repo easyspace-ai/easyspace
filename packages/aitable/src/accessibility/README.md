@@ -11,7 +11,7 @@
 **用途**: 完整的键盘导航支持
 
 ```tsx
-import { KeyboardNavigation } from '@luckdb/aitable/accessibility';
+import { KeyboardNavigation } from "@luckdb/aitable/accessibility";
 
 const navigation = new KeyboardNavigation({
   onNavigate: (direction, position) => {
@@ -35,7 +35,7 @@ const navigation = new KeyboardNavigation({
 });
 
 // 注册键盘事件
-element.addEventListener('keydown', navigation.handleKeyDown);
+element.addEventListener("keydown", navigation.handleKeyDown);
 ```
 
 **支持的快捷键**：
@@ -58,7 +58,7 @@ element.addEventListener('keydown', navigation.handleKeyDown);
 **用途**: 焦点管理和焦点陷阱
 
 ```tsx
-import { FocusManager } from '@luckdb/aitable/accessibility';
+import { FocusManager } from "@luckdb/aitable/accessibility";
 
 const focusManager = new FocusManager(containerElement);
 
@@ -80,14 +80,14 @@ focusManager.enableFocusCycle();
 **用途**: ARIA标签和语义化管理
 
 ```tsx
-import { AriaManager } from '@luckdb/aitable/accessibility';
+import { AriaManager } from "@luckdb/aitable/accessibility";
 
 const ariaManager = new AriaManager();
 
 // 为Grid添加ARIA标签
 ariaManager.labelGrid(gridElement, {
-  label: '数据表格',
-  description: '包含100行，5列的数据表格',
+  label: "数据表格",
+  description: "包含100行，5列的数据表格",
   rowCount: 100,
   columnCount: 5,
 });
@@ -96,12 +96,12 @@ ariaManager.labelGrid(gridElement, {
 ariaManager.labelCell(cellElement, {
   row: 1,
   column: 2,
-  value: 'John Doe',
-  columnName: '姓名',
+  value: "John Doe",
+  columnName: "姓名",
 });
 
 // 更新实时区域（屏幕阅读器）
-ariaManager.announce('已添加新行');
+ariaManager.announce("已添加新行");
 ```
 
 ## ARIA标签规范
@@ -109,7 +109,13 @@ ariaManager.announce('已添加新行');
 ### Grid容器
 
 ```html
-<div role="grid" aria-label="数据表格" aria-rowcount="100" aria-colcount="5" tabindex="0"></div>
+<div
+  role="grid"
+  aria-label="数据表格"
+  aria-rowcount="100"
+  aria-colcount="5"
+  tabindex="0"
+></div>
 ```
 
 ### 行
@@ -184,7 +190,7 @@ ariaManager.announce('已添加新行');
 ```css
 /* Grid使用Tailwind的focus-visible */
 .grid-cell:focus-visible {
-  outline: 2px solid theme('colors.blue.500');
+  outline: 2px solid theme("colors.blue.500");
   outline-offset: -2px;
 }
 ```
@@ -210,15 +216,15 @@ ariaManager.announce('已添加新行');
 ### 键盘导航测试
 
 ```tsx
-import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
-test('支持箭头键导航', async () => {
+test("支持箭头键导航", async () => {
   const { container } = render(<Grid {...props} />);
   const grid = container.querySelector('[role="grid"]');
 
   grid?.focus();
-  await userEvent.keyboard('{ArrowDown}');
+  await userEvent.keyboard("{ArrowDown}");
 
   // 验证焦点移动
 });
@@ -227,12 +233,12 @@ test('支持箭头键导航', async () => {
 ### ARIA标签测试
 
 ```tsx
-test('Grid有正确的ARIA标签', () => {
+test("Grid有正确的ARIA标签", () => {
   const { container } = render(<Grid {...props} />);
   const grid = container.querySelector('[role="grid"]');
 
-  expect(grid).toHaveAttribute('aria-rowcount');
-  expect(grid).toHaveAttribute('aria-colcount');
+  expect(grid).toHaveAttribute("aria-rowcount");
+  expect(grid).toHaveAttribute("aria-colcount");
 });
 ```
 

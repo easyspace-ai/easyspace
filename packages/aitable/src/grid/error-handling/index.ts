@@ -1,5 +1,5 @@
-export { GridErrorBoundary } from './GridErrorBoundary';
-export { FeatureErrorBoundary } from './FeatureErrorBoundary';
+export { GridErrorBoundary } from "./GridErrorBoundary";
+export { FeatureErrorBoundary } from "./FeatureErrorBoundary";
 
 // 错误类型定义
 export interface GridError extends Error {
@@ -10,11 +10,11 @@ export interface GridError extends Error {
 
 // 错误分类
 export enum GridErrorType {
-  RENDER_ERROR = 'RENDER_ERROR',
-  VALIDATION_ERROR = 'VALIDATION_ERROR',
-  API_ERROR = 'API_ERROR',
-  STATE_ERROR = 'STATE_ERROR',
-  PERFORMANCE_ERROR = 'PERFORMANCE_ERROR',
+  RENDER_ERROR = "RENDER_ERROR",
+  VALIDATION_ERROR = "VALIDATION_ERROR",
+  API_ERROR = "API_ERROR",
+  STATE_ERROR = "STATE_ERROR",
+  PERFORMANCE_ERROR = "PERFORMANCE_ERROR",
 }
 
 // 错误处理器
@@ -46,20 +46,20 @@ export class GridErrorHandler {
       context,
     };
 
-    this.errorCallbacks.forEach(callback => {
+    this.errorCallbacks.forEach((callback) => {
       try {
         callback(gridError);
       } catch (callbackError) {
-        console.warn('Error in error callback:', callbackError);
+        console.warn("Error in error callback:", callbackError);
       }
     });
 
     // 开发环境打印
-    if (process.env.NODE_ENV === 'development') {
-      console.group('🚨 Grid Error');
-      console.error('Error:', error);
+    if (process.env.NODE_ENV === "development") {
+      console.group("🚨 Grid Error");
+      console.error("Error:", error);
       if (context) {
-        console.error('Context:', context);
+        console.error("Context:", context);
       }
       console.groupEnd();
     }

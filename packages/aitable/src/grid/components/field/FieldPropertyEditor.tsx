@@ -3,12 +3,16 @@
  * 占位符实现 - 待完善
  */
 
-import { forwardRef, useImperativeHandle, useState } from 'react';
-import type { ForwardRefRenderFunction } from 'react';
-import type { IGridColumn } from '../../types/grid';
+import { forwardRef, useImperativeHandle, useState } from "react";
+import type { ForwardRefRenderFunction } from "react";
+import type { IGridColumn } from "../../types/grid";
 
 export interface IFieldPropertyEditorRef {
-  show: (column: IGridColumn, columnIndex: number, position?: { x: number; y: number; width?: number }) => void;
+  show: (
+    column: IGridColumn,
+    columnIndex: number,
+    position?: { x: number; y: number; width?: number },
+  ) => void;
   hide: () => void;
 }
 
@@ -26,7 +30,7 @@ const FieldPropertyEditorBase: ForwardRefRenderFunction<
   const [currentColumn, setCurrentColumn] = useState<IGridColumn | null>(null);
   const [columnIndex, setColumnIndex] = useState<number>(-1);
   const [position, setPosition] = useState({ x: 0, y: 0, width: 300 });
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
 
   useImperativeHandle(ref, () => ({
     show: (column, index, pos) => {
@@ -44,7 +48,9 @@ const FieldPropertyEditorBase: ForwardRefRenderFunction<
     },
   }));
 
-  if (!visible || !currentColumn) {return null;}
+  if (!visible || !currentColumn) {
+    return null;
+  }
 
   const handleSave = () => {
     if (currentColumn) {
@@ -59,24 +65,26 @@ const FieldPropertyEditorBase: ForwardRefRenderFunction<
   return (
     <div
       style={{
-        position: 'fixed',
+        position: "fixed",
         left: position.x,
         top: position.y,
         width: position.width,
-        background: 'white',
-        border: '1px solid #ddd',
-        borderRadius: '8px',
-        padding: '16px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        background: "white",
+        border: "1px solid #ddd",
+        borderRadius: "8px",
+        padding: "16px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
         zIndex: 10000,
       }}
     >
-      <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: 600 }}>
+      <h3 style={{ margin: "0 0 16px 0", fontSize: "16px", fontWeight: 600 }}>
         编辑字段属性
       </h3>
-      
-      <div style={{ marginBottom: '12px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px' }}>
+
+      <div style={{ marginBottom: "12px" }}>
+        <label
+          style={{ display: "block", marginBottom: "4px", fontSize: "14px" }}
+        >
           字段名称
         </label>
         <input
@@ -84,24 +92,31 @@ const FieldPropertyEditorBase: ForwardRefRenderFunction<
           value={name}
           onChange={(e) => setName(e.target.value)}
           style={{
-            width: '100%',
-            padding: '8px',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            fontSize: '14px',
+            width: "100%",
+            padding: "8px",
+            border: "1px solid #ddd",
+            borderRadius: "4px",
+            fontSize: "14px",
           }}
         />
       </div>
 
-      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '16px' }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "8px",
+          justifyContent: "flex-end",
+          marginTop: "16px",
+        }}
+      >
         <button
           onClick={() => setVisible(false)}
           style={{
-            padding: '8px 16px',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            background: 'white',
-            cursor: 'pointer',
+            padding: "8px 16px",
+            border: "1px solid #ddd",
+            borderRadius: "4px",
+            background: "white",
+            cursor: "pointer",
           }}
         >
           取消
@@ -109,12 +124,12 @@ const FieldPropertyEditorBase: ForwardRefRenderFunction<
         <button
           onClick={handleSave}
           style={{
-            padding: '8px 16px',
-            border: 'none',
-            borderRadius: '4px',
-            background: '#1890ff',
-            color: 'white',
-            cursor: 'pointer',
+            padding: "8px 16px",
+            border: "none",
+            borderRadius: "4px",
+            background: "#1890ff",
+            color: "white",
+            cursor: "pointer",
           }}
         >
           保存
@@ -125,4 +140,3 @@ const FieldPropertyEditorBase: ForwardRefRenderFunction<
 };
 
 export const FieldPropertyEditor = forwardRef(FieldPropertyEditorBase);
-

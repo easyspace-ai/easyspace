@@ -22,7 +22,7 @@ export interface CreateRecordCommand {
   order?: {
     viewId: string;
     anchorId: string;
-    position: 'before' | 'after';
+    position: "before" | "after";
   };
 }
 
@@ -44,4 +44,3 @@ export interface BatchUpdateRecordCommand {
     fields: Map<string, any> | Record<string, any>;
   }>;
 }
-

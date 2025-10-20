@@ -2,7 +2,5 @@
  * All Grid Types
  */
 
-export * from './grid';
-export * from './editor';
-
-
+export * from "./grid";
+export * from "./editor";

@@ -98,6 +98,9 @@ func (sm *SSEManager) startBusinessEventSubscription() {
 		events.BusinessEventTypeRecordUpdate,
 		events.BusinessEventTypeRecordDelete,
 		events.BusinessEventTypeCalculationUpdate,
+		events.BusinessEventTypeViewCreate,
+		events.BusinessEventTypeViewUpdate,
+		events.BusinessEventTypeViewDelete,
 	}
 
 	eventChan, err := sm.businessEvents.Subscribe(sm.ctx, eventTypes)

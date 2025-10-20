@@ -1,5 +1,5 @@
-import React from 'react';
-import { tokens, elevation } from '../../grid/design-system';
+import React from "react";
+import { tokens, elevation } from "../../grid/design-system";
 
 export interface EmptyStateProps {
   title?: string;
@@ -11,7 +11,7 @@ export interface EmptyStateProps {
 
 /**
  * 空状态组件
- * 
+ *
  * 设计原则：
  * - 友好而不失专业
  * - 引导用户采取行动
@@ -25,24 +25,24 @@ export function EmptyState({
   icon,
 }: EmptyStateProps) {
   return (
-    <div 
+    <div
       className="flex flex-col items-center justify-center"
-      style={{ 
-        minHeight: '400px',
-        padding: '48px 24px',
+      style={{
+        minHeight: "400px",
+        padding: "48px 24px",
       }}
     >
       {/* 图标 */}
       <div
         style={{
-          width: '96px',
-          height: '96px',
+          width: "96px",
+          height: "96px",
           borderRadius: tokens.radius.xl,
           backgroundColor: tokens.colors.surface.hover,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '24px',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: "24px",
           border: `1px solid ${tokens.colors.border.subtle}`,
         }}
       >
@@ -68,10 +68,10 @@ export function EmptyState({
       {/* 标题 */}
       <h3
         style={{
-          fontSize: '18px',
+          fontSize: "18px",
           fontWeight: tokens.typography.fontWeight.semibold,
           color: tokens.colors.text.primary,
-          marginBottom: '8px',
+          marginBottom: "8px",
           letterSpacing: tokens.typography.letterSpacing.tight,
         }}
       >
@@ -81,12 +81,12 @@ export function EmptyState({
       {/* 描述 */}
       <p
         style={{
-          fontSize: '14px',
+          fontSize: "14px",
           color: tokens.colors.text.secondary,
-          textAlign: 'center',
-          maxWidth: '320px',
-          marginBottom: '24px',
-          lineHeight: '1.6',
+          textAlign: "center",
+          maxWidth: "320px",
+          marginBottom: "24px",
+          lineHeight: "1.6",
         }}
       >
         {description}
@@ -98,36 +98,36 @@ export function EmptyState({
           onClick={onAction}
           className="group"
           style={{
-            height: '40px',
-            padding: '0 24px',
+            height: "40px",
+            padding: "0 24px",
             borderRadius: tokens.radius.md,
             backgroundColor: tokens.colors.primary[500],
-            color: 'white',
-            fontSize: '14px',
+            color: "white",
+            fontSize: "14px",
             fontWeight: tokens.typography.fontWeight.medium,
-            border: 'none',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            transition: 'all 150ms cubic-bezier(0.4, 0.0, 0.2, 1)',
+            border: "none",
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            transition: "all 150ms cubic-bezier(0.4, 0.0, 0.2, 1)",
             boxShadow: elevation.sm,
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = tokens.colors.primary[600];
             e.currentTarget.style.boxShadow = elevation.md;
-            e.currentTarget.style.transform = 'translateY(-1px)';
+            e.currentTarget.style.transform = "translateY(-1px)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = tokens.colors.primary[500];
             e.currentTarget.style.boxShadow = elevation.sm;
-            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.transform = "translateY(0)";
           }}
           onMouseDown={(e) => {
-            e.currentTarget.style.transform = 'translateY(0) scale(0.98)';
+            e.currentTarget.style.transform = "translateY(0) scale(0.98)";
           }}
           onMouseUp={(e) => {
-            e.currentTarget.style.transform = 'translateY(-1px) scale(1)';
+            e.currentTarget.style.transform = "translateY(-1px) scale(1)";
           }}
         >
           <svg
@@ -149,5 +149,3 @@ export function EmptyState({
     </div>
   );
 }
-
-

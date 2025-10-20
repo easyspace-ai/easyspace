@@ -1,11 +1,11 @@
 /**
  * Grid Store Hooks
- * 
+ *
  * 提供便捷的 hooks 来访问和操作 store
  * 这些 hooks 经过优化，只订阅需要的状态，避免无脑重渲染
  */
 
-import { useGridStore } from './grid-store';
+import { useGridStore } from "./grid-store";
 import {
   selectField,
   selectFieldsArray,
@@ -16,7 +16,7 @@ import {
   selectIsRowSelected,
   selectIsColumnSelected,
   selectCellValue,
-} from './grid-store';
+} from "./grid-store";
 
 // ============= Data Hooks =============
 
@@ -148,7 +148,7 @@ export function usePermissions() {
 /**
  * Check specific permission
  */
-export function useCheckPermission(action: keyof import('./types').Permission) {
+export function useCheckPermission(action: keyof import("./types").Permission) {
   return useGridStore((state) => state.checkPermission(action));
 }
 

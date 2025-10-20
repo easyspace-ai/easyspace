@@ -24,8 +24,12 @@ export class OperationHistory {
   private maxSize: number = 100;
   private changeListeners: Array<(history: IHistoryEntry[]) => void> = [];
 
-  constructor(config: number | { maxSize?: number; autoSave?: boolean; storageKey?: string } = 100) {
-    if (typeof config === 'number') {
+  constructor(
+    config:
+      | number
+      | { maxSize?: number; autoSave?: boolean; storageKey?: string } = 100,
+  ) {
+    if (typeof config === "number") {
       this.maxSize = config;
     } else {
       this.maxSize = config.maxSize || 100;
@@ -35,15 +39,15 @@ export class OperationHistory {
   push(operation: IOperation | IHistoryEntry): void {
     // 移除当前位置之后的所有操作
     this.history = this.history.slice(0, this.currentIndex + 1);
-    
+
     // 添加新操作
     const entry: IHistoryEntry = {
-      id: 'id' in operation ? operation.id : `op_${Date.now()}`,
+      id: "id" in operation ? operation.id : `op_${Date.now()}`,
       type: operation.type,
       data: operation.data,
       timestamp: operation.timestamp || Date.now(),
     };
-    
+
     this.history.push(entry);
 
     // 限制历史记录大小
@@ -52,7 +56,7 @@ export class OperationHistory {
     } else {
       this.currentIndex++;
     }
-    
+
     this.notifyChange();
   }
 
@@ -94,14 +98,15 @@ export class OperationHistory {
   }
 
   getRecordHistory(recordId: string): IHistoryEntry[] {
-    return this.getHistory().filter(entry => 
-      entry.data?.recordId === recordId
+    return this.getHistory().filter(
+      (entry) => entry.data?.recordId === recordId,
     );
   }
 
   getFieldHistory(recordId: string, fieldId: string): IHistoryEntry[] {
-    return this.getHistory().filter(entry => 
-      entry.data?.recordId === recordId && entry.data?.fieldId === fieldId
+    return this.getHistory().filter(
+      (entry) =>
+        entry.data?.recordId === recordId && entry.data?.fieldId === fieldId,
     );
   }
 
@@ -119,10 +124,14 @@ export class OperationHistory {
 
   private notifyChange(): void {
     const currentHistory = this.getHistory();
-    this.changeListeners.forEach(listener => listener(currentHistory));
+    this.changeListeners.forEach((listener) => listener(currentHistory));
   }
 }
 
-export function createOperationHistory(config?: { maxSize?: number; autoSave?: boolean; storageKey?: string }): OperationHistory {
+export function createOperationHistory(config?: {
+  maxSize?: number;
+  autoSave?: boolean;
+  storageKey?: string;
+}): OperationHistory {
   return new OperationHistory(config?.maxSize);
 }

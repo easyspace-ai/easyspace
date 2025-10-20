@@ -1,1 +1,1 @@
-export * from './ImageManager';
+export * from "./ImageManager";

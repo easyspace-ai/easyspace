@@ -2,7 +2,7 @@
  * Table DTO - API 层 Table 数据传输对象
  */
 
-import type { CreateFieldDTO } from './field.dto';
+import type { CreateFieldDTO } from "./field.dto";
 
 /**
  * Table DTO (从 API 返回)
@@ -37,4 +37,3 @@ export interface UpdateTableDTO {
   icon?: string;
   description?: string;
 }
-

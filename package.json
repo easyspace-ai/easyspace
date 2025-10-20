@@ -16,18 +16,22 @@
     "typecheck": "turbo typecheck",
     "postinstall": "bun run check-deps",
     "check-deps": "check-dependency-version-consistency .",
-    "gen": "turbo gen --config 'turbo/generators/config.ts'"
+    "gen": "turbo gen --config 'turbo/generators/config.ts'",
+    "upgrade": "bun upgrade --latest",
+    "deps:check": "bun pm ls --outdated",
+    "deps:update": "bun update"
   },
   "devDependencies": {
     "@turbo/gen": "1.13.3",
     "check-dependency-version-consistency": "4.1.0",
-    "prettier": "3.2.5",
+    "prettier": "3.3.2",
     "tailwind-config-viewer": "^2.0.4",
     "turbo": "1.13.3",
-    "typescript": "5.4.5"
+    "typescript": "^5.5.4"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=18",
+    "bun": ">=1.2.0"
   },
   "prettier": "@easyspace/prettier-config",
   "workspaces": [
@@ -35,7 +39,7 @@
     "packages/*",
     "tooling/*"
   ],
-  "packageManager": "bun@v1.1.10",
+  "packageManager": "bun@1.2.22",
   "dependencies": {
     "@clerk/nextjs": "^6.20.0"
   }

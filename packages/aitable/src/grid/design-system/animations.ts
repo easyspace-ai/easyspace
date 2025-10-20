@@ -1,8 +1,8 @@
 /**
  * 动画系统
- * 
+ *
  * 精心设计的微动画，提升用户体验
- * 
+ *
  * 参考：
  * - Framer Motion
  * - Radix UI
@@ -77,7 +77,7 @@ export const spring = {
   animate: { scale: 1, opacity: 1 },
   exit: { scale: 0.9, opacity: 0 },
   transition: {
-    type: 'spring',
+    type: "spring",
     stiffness: 300,
     damping: 25,
   },
@@ -88,34 +88,34 @@ export const spring = {
  */
 export const tailwindAnimations = {
   // 淡入
-  fadeIn: 'animate-in fade-in-0 duration-150',
-  
+  fadeIn: "animate-in fade-in-0 duration-150",
+
   // 缩放淡入
-  scaleIn: 'animate-in fade-in-0 zoom-in-95 duration-200',
-  
+  scaleIn: "animate-in fade-in-0 zoom-in-95 duration-200",
+
   // 从上滑入
-  slideInFromTop: 'animate-in fade-in-0 slide-in-from-top-2 duration-200',
-  
+  slideInFromTop: "animate-in fade-in-0 slide-in-from-top-2 duration-200",
+
   // 从下滑入
-  slideInFromBottom: 'animate-in fade-in-0 slide-in-from-bottom-2 duration-200',
-  
+  slideInFromBottom: "animate-in fade-in-0 slide-in-from-bottom-2 duration-200",
+
   // 从左滑入
-  slideInFromLeft: 'animate-in fade-in-0 slide-in-from-left-2 duration-200',
-  
+  slideInFromLeft: "animate-in fade-in-0 slide-in-from-left-2 duration-200",
+
   // 从右滑入
-  slideInFromRight: 'animate-in fade-in-0 slide-in-from-right-2 duration-200',
-  
+  slideInFromRight: "animate-in fade-in-0 slide-in-from-right-2 duration-200",
+
   // 脉冲（loading）
-  pulse: 'animate-pulse',
-  
+  pulse: "animate-pulse",
+
   // 旋转（loading spinner）
-  spin: 'animate-spin',
-  
+  spin: "animate-spin",
+
   // Ping（通知提示）
-  ping: 'animate-ping',
-  
+  ping: "animate-ping",
+
   // Bounce（强调）
-  bounce: 'animate-bounce',
+  bounce: "animate-bounce",
 };
 
 /**
@@ -166,19 +166,20 @@ export const customKeyframes = `
  */
 export const hoverTransitions = {
   // 标准 hover（按钮、卡片）
-  standard: 'transition-all duration-200 ease-out hover:scale-[1.02] active:scale-[0.98]',
-  
+  standard:
+    "transition-all duration-200 ease-out hover:scale-[1.02] active:scale-[0.98]",
+
   // 颜色变化（背景、文字）
-  colors: 'transition-colors duration-150 ease-out',
-  
+  colors: "transition-colors duration-150 ease-out",
+
   // 阴影变化
-  shadow: 'transition-shadow duration-200 ease-out',
-  
+  shadow: "transition-shadow duration-200 ease-out",
+
   // Transform（位置、缩放、旋转）
-  transform: 'transition-transform duration-200 ease-out',
-  
+  transform: "transition-transform duration-200 ease-out",
+
   // Opacity
-  opacity: 'transition-opacity duration-150 ease-out',
+  opacity: "transition-opacity duration-150 ease-out",
 };
 
 /**
@@ -186,16 +187,19 @@ export const hoverTransitions = {
  */
 export const focusStyles = {
   // 标准 focus ring
-  standard: 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
-  
+  standard:
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+
   // 无 offset（紧凑布局）
-  compact: 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
-  
+  compact:
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+
   // 粗 ring（强调）
-  bold: 'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
-  
+  bold: "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+
   // 内部 ring（特殊场景）
-  inset: 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500',
+  inset:
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500",
 };
 
 /**
@@ -203,16 +207,18 @@ export const focusStyles = {
  */
 export const loadingStyles = {
   // Spinner
-  spinner: 'inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent',
-  
+  spinner:
+    "inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent",
+
   // Dots
-  dots: 'inline-flex gap-1',
-  
+  dots: "inline-flex gap-1",
+
   // Skeleton
-  skeleton: 'animate-pulse bg-gray-200 rounded',
-  
+  skeleton: "animate-pulse bg-gray-200 rounded",
+
   // Shimmer
-  shimmer: 'relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent',
+  shimmer:
+    "relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent",
 };
 
 /**
@@ -227,20 +233,19 @@ export const animations = {
   slideInFromLeft,
   slideInFromRight,
   spring,
-  
+
   // Tailwind classes
   tailwind: tailwindAnimations,
-  
+
   // Hover transitions
   hover: hoverTransitions,
-  
+
   // Focus styles
   focus: focusStyles,
-  
+
   // Loading states
   loading: loadingStyles,
-  
+
   // Custom keyframes
   keyframes: customKeyframes,
 };
-

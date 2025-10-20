@@ -9,21 +9,24 @@ import (
 	"github.com/easyspace-ai/luckdb/server/internal/domain/view/entity"
 	"github.com/easyspace-ai/luckdb/server/internal/domain/view/repository"
 	"github.com/easyspace-ai/luckdb/server/internal/domain/view/valueobject"
+	"github.com/easyspace-ai/luckdb/server/internal/events"
 	pkgerrors "github.com/easyspace-ai/luckdb/server/pkg/errors"
 	"github.com/easyspace-ai/luckdb/server/pkg/logger"
 )
 
 // ViewService 视图应用服务
 type ViewService struct {
-	viewRepo  repository.ViewRepository
-	tableRepo tableRepo.TableRepository // ✅ 添加表仓储，用于检查表存在性
+	viewRepo             repository.ViewRepository
+	tableRepo            tableRepo.TableRepository    // ✅ 添加表仓储，用于检查表存在性
+	businessEventManager *events.BusinessEventManager // ✅ 添加业务事件管理器，用于发布业务事件
 }
 
 // NewViewService 创建视图服务
-func NewViewService(viewRepo repository.ViewRepository, tableRepo tableRepo.TableRepository) *ViewService {
+func NewViewService(viewRepo repository.ViewRepository, tableRepo tableRepo.TableRepository, businessEventManager *events.BusinessEventManager) *ViewService {
 	return &ViewService{
-		viewRepo:  viewRepo,
-		tableRepo: tableRepo,
+		viewRepo:             viewRepo,
+		tableRepo:            tableRepo,
+		businessEventManager: businessEventManager,
 	}
 }
 
@@ -362,6 +365,30 @@ func (s *ViewService) UpdateViewColumnMeta(
 	// 4. 保存更新
 	if err := s.viewRepo.Update(ctx, view); err != nil {
 		return pkgerrors.ErrDatabaseOperation.WithDetails(fmt.Sprintf("更新视图失败: %v", err))
+	}
+
+	// 5. 发布业务事件，触发 YJS 同步
+	if s.businessEventManager != nil {
+		event := &events.BusinessEvent{
+			Type:    events.BusinessEventTypeViewUpdate,
+			TableID: view.TableID(),
+			Data: map[string]interface{}{
+				"view_id":     viewID,
+				"column_meta": columnMetaData,
+				"update_type": "column_meta",
+			},
+			UserID: "system", // TODO: 从上下文获取用户ID
+		}
+
+		if err := s.businessEventManager.Publish(event); err != nil {
+			logger.Warn("发布视图更新事件失败",
+				logger.String("view_id", viewID),
+				logger.ErrorField(err))
+		} else {
+			logger.Info("视图更新事件已发布",
+				logger.String("view_id", viewID),
+				logger.String("event_type", string(event.Type)))
+		}
 	}
 
 	logger.Info("视图列配置更新成功",

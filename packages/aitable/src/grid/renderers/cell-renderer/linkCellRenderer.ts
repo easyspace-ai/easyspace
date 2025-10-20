@@ -1,9 +1,9 @@
-import type { IGridTheme } from '../../configs';
-import { GRID_DEFAULT } from '../../configs';
-import type { IRectangle } from '../../interface';
-import { measuredCanvas } from '../../utils';
-import { drawLine, drawMultiLineText } from '../base-renderer';
-import { CellRegionType, CellType } from './interface';
+import type { IGridTheme } from "../../configs";
+import { GRID_DEFAULT } from "../../configs";
+import type { IRectangle } from "../../interface";
+import { measuredCanvas } from "../../utils";
+import { drawLine, drawMultiLineText } from "../base-renderer";
+import { CellRegionType, CellType } from "./interface";
 import type {
   IInternalCellRenderer,
   ICellRenderProps,
@@ -11,7 +11,7 @@ import type {
   ICellClickProps,
   ICellClickCallback,
   ICellMeasureProps,
-} from './interface';
+} from "./interface";
 
 interface ITextPosition {
   x: number;
@@ -36,8 +36,12 @@ interface ILinkCellData {
   text?: string;
 }
 
-const { cellHorizontalPadding, cellVerticalPaddingMD, cellTextLineHeight, maxRowCount } =
-  GRID_DEFAULT;
+const {
+  cellHorizontalPadding,
+  cellVerticalPaddingMD,
+  cellTextLineHeight,
+  maxRowCount,
+} = GRID_DEFAULT;
 
 const computeTextPositions = ({
   ctx,
@@ -51,7 +55,9 @@ const computeTextPositions = ({
   const { fontSizeSM } = theme;
   const drawWidth = width - 2 * cellHorizontalPadding;
   const drawHeight = height - cellVerticalPaddingMD;
-  const maxLines = isActive ? Infinity : Math.max(1, Math.floor(drawHeight / cellTextLineHeight));
+  const maxLines = isActive
+    ? Infinity
+    : Math.max(1, Math.floor(drawHeight / cellTextLineHeight));
 
   let row = 1;
   let index = 0;
@@ -61,11 +67,11 @@ const computeTextPositions = ({
   // Handle different data structures: array, object, or string
   let textArray: string[] = [];
   if (Array.isArray(data)) {
-    textArray = data.filter(item => item != null).map(item => String(item));
-  } else if (data && typeof data === 'object') {
+    textArray = data.filter((item) => item != null).map((item) => String(item));
+  } else if (data && typeof data === "object") {
     // Extract text from ILinkCellData object
     const linkData = data;
-    const displayText = linkData.title || linkData.text || linkData.url || '';
+    const displayText = linkData.title || linkData.text || linkData.url || "";
     if (displayText) {
       textArray = [displayText];
     }
@@ -84,7 +90,9 @@ const computeTextPositions = ({
     });
 
     for (const { text: lineText, width: textWidth } of textLines) {
-      if (row > maxLines) {break;}
+      if (row > maxLines) {
+        break;
+      }
 
       positions.push({
         x: drawX,
@@ -113,12 +121,19 @@ export const linkCellRenderer: IInternalCellRenderer<ILinkCell> = {
   measure: (cell: ILinkCell, props: ICellMeasureProps) => {
     const { data } = cell;
     const { ctx, theme, width, height } = props;
-    if (!ctx || !theme) return { width: width ?? 0, height: height ?? 0, totalHeight: height ?? 0 };
+    if (!ctx || !theme)
+      return {
+        width: width ?? 0,
+        height: height ?? 0,
+        totalHeight: height ?? 0,
+      };
 
     // Check if data is empty
-    const isEmpty = Array.isArray(data) ? !data.length : 
-                   (data && typeof data === 'object') ? (!data.title && !data.text && !data.url) :
-                   !data || data === '';
+    const isEmpty = Array.isArray(data)
+      ? !data.length
+      : data && typeof data === "object"
+        ? !data.title && !data.text && !data.url
+        : !data || data === "";
     if (isEmpty) {
       return { width, height, totalHeight: height };
     }
@@ -132,9 +147,12 @@ export const linkCellRenderer: IInternalCellRenderer<ILinkCell> = {
     });
 
     const positionLength = textPositions.length;
-    if (!positionLength) {return { width, height, totalHeight: height };}
+    if (!positionLength) {
+      return { width, height, totalHeight: height };
+    }
 
-    const totalHeight = textPositions[positionLength - 1].y + cellTextLineHeight;
+    const totalHeight =
+      textPositions[positionLength - 1].y + cellTextLineHeight;
     const maxHeight = cellVerticalPaddingMD + maxRowCount * cellTextLineHeight;
     const finalHeight = Math.max(Math.min(totalHeight, maxHeight), height);
 
@@ -147,9 +165,14 @@ export const linkCellRenderer: IInternalCellRenderer<ILinkCell> = {
   draw: (cell: ILinkCell, props: ICellRenderProps) => {
     const { ctx, rect, theme, hoverCellPosition, isActive } = props;
     if (!ctx || !rect || !theme) return;
-    
+
     const { data } = cell;
-    const { x: originX, y: originY, width: originWidth, height: originHeight } = rect;
+    const {
+      x: originX,
+      y: originY,
+      width: originWidth,
+      height: originHeight,
+    } = rect;
     const hoverX = hoverCellPosition?.x ?? -1;
     const hoverY = hoverCellPosition?.y ?? -1;
     const { fontSizeSM, cellTextColorHighlight } = theme;
@@ -158,9 +181,11 @@ export const linkCellRenderer: IInternalCellRenderer<ILinkCell> = {
     ctx.beginPath();
 
     // Check if data is empty
-    const isEmpty = Array.isArray(data) ? !data.length : 
-                   (data && typeof data === 'object') ? (!data.title && !data.text && !data.url) :
-                   !data || data === '';
+    const isEmpty = Array.isArray(data)
+      ? !data.length
+      : data && typeof data === "object"
+        ? !data.title && !data.text && !data.url
+        : !data || data === "";
     if (!isEmpty && !isActive) {
       ctx.rect(originX, originY, originWidth, originHeight);
       ctx.clip();
@@ -174,12 +199,12 @@ export const linkCellRenderer: IInternalCellRenderer<ILinkCell> = {
       isActive,
     });
 
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
     ctx.fillStyle = cellTextColorHighlight;
 
-    let hoveredLink = '';
-    let hoveredKey = '';
+    let hoveredLink = "";
+    let hoveredKey = "";
     const offsetY = fontSizeSM / 2;
 
     textPositions.forEach((position) => {
@@ -215,17 +240,32 @@ export const linkCellRenderer: IInternalCellRenderer<ILinkCell> = {
 
     ctx.restore();
   },
-  checkRegion: (cell: ILinkCell, props: ICellClickProps, _shouldCalculate?: boolean) => {
-    const { hoverCellPosition, width, height, isActive, theme, activeCellBound } = props;
+  checkRegion: (
+    cell: ILinkCell,
+    props: ICellClickProps,
+    _shouldCalculate?: boolean,
+  ) => {
+    const {
+      hoverCellPosition,
+      width,
+      height,
+      isActive,
+      theme,
+      activeCellBound,
+    } = props;
     const { x: hoverX, y: originHoverY } = hoverCellPosition;
     const { fontSizeSM } = theme;
     const { data } = cell;
 
-    if (measuredCanvas == null) {return { type: CellRegionType.Blank };}
+    if (measuredCanvas == null) {
+      return { type: CellRegionType.Blank };
+    }
 
     const { ctx, setFontSize } = measuredCanvas;
 
-    if (!ctx) {return { type: CellRegionType.Blank };}
+    if (!ctx) {
+      return { type: CellRegionType.Blank };
+    }
 
     const scrollTop = activeCellBound?.scrollTop ?? 0;
     const hoverY = originHoverY + scrollTop;
@@ -242,15 +282,20 @@ export const linkCellRenderer: IInternalCellRenderer<ILinkCell> = {
 
     for (const position of textPositions) {
       const { x, y, width, link } = position;
-      if (hoverX >= x && hoverX <= x + width && hoverY >= y && hoverY <= y + cellTextLineHeight) {
+      if (
+        hoverX >= x &&
+        hoverX <= x + width &&
+        hoverY >= y &&
+        hoverY <= y + cellTextLineHeight
+      ) {
         // Extract URL based on data structure
         let linkUrl = link; // default to the text content
         if (Array.isArray(data)) {
           linkUrl = link;
-        } else if (data && typeof data === 'object') {
+        } else if (data && typeof data === "object") {
           const linkData = data as ILinkCellData;
           linkUrl = linkData.url || linkData.text || linkData.title || link;
-        } else if (typeof data === 'string') {
+        } else if (typeof data === "string") {
           linkUrl = data;
         }
         return { type: CellRegionType.Preview, data: linkUrl };
@@ -258,9 +303,15 @@ export const linkCellRenderer: IInternalCellRenderer<ILinkCell> = {
     }
     return { type: CellRegionType.Blank };
   },
-  onClick: (cell: ILinkCell, props: ICellClickProps, _callback: ICellClickCallback) => {
+  onClick: (
+    cell: ILinkCell,
+    props: ICellClickProps,
+    _callback: ICellClickCallback,
+  ) => {
     const cellRegion = linkCellRenderer.checkRegion?.(cell, props, true);
-    if (!cellRegion || cellRegion.type === CellRegionType.Blank) {return;}
+    if (!cellRegion || cellRegion.type === CellRegionType.Blank) {
+      return;
+    }
     if (cellRegion.type === CellRegionType.Preview) {
       cell.onClick?.(cellRegion.data as string);
     }

@@ -1,7 +1,11 @@
-import { GRID_DEFAULT } from '../../configs';
-import { drawRect } from '../base-renderer';
-import type { ICellRenderProps, IInternalCellRenderer, ILoadingCell } from './interface';
-import { CellType } from './interface';
+import { GRID_DEFAULT } from "../../configs";
+import { drawRect } from "../base-renderer";
+import type {
+  ICellRenderProps,
+  IInternalCellRenderer,
+  ILoadingCell,
+} from "./interface";
+import { CellType } from "./interface";
 
 const { cellHorizontalPadding, cellVerticalPaddingXS } = GRID_DEFAULT;
 
@@ -10,7 +14,7 @@ export const loadingCellRenderer: IInternalCellRenderer<ILoadingCell> = {
   draw: (_cell: ILoadingCell, props: ICellRenderProps) => {
     const { ctx, theme, rect } = props;
     if (!ctx || !theme || !rect) return;
-    
+
     const { x, y, width, height } = rect;
     const { cellBgLoading } = theme;
 

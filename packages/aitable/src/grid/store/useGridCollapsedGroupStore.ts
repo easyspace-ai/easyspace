@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface IGridCollapsedGroupState {
   collapsedGroupMap: Record<string, string[]>;
@@ -6,17 +6,19 @@ interface IGridCollapsedGroupState {
   getCollapsedGroupIds: (key: string) => string[];
 }
 
-export const useGridCollapsedGroupStore = create<IGridCollapsedGroupState>((set, get) => ({
-  collapsedGroupMap: {},
-  setCollapsedGroupMap: (key, groupIds) =>
-    set((state) => ({
-      collapsedGroupMap: {
-        ...state.collapsedGroupMap,
-        [key]: groupIds,
-      },
-    })),
-  getCollapsedGroupIds: (key) => {
-    const state = get();
-    return state.collapsedGroupMap[key] || [];
-  },
-}));
+export const useGridCollapsedGroupStore = create<IGridCollapsedGroupState>(
+  (set, get) => ({
+    collapsedGroupMap: {},
+    setCollapsedGroupMap: (key, groupIds) =>
+      set((state) => ({
+        collapsedGroupMap: {
+          ...state.collapsedGroupMap,
+          [key]: groupIds,
+        },
+      })),
+    getCollapsedGroupIds: (key) => {
+      const state = get();
+      return state.collapsedGroupMap[key] || [];
+    },
+  }),
+);

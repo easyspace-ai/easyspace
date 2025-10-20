@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { LuckDB } from '@luckdb/sdk';
+import { LuckDB } from '@easyspace/sdk';
 
 interface RealtimeSyncState {
   fields: any[];

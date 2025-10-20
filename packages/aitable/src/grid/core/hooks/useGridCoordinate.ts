@@ -2,15 +2,24 @@
  * Grid 坐标管理 Hook
  * 提取Grid.tsx中的坐标计算逻辑
  */
-import { useMemo, useCallback } from 'react';
-import { CoordinateManager } from '../../managers';
-import { LinearRowType } from '../../types/grid';
-import type { IGridColumn, ILinearRow, IGroupCollection } from '../../types/grid';
-import { GRID_DEFAULT } from '../../configs';
+import { useMemo, useCallback } from "react";
+import { CoordinateManager } from "../../managers";
+import { LinearRowType } from "../../types/grid";
+import type {
+  IGridColumn,
+  ILinearRow,
+  IGroupCollection,
+} from "../../types/grid";
+import { GRID_DEFAULT } from "../../configs";
 
-const defaultColumnWidth = (GRID_DEFAULT as any).defaultColumnWidth || GRID_DEFAULT.columnWidth || 100;
-const defaultRowHeight = (GRID_DEFAULT as any).defaultRowHeight || GRID_DEFAULT.rowHeight || 32;
-const defaultColumnHeaderHeight = (GRID_DEFAULT as any).defaultColumnHeaderHeight || GRID_DEFAULT.columnHeadHeight || 40;
+const defaultColumnWidth =
+  (GRID_DEFAULT as any).defaultColumnWidth || GRID_DEFAULT.columnWidth || 100;
+const defaultRowHeight =
+  (GRID_DEFAULT as any).defaultRowHeight || GRID_DEFAULT.rowHeight || 32;
+const defaultColumnHeaderHeight =
+  (GRID_DEFAULT as any).defaultColumnHeaderHeight ||
+  GRID_DEFAULT.columnHeadHeight ||
+  40;
 
 interface UseGridCoordinateProps {
   columns: IGridColumn[];
@@ -43,7 +52,9 @@ export function useGridCoordinate(props: UseGridCoordinateProps) {
     hasColumnStatistics,
   } = props;
 
-  const containerHeight = hasColumnStatistics ? height - columnStatisticHeight : height;
+  const containerHeight = hasColumnStatistics
+    ? height - columnStatisticHeight
+    : height;
   const columnCount = columns.length;
   const actualFreezeColumnCount = Math.min(freezeColumnCount, columnCount);
 
@@ -69,7 +80,7 @@ export function useGridCoordinate(props: UseGridCoordinateProps) {
   // 分组行信息（简化版，完整逻辑在原Grid.tsx）
   const groupRowsInfo = useMemo(() => {
     if (!groupCollection || !collapsedGroupIds) return {};
-    
+
     // 实际的分组计算逻辑在原Grid.tsx中，这里只是提取结构
     return {
       rowHeightMap: {},
@@ -102,19 +113,24 @@ export function useGridCoordinate(props: UseGridCoordinateProps) {
               }
         ) as ILinearRow;
       }
-      return linearRows[index] ?? ({ type: LinearRowType.Row, realIndex: -2 } as ILinearRow);
+      return (
+        linearRows[index] ??
+        ({ type: LinearRowType.Row, realIndex: -2 } as ILinearRow)
+      );
     },
-    [rowsInfo, pureRowCount]
+    [rowsInfo, pureRowCount],
   );
 
   // 真实行索引转换
   const real2RowIndex = useCallback(
     (index: number): number => {
       const { real2LinearRowMap } = rowsInfo;
-      if (real2LinearRowMap == null) {return index;}
+      if (real2LinearRowMap == null) {
+        return index;
+      }
       return real2LinearRowMap[index] ?? index;
     },
-    [rowsInfo]
+    [rowsInfo],
   );
 
   // 列宽映射
@@ -124,7 +140,7 @@ export function useGridCoordinate(props: UseGridCoordinateProps) {
         ...acc,
         [index]: column.width || defaultColumnWidth,
       }),
-      {}
+      {},
     );
   }, [columns]);
 
@@ -169,4 +185,3 @@ export function useGridCoordinate(props: UseGridCoordinateProps) {
     rowsInfo,
   };
 }
-

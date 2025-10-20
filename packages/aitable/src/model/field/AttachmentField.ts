@@ -3,7 +3,7 @@
  * File attachment fields
  */
 
-import { Field } from './Field';
+import { Field } from "./Field";
 
 export interface IAttachment {
   id: string;
@@ -22,7 +22,6 @@ export interface IAttachmentFieldOptions {
 }
 
 export class AttachmentField extends Field {
-
   validate(value: unknown): boolean {
     if (this.isEmpty(value)) {
       return true;
@@ -32,11 +31,11 @@ export class AttachmentField extends Field {
       return value.every(
         (item) =>
           item &&
-          typeof item === 'object' &&
-          'id' in item &&
-          'name' in item &&
-          'size' in item &&
-          'type' in item
+          typeof item === "object" &&
+          "id" in item &&
+          "name" in item &&
+          "size" in item &&
+          "type" in item,
       );
     }
 
@@ -45,15 +44,15 @@ export class AttachmentField extends Field {
 
   format(value: unknown): string {
     if (this.isEmpty(value)) {
-      return '';
+      return "";
     }
 
     if (Array.isArray(value)) {
       const attachments = value as IAttachment[];
-      return attachments.map((att) => att.name).join(', ');
+      return attachments.map((att) => att.name).join(", ");
     }
 
-    return '';
+    return "";
   }
 
   getEmptyValue(): IAttachment[] {
@@ -105,7 +104,7 @@ export class AttachmentField extends Field {
    */
   hasImages(value: unknown): boolean {
     const attachments = this.fromCellValue(value);
-    return attachments.some((att) => att.type.startsWith('image/'));
+    return attachments.some((att) => att.type.startsWith("image/"));
   }
 
   /**
@@ -113,8 +112,6 @@ export class AttachmentField extends Field {
    */
   getImages(value: unknown): IAttachment[] {
     const attachments = this.fromCellValue(value);
-    return attachments.filter((att) => att.type.startsWith('image/'));
+    return attachments.filter((att) => att.type.startsWith("image/"));
   }
 }
-
-

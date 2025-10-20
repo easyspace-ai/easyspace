@@ -9,19 +9,19 @@
 ### 使用方式
 
 ```typescript
-import { createSDKAdapter } from '@luckdb/aitable';
+import { createSDKAdapter } from "@luckdb/aitable";
 
 // 创建 SDK 适配器
 const apiClient = createSDKAdapter({
-  baseURL: 'http://localhost:8080/api/v1',
-  token: 'your-auth-token',
-  onError: (error) => console.error('API Error:', error),
-  onUnauthorized: () => console.log('Unauthorized'),
+  baseURL: "http://localhost:8080/api/v1",
+  token: "your-auth-token",
+  onError: (error) => console.error("API Error:", error),
+  onUnauthorized: () => console.log("Unauthorized"),
 });
 
 // 使用 API
 const bases = await apiClient.getBases();
-const tables = await apiClient.getTables('base-id');
+const tables = await apiClient.getTables("base-id");
 ```
 
 ### 在 React 组件中使用
@@ -55,11 +55,11 @@ function App() {
 ### 使用方式
 
 ```typescript
-import { createLegacyClient } from '@luckdb/aitable';
+import { createLegacyClient } from "@luckdb/aitable";
 
 const apiClient = createLegacyClient({
-  baseURL: 'http://localhost:8080/api/v1',
-  token: 'your-auth-token',
+  baseURL: "http://localhost:8080/api/v1",
+  token: "your-auth-token",
 });
 ```
 
@@ -68,20 +68,20 @@ const apiClient = createLegacyClient({
 使用工厂函数可以根据配置动态选择使用哪种实现：
 
 ```typescript
-import { createApiClient } from '@luckdb/aitable';
+import { createApiClient } from "@luckdb/aitable";
 
 // 使用 SDK（默认）
 const sdkClient = createApiClient({
-  baseURL: 'http://localhost:8080/api/v1',
-  token: 'your-auth-token',
-  type: 'sdk', // 可选，默认就是 'sdk'
+  baseURL: "http://localhost:8080/api/v1",
+  token: "your-auth-token",
+  type: "sdk", // 可选，默认就是 'sdk'
 });
 
 // 使用传统客户端
 const legacyClient = createApiClient({
-  baseURL: 'http://localhost:8080/api/v1',
-  token: 'your-auth-token',
-  type: 'legacy',
+  baseURL: "http://localhost:8080/api/v1",
+  token: "your-auth-token",
+  type: "legacy",
 });
 ```
 
@@ -97,7 +97,7 @@ import type {
   IRecord,
   IView,
   // ... 其他类型
-} from '@luckdb/aitable';
+} from "@luckdb/aitable";
 ```
 
 ### SDK 类型（推荐）
@@ -112,7 +112,7 @@ import type {
   CreateBaseRequest,
   CreateTableRequest,
   // ... 其他 SDK 类型
-} from '@luckdb/aitable';
+} from "@luckdb/aitable";
 ```
 
 ## API 接口
@@ -170,34 +170,34 @@ import type {
 ### 之前
 
 ```typescript
-import { ApiClient } from '@luckdb/aitable';
+import { ApiClient } from "@luckdb/aitable";
 
 const apiClient = new ApiClient({
-  baseURL: 'http://localhost:8080/api/v1',
-  token: 'your-auth-token',
+  baseURL: "http://localhost:8080/api/v1",
+  token: "your-auth-token",
 });
 ```
 
 ### 之后（推荐）
 
 ```typescript
-import { createSDKAdapter } from '@luckdb/aitable';
+import { createSDKAdapter } from "@luckdb/aitable";
 
 const apiClient = createSDKAdapter({
-  baseURL: 'http://localhost:8080/api/v1',
-  token: 'your-auth-token',
+  baseURL: "http://localhost:8080/api/v1",
+  token: "your-auth-token",
 });
 ```
 
 或者使用默认导出：
 
 ```typescript
-import { ApiClient } from '@luckdb/aitable';
+import { ApiClient } from "@luckdb/aitable";
 
 // 现在 ApiClient 默认指向 SDKAdapter
 const apiClient = new ApiClient({
-  baseURL: 'http://localhost:8080/api/v1',
-  token: 'your-auth-token',
+  baseURL: "http://localhost:8080/api/v1",
+  token: "your-auth-token",
 });
 ```
 
@@ -217,4 +217,3 @@ SDK 适配器目前有以下限制：
 - 通用的 HTTP 方法（get/post/patch/delete）不支持，请使用具体的业务方法
 
 这些功能将在未来的版本中添加。
-

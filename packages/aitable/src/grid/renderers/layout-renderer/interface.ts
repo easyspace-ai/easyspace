@@ -1,7 +1,17 @@
-import type { IGridTheme } from '../../configs';
-import type { ICellPosition, IGridColumn, IRectangle, IRowControlItem, ICellItem } from '../../types/grid';
-import type { CoordinateManager, ImageManager, SpriteManager } from '../../managers';
-import type { ICell } from '../cell-renderer/interface';
+import type { IGridTheme } from "../../configs";
+import type {
+  ICellPosition,
+  IGridColumn,
+  IRectangle,
+  IRowControlItem,
+  ICellItem,
+} from "../../types/grid";
+import type {
+  CoordinateManager,
+  ImageManager,
+  SpriteManager,
+} from "../../managers";
+import type { ICell } from "../cell-renderer/interface";
 
 export interface IRenderLayerProps {
   getCellContent: (cell: ICellItem) => ICell;
@@ -9,7 +19,7 @@ export interface IRenderLayerProps {
 }
 
 export interface ICellDrawerProps extends IRectangle {
-  getCellContent: IRenderLayerProps['getCellContent'];
+  getCellContent: IRenderLayerProps["getCellContent"];
   theme: IGridTheme;
   fill?: string;
   stroke?: string;
@@ -39,7 +49,7 @@ export interface IGroupRowHeaderDrawerProps extends IRectangle {
   theme: IGridTheme;
   isCollapsed: boolean;
   spriteManager: SpriteManager;
-  groupCollection: IRenderLayerProps['groupCollection'];
+  groupCollection: IRenderLayerProps["groupCollection"];
 }
 
 export interface IGroupRowDrawerProps extends IGroupRowHeaderDrawerProps {
@@ -79,13 +89,13 @@ export interface IGridHeaderDrawerProps extends IRectangle {
 }
 
 export enum RenderRegion {
-  Freeze = 'Freeze',
-  Other = 'Other',
+  Freeze = "Freeze",
+  Other = "Other",
 }
 
 export enum DividerRegion {
-  Top = 'Top',
-  Bottom = 'Bottom',
+  Top = "Top",
+  Bottom = "Bottom",
 }
 
 export interface ILayoutDrawerProps extends IRenderLayerProps {

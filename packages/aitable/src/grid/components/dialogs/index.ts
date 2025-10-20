@@ -2,5 +2,4 @@
  * Dialog Components
  */
 
-export * from './DeleteConfirmDialog';
-
+export * from "./DeleteConfirmDialog";

@@ -1,14 +1,14 @@
-import { GRID_DEFAULT } from '../../configs';
-import { inRange } from '../../utils';
-import { drawCheckbox } from '../base-renderer';
-import { CellRegionType, CellType } from './interface';
+import { GRID_DEFAULT } from "../../configs";
+import { inRange } from "../../utils";
+import { drawCheckbox } from "../base-renderer";
+import { CellRegionType, CellType } from "./interface";
 import type {
   IInternalCellRenderer,
   ICellRenderProps,
   IBooleanCell,
   ICellClickProps,
   ICellClickCallback,
-} from './interface';
+} from "./interface";
 
 const { cellHorizontalPadding } = GRID_DEFAULT;
 
@@ -17,20 +17,21 @@ export const booleanCellRenderer: IInternalCellRenderer<IBooleanCell> = {
   needsHover: true,
   needsHoverPosition: true,
   draw: (cell: IBooleanCell, props: ICellRenderProps) => {
-    const { data, isMultiple, contentAlign = 'center' } = cell;
+    const { data, isMultiple, contentAlign = "center" } = cell;
     const { ctx, rect, theme } = props;
     if (!ctx || !rect || !theme) return;
-    
+
     const { x, y, width, height } = rect;
-    const { iconSizeSM, staticWhite, iconBgSelected, rowHeaderTextColor } = theme;
+    const { iconSizeSM, staticWhite, iconBgSelected, rowHeaderTextColor } =
+      theme;
     const halfIconSize = iconSizeSM / 2;
 
     if (!isMultiple) {
       let textOffsetX = width / 2 - halfIconSize;
 
-      if (contentAlign === 'left') {
+      if (contentAlign === "left") {
         textOffsetX = cellHorizontalPadding;
-      } else if (contentAlign === 'right') {
+      } else if (contentAlign === "right") {
         textOffsetX = width - cellHorizontalPadding - iconSizeSM;
       }
 
@@ -69,12 +70,18 @@ export const booleanCellRenderer: IInternalCellRenderer<IBooleanCell> = {
       ctx.restore();
     }
   },
-  checkRegion: (cell: IBooleanCell, props: ICellClickProps, _shouldCalculate?: boolean) => {
+  checkRegion: (
+    cell: IBooleanCell,
+    props: ICellClickProps,
+    _shouldCalculate?: boolean,
+  ) => {
     const { data, readonly } = cell;
-    if (readonly) {return { type: CellRegionType.Blank };}
+    if (readonly) {
+      return { type: CellRegionType.Blank };
+    }
     const { hoverCellPosition, width, height, theme } = props;
     if (!hoverCellPosition || !theme) return { type: CellRegionType.Blank };
-    
+
     const { x, y } = hoverCellPosition;
     const { iconSizeSM } = theme;
     const halfIconSize = iconSizeSM / 2;
@@ -90,9 +97,15 @@ export const booleanCellRenderer: IInternalCellRenderer<IBooleanCell> = {
     }
     return { type: CellRegionType.Blank };
   },
-  onClick: (cell: IBooleanCell, props: ICellClickProps, callback: ICellClickCallback) => {
+  onClick: (
+    cell: IBooleanCell,
+    props: ICellClickProps,
+    callback: ICellClickCallback,
+  ) => {
     const cellRegion = booleanCellRenderer.checkRegion?.(cell, props, true);
-    if (!cellRegion || cellRegion.type === CellRegionType.Blank) {return;}
+    if (!cellRegion || cellRegion.type === CellRegionType.Blank) {
+      return;
+    }
     callback(cellRegion);
   },
 };

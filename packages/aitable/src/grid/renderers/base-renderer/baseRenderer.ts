@@ -1,5 +1,5 @@
-import { LRUCache } from 'lru-cache';
-import { parseToRGB } from '../../utils';
+import { LRUCache } from "lru-cache";
+import { parseToRGB } from "../../utils";
 import type {
   ILineProps,
   IMultiLineTextProps,
@@ -15,16 +15,24 @@ import type {
   IChartBarProps,
   ITextInfo,
   IAvatarProps,
-} from './interface';
+} from "./interface";
 
-const singleLineTextInfoCache: LRUCache<string, { text: string; width: number }> = new LRUCache({
+const singleLineTextInfoCache: LRUCache<
+  string,
+  { text: string; width: number }
+> = new LRUCache({
   max: 1000,
 });
 
-const multiLineTextInfoCache: LRUCache<string, ITextInfo[]> = new LRUCache({ max: 1000 });
+const multiLineTextInfoCache: LRUCache<string, ITextInfo[]> = new LRUCache({
+  max: 1000,
+});
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export const drawMultiLineText = (ctx: CanvasRenderingContext2D, props: IMultiLineTextProps) => {
+export const drawMultiLineText = (
+  ctx: CanvasRenderingContext2D,
+  props: IMultiLineTextProps,
+) => {
   const {
     x = 0,
     y = 0,
@@ -34,16 +42,16 @@ export const drawMultiLineText = (ctx: CanvasRenderingContext2D, props: IMultiLi
     isUnderline,
     fontSize = 13,
     lineHeight = 22,
-    fill = 'black',
-    textAlign = 'left',
-    verticalAlign = 'middle',
+    fill = "black",
+    textAlign = "left",
+    verticalAlign = "middle",
     needRender = true,
   } = props;
 
   let lines: ITextInfo[] = [];
-  const ellipsis = '...';
+  const ellipsis = "...";
   const ellipsisWidth = ctx.measureText(ellipsis).width;
-  let currentLine = '';
+  let currentLine = "";
   let currentLineWidth = 0;
 
   const cacheKey = `${text}-${fontSize}-${maxWidth}-${maxLines}`;
@@ -55,25 +63,28 @@ export const drawMultiLineText = (ctx: CanvasRenderingContext2D, props: IMultiLi
     for (let i = 0; i < text.length; i++) {
       const char = text[i];
 
-      if (char === '\n') {
+      if (char === "\n") {
         if (lines.length + 1 === maxLines && i < text.length - 1) {
-          lines.push({ text: currentLine + ellipsis, width: currentLineWidth + ellipsisWidth });
-          currentLine = '';
+          lines.push({
+            text: currentLine + ellipsis,
+            width: currentLineWidth + ellipsisWidth,
+          });
+          currentLine = "";
           currentLineWidth = 0;
           break;
         }
         lines.push({ text: currentLine, width: currentLineWidth });
-        currentLine = '';
+        currentLine = "";
         currentLineWidth = 0;
         continue;
       }
 
-      const charWidth = ctx.measureText(char ?? '').width;
+      const charWidth = ctx.measureText(char ?? "").width;
 
       if (currentLineWidth + charWidth > maxWidth) {
         if (lines.length < maxLines - 1) {
           lines.push({ text: currentLine, width: currentLineWidth });
-          currentLine = char ?? '';
+          currentLine = char ?? "";
           currentLineWidth = charWidth;
         } else {
           if (currentLineWidth + ellipsisWidth > maxWidth) {
@@ -81,12 +92,17 @@ export const drawMultiLineText = (ctx: CanvasRenderingContext2D, props: IMultiLi
             let tempLineWidth = currentLineWidth;
             while (tempLineWidth + ellipsisWidth > maxWidth) {
               tempLine = tempLine.substring(0, tempLine.length - 1);
-              tempLineWidth -= ctx.measureText(tempLine[tempLine.length - 1] ?? '').width;
+              tempLineWidth -= ctx.measureText(
+                tempLine[tempLine.length - 1] ?? "",
+              ).width;
             }
             currentLine = tempLine;
             currentLineWidth = tempLineWidth;
           }
-          lines.push({ text: currentLine + ellipsis, width: currentLineWidth + ellipsisWidth });
+          lines.push({
+            text: currentLine + ellipsis,
+            width: currentLineWidth + ellipsisWidth,
+          });
           break;
         }
       } else {
@@ -95,14 +111,14 @@ export const drawMultiLineText = (ctx: CanvasRenderingContext2D, props: IMultiLi
       }
     }
 
-    if (lines.length < maxLines && currentLine !== '') {
+    if (lines.length < maxLines && currentLine !== "") {
       lines.push({ text: currentLine, width: currentLineWidth });
     }
 
     multiLineTextInfoCache.set(cacheKey, lines);
   }
 
-  const offsetY = verticalAlign === 'middle' ? fontSize / 2 : 0;
+  const offsetY = verticalAlign === "middle" ? fontSize / 2 : 0;
 
   if (needRender) {
     if (fill) {
@@ -128,22 +144,25 @@ export const drawMultiLineText = (ctx: CanvasRenderingContext2D, props: IMultiLi
 };
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export const drawSingleLineText = (ctx: CanvasRenderingContext2D, props: ISingleLineTextProps) => {
+export const drawSingleLineText = (
+  ctx: CanvasRenderingContext2D,
+  props: ISingleLineTextProps,
+) => {
   const {
     x = 0,
     y = 0,
     text,
     fill,
     fontSize = 13,
-    textAlign = 'left',
-    verticalAlign = 'middle',
+    textAlign = "left",
+    verticalAlign = "middle",
     maxWidth = Infinity,
     needRender = true,
     isUnderline = false,
   } = props;
 
   let width = 0;
-  let displayText = '';
+  let displayText = "";
 
   const cacheKey = `${text}-${fontSize}-${maxWidth}`;
   const cachedTextInfo = singleLineTextInfoCache.get(cacheKey);
@@ -152,14 +171,16 @@ export const drawSingleLineText = (ctx: CanvasRenderingContext2D, props: ISingle
     width = cachedTextInfo.width;
     displayText = cachedTextInfo.text;
   } else {
-    const ellipsis = '...';
+    const ellipsis = "...";
     const ellipsisWidth = ctx.measureText(ellipsis).width;
 
     for (let i = 0; i < text.length; i++) {
-      const char = text[i] ?? '';
+      const char = text[i] ?? "";
       const charWidth = ctx.measureText(char).width;
 
-      if (width + charWidth > maxWidth) {break;}
+      if (width + charWidth > maxWidth) {
+        break;
+      }
 
       displayText += char;
       width += charWidth;
@@ -169,9 +190,14 @@ export const drawSingleLineText = (ctx: CanvasRenderingContext2D, props: ISingle
     if (isDisplayEllipsis) {
       while (width + ellipsisWidth > maxWidth && displayText.length > 0) {
         displayText = displayText.slice(0, -1);
-        width -= ctx.measureText(displayText[displayText.length - 1] ?? '').width;
+        width -= ctx.measureText(
+          displayText[displayText.length - 1] ?? "",
+        ).width;
       }
-      displayText = ctx.direction === 'rtl' ? ellipsis + displayText : displayText + ellipsis;
+      displayText =
+        ctx.direction === "rtl"
+          ? ellipsis + displayText
+          : displayText + ellipsis;
       width = Math.min(width + ellipsisWidth, maxWidth);
     } else {
       displayText = text;
@@ -181,8 +207,8 @@ export const drawSingleLineText = (ctx: CanvasRenderingContext2D, props: ISingle
   }
 
   if (needRender) {
-    const offsetY = verticalAlign === 'middle' ? fontSize / 2 : 0;
-    const finalX = textAlign === 'right' ? x + maxWidth : x;
+    const offsetY = verticalAlign === "middle" ? fontSize / 2 : 0;
+    const finalX = textAlign === "right" ? x + maxWidth : x;
     if (fill) {
       ctx.fillStyle = fill;
       ctx.strokeStyle = fill;
@@ -210,9 +236,11 @@ export const drawLine = (ctx: CanvasRenderingContext2D, props: ILineProps) => {
 
   ctx.save();
   ctx.beginPath();
-  if (stroke) {ctx.strokeStyle = stroke;}
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+  }
   ctx.lineWidth = lineWidth;
-  ctx.lineJoin = 'round';
+  ctx.lineJoin = "round";
   ctx.translate(x, y);
   ctx.moveTo(points[0] ?? 0, points[1] ?? 0);
 
@@ -231,15 +259,21 @@ export const drawRect = (ctx: CanvasRenderingContext2D, props: IRectProps) => {
   const { x, y, width, height, fill, stroke, radius: _radius, opacity } = props;
 
   ctx.beginPath();
-  if (fill) {ctx.fillStyle = fill;}
-  if (stroke) {ctx.strokeStyle = stroke;}
-  if (opacity) {ctx.globalAlpha = opacity;}
+  if (fill) {
+    ctx.fillStyle = fill;
+  }
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+  }
+  if (opacity) {
+    ctx.globalAlpha = opacity;
+  }
 
   if (_radius == null) {
     ctx.rect(x, y, width, height);
   } else {
     const radius =
-      typeof _radius === 'number'
+      typeof _radius === "number"
         ? { tl: _radius, tr: _radius, br: _radius, bl: _radius }
         : {
             tl: Math.min(_radius.tl, height / 2, width / 2),
@@ -250,18 +284,31 @@ export const drawRect = (ctx: CanvasRenderingContext2D, props: IRectProps) => {
 
     ctx.moveTo(x + radius.tl, y);
     ctx.arcTo(x + width, y, x + width, y + radius.tr, radius.tr);
-    ctx.arcTo(x + width, y + height, x + width - radius.br, y + height, radius.br);
+    ctx.arcTo(
+      x + width,
+      y + height,
+      x + width - radius.br,
+      y + height,
+      radius.br,
+    );
     ctx.arcTo(x, y + height, x, y + height - radius.bl, radius.bl);
     ctx.arcTo(x, y, x + radius.tl, y, radius.tl);
   }
   ctx.closePath();
 
-  if (fill) {ctx.fill();}
-  if (stroke) {ctx.stroke();}
+  if (fill) {
+    ctx.fill();
+  }
+  if (stroke) {
+    ctx.stroke();
+  }
 };
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export const drawRoundPoly = (ctx: CanvasRenderingContext2D, props: IRoundPolyProps) => {
+export const drawRoundPoly = (
+  ctx: CanvasRenderingContext2D,
+  props: IRoundPolyProps,
+) => {
   const { points, radiusAll, fill, stroke } = props;
   const asVec = function (p: IPoint, pp: IPoint): IVector {
     const vx = pp.x - p.x;
@@ -283,8 +330,12 @@ export const drawRoundPoly = (ctx: CanvasRenderingContext2D, props: IRoundPolyPr
   let p1 = points[len - 1];
 
   ctx.beginPath();
-  if (fill) {ctx.fillStyle = fill;}
-  if (stroke) {ctx.strokeStyle = stroke;}
+  if (fill) {
+    ctx.fillStyle = fill;
+  }
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+  }
   let p2 = p1;
   for (let i = 0; i < len; i++) {
     p2 = points[i % len];
@@ -338,18 +389,25 @@ export const drawRoundPoly = (ctx: CanvasRenderingContext2D, props: IRoundPolyPr
       cRadius,
       v1.ang + (Math.PI / 2) * radDirection,
       v2.ang - (Math.PI / 2) * radDirection,
-      drawDirection
+      drawDirection,
     );
 
     p1 = p2;
     p2 = p3;
   }
   ctx.closePath();
-  if (fill) {ctx.fill();}
-  if (stroke) {ctx.stroke();}
+  if (fill) {
+    ctx.fill();
+  }
+  if (stroke) {
+    ctx.stroke();
+  }
 };
 
-export const drawCheckbox = (ctx: CanvasRenderingContext2D, props: ICheckboxProps) => {
+export const drawCheckbox = (
+  ctx: CanvasRenderingContext2D,
+  props: ICheckboxProps,
+) => {
   const { x, y, size, radius = 4, fill, stroke, isChecked = false } = props;
   const dynamicSize = isChecked ? size : size - 1;
 
@@ -364,7 +422,9 @@ export const drawCheckbox = (ctx: CanvasRenderingContext2D, props: ICheckboxProp
     stroke,
   });
 
-  if (stroke) {ctx.strokeStyle = stroke;}
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+  }
   if (isChecked) {
     ctx.save();
     ctx.beginPath();
@@ -372,8 +432,8 @@ export const drawCheckbox = (ctx: CanvasRenderingContext2D, props: ICheckboxProp
     ctx.lineTo(x + size / 2.42, y + size / 1.44);
     ctx.lineTo(x + size / 1.29, y + size / 3.25);
 
-    ctx.lineJoin = 'round';
-    ctx.lineCap = 'round';
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
     ctx.lineWidth = 1.9;
     ctx.stroke();
     ctx.restore();
@@ -383,7 +443,8 @@ export const drawCheckbox = (ctx: CanvasRenderingContext2D, props: ICheckboxProp
 export const drawRing = (ctx: CanvasRenderingContext2D, props: IRingProps) => {
   const { x, y, radius, lineWidth = 5, value, maxValue, color } = props;
   const startAngle = -Math.PI / 2;
-  const angle = value > maxValue ? 2 * Math.PI : (value / maxValue) * 2 * Math.PI;
+  const angle =
+    value > maxValue ? 2 * Math.PI : (value / maxValue) * 2 * Math.PI;
 
   ctx.save();
 
@@ -404,7 +465,10 @@ export const drawRing = (ctx: CanvasRenderingContext2D, props: IRingProps) => {
   ctx.restore();
 };
 
-export const drawProcessBar = (ctx: CanvasRenderingContext2D, props: IProcessBarProps) => {
+export const drawProcessBar = (
+  ctx: CanvasRenderingContext2D,
+  props: IProcessBarProps,
+) => {
   const { x, y, width, height, radius = 4, value, maxValue, color } = props;
   const progressWidth = value > maxValue ? width : (value / maxValue) * width;
 
@@ -431,7 +495,10 @@ export const drawProcessBar = (ctx: CanvasRenderingContext2D, props: IProcessBar
   ctx.restore();
 };
 
-export const drawChartLine = (ctx: CanvasRenderingContext2D, props: IChartLineProps) => {
+export const drawChartLine = (
+  ctx: CanvasRenderingContext2D,
+  props: IChartLineProps,
+) => {
   const {
     x,
     y,
@@ -448,9 +515,12 @@ export const drawChartLine = (ctx: CanvasRenderingContext2D, props: IChartLinePr
   } = props;
   const [minY, maxY] = yAxis ?? [Math.min(...values), Math.max(...values)];
   const delta = maxY - minY === 0 ? 1 : maxY - minY;
-  const zeroY = maxY <= 0 ? y : minY >= 0 ? y + height : y + height * (maxY / delta);
+  const zeroY =
+    maxY <= 0 ? y : minY >= 0 ? y + height : y + height * (maxY / delta);
 
-  let drawValues = values.map((d) => Math.min(1, Math.max(0, (d - minY) / delta)));
+  let drawValues = values.map((d) =>
+    Math.min(1, Math.max(0, (d - minY) / delta)),
+  );
 
   if (drawValues.length === 1) {
     drawValues = [drawValues[0] ?? 0, drawValues[0] ?? 0];
@@ -525,7 +595,10 @@ export const drawChartLine = (ctx: CanvasRenderingContext2D, props: IChartLinePr
 
   if (hoverX != null) {
     ctx.beginPath();
-    const closest = Math.min(values.length - 1, Math.max(0, Math.round(hoverX / xStep)));
+    const closest = Math.min(
+      values.length - 1,
+      Math.max(0, Math.round(hoverX / xStep)),
+    );
     ctx.moveTo(x + closest * xStep, y);
     ctx.lineTo(x + closest * xStep, y + height);
 
@@ -546,7 +619,10 @@ export const drawChartLine = (ctx: CanvasRenderingContext2D, props: IChartLinePr
 };
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export const drawChartBar = (ctx: CanvasRenderingContext2D, props: IChartBarProps) => {
+export const drawChartBar = (
+  ctx: CanvasRenderingContext2D,
+  props: IChartBarProps,
+) => {
   const {
     x,
     y,
@@ -562,12 +638,18 @@ export const drawChartBar = (ctx: CanvasRenderingContext2D, props: IChartBarProp
   } = props;
 
   const barMaxWidth = 8;
-  const [originMinY, maxY] = yAxis ?? [Math.min(...values), Math.max(...values)];
+  const [originMinY, maxY] = yAxis ?? [
+    Math.min(...values),
+    Math.max(...values),
+  ];
   const minY = originMinY > 0 ? 0 : originMinY;
   const delta = maxY - minY === 0 ? 1 : maxY - minY;
-  const zeroY = maxY <= 0 ? y : minY >= 0 ? y + height : y + height * (maxY / delta);
+  const zeroY =
+    maxY <= 0 ? y : minY >= 0 ? y + height : y + height * (maxY / delta);
 
-  const drawValues = values.map((d) => Math.min(1, Math.max(0, (d - minY) / delta)));
+  const drawValues = values.map((d) =>
+    Math.min(1, Math.max(0, (d - minY) / delta)),
+  );
 
   if (minY <= 0 && maxY >= 0) {
     ctx.beginPath();
@@ -606,9 +688,14 @@ export const drawChartBar = (ctx: CanvasRenderingContext2D, props: IChartBarProp
     const closest =
       hoverX > drawX - x - margin
         ? null
-        : Math.min(drawValues.length - 1, Math.max(0, Math.floor(hoverX / xStep)));
+        : Math.min(
+            drawValues.length - 1,
+            Math.max(0, Math.floor(hoverX / xStep)),
+          );
 
-    if (closest == null) {return;}
+    if (closest == null) {
+      return;
+    }
 
     const finalHoverX = x + closest * xStep + (xStep - margin) / 2;
     ctx.moveTo(finalHoverX, y);
@@ -630,7 +717,10 @@ export const drawChartBar = (ctx: CanvasRenderingContext2D, props: IChartBarProp
   }
 };
 
-export const drawAvatar = (ctx: CanvasRenderingContext2D, props: IAvatarProps) => {
+export const drawAvatar = (
+  ctx: CanvasRenderingContext2D,
+  props: IAvatarProps,
+) => {
   const {
     x,
     y,
@@ -649,17 +739,27 @@ export const drawAvatar = (ctx: CanvasRenderingContext2D, props: IAvatarProps) =
   ctx.beginPath();
 
   // wrapper stroke
-  if (stroke) {ctx.strokeStyle = stroke;}
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+  }
   ctx.arc(x + width / 2, y + height / 2, width / 2, 0, Math.PI * 2, false);
 
-  if (fill) {ctx.fillStyle = fill;}
-  if (fill) {ctx.fill();}
-  if (stroke) {ctx.stroke();}
+  if (fill) {
+    ctx.fillStyle = fill;
+  }
+  if (fill) {
+    ctx.fill();
+  }
+  if (stroke) {
+    ctx.stroke();
+  }
 
   if (img) {
     ctx.clip();
     ctx.drawImage(img, x, y, width, height);
-    if (stroke) {ctx.stroke();}
+    if (stroke) {
+      ctx.stroke();
+    }
     ctx.restore();
     return;
   }
@@ -667,19 +767,25 @@ export const drawAvatar = (ctx: CanvasRenderingContext2D, props: IAvatarProps) =
   const textAbb = defaultText.slice(0, 1);
 
   ctx.beginPath();
-  if (textColor) {ctx.fillStyle = textColor;}
+  if (textColor) {
+    ctx.fillStyle = textColor;
+  }
   ctx.font = `${fontSize}px ${fontFamily}`;
 
   drawSingleLineText(ctx, {
     x: x + width / 2,
     y: y + height / 2 - fontSize / 2,
     text: textAbb,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: fontSize,
   });
 
-  if (fill) {ctx.fill();}
-  if (stroke) {ctx.stroke();}
+  if (fill) {
+    ctx.fill();
+  }
+  if (stroke) {
+    ctx.stroke();
+  }
 
   ctx.restore();
 };

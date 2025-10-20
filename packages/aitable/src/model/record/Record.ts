@@ -3,8 +3,8 @@
  * Represents a single record in a table
  */
 
-import type { IRecord } from '../../api/types';
-import type { IFieldInstance } from '../field';
+import type { IRecord } from "../../api/types";
+import type { IFieldInstance } from "../field";
 
 export interface IRecordConfig {
   id: string;
@@ -120,5 +120,3 @@ export function createRecordInstance(record: IRecord): IRecordInstance {
 export function createRecordInstances(records: IRecord[]): IRecordInstance[] {
   return records.map(createRecordInstance);
 }
-
-

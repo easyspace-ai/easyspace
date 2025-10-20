@@ -30,4 +30,3 @@ export interface UpdateBaseDTO {
   name?: string;
   icon?: string;
 }
-

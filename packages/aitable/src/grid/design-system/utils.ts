@@ -2,11 +2,11 @@
  * Design System 工具函数
  */
 
-import { clsx, type ClassValue } from 'clsx';
+import { clsx, type ClassValue } from "clsx";
 
 /**
  * 合并 className（类似 shadcn/ui 的 cn 函数）
- * 
+ *
  * @example
  * cn('px-4 py-2', isActive && 'bg-blue-500')
  */
@@ -30,18 +30,24 @@ export function hexToRGBA(hex: string, alpha: number): string {
 export function getContrastText(backgroundColor: string): string {
   // 简单的亮度计算
   const rgb = backgroundColor.match(/\d+/g);
-  if (!rgb || rgb.length < 3) {return '#000000';}
-  
+  if (!rgb || rgb.length < 3) {
+    return "#000000";
+  }
+
   const [r, g, b] = rgb.map(Number);
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  
-  return luminance > 0.5 ? '#000000' : '#ffffff';
+
+  return luminance > 0.5 ? "#000000" : "#ffffff";
 }
 
 /**
  * 生成渐变背景
  */
-export function gradientBackground(from: string, to: string, angle = 135): string {
+export function gradientBackground(
+  from: string,
+  to: string,
+  angle = 135,
+): string {
   return `linear-gradient(${angle}deg, ${from}, ${to})`;
 }
 
@@ -51,4 +57,3 @@ export function gradientBackground(from: string, to: string, angle = 135): strin
 export function responsive(baseSize: number, scale = 1): string {
   return `clamp(${baseSize * 0.875}px, ${baseSize * scale}px, ${baseSize * 1.125}px)`;
 }
-

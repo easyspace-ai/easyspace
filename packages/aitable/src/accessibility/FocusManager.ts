@@ -1,6 +1,6 @@
 /**
  * 焦点管理器
- * 
+ *
  * 管理 Grid 组件中的焦点状态和焦点陷阱
  */
 
@@ -27,7 +27,7 @@ export class FocusManager {
   focusCell(
     rowIndex: number,
     columnIndex: number,
-    options: FocusOptions = {}
+    options: FocusOptions = {},
   ): void {
     if (!this.gridElement) {
       return;
@@ -59,9 +59,9 @@ export class FocusManager {
 
     // 设置焦点可见性
     if (options.focusVisible) {
-      element.setAttribute('data-focus-visible', 'true');
+      element.setAttribute("data-focus-visible", "true");
     } else {
-      element.removeAttribute('data-focus-visible');
+      element.removeAttribute("data-focus-visible");
     }
   }
 
@@ -80,7 +80,7 @@ export class FocusManager {
    */
   private getCellElement(
     rowIndex: number,
-    columnIndex: number
+    columnIndex: number,
   ): HTMLElement | null {
     if (!this.gridElement) {
       return null;
@@ -120,12 +120,12 @@ export class FocusManager {
    */
   createFocusTrap(container: HTMLElement): () => void {
     const handleKeyDown = (event: KeyboardEvent): void => {
-      if (event.key !== 'Tab') {
+      if (event.key !== "Tab") {
         return;
       }
 
       const focusableElements = container.querySelectorAll<HTMLElement>(
-        this.getFocusableSelector()
+        this.getFocusableSelector(),
       );
 
       if (focusableElements.length === 0) {
@@ -151,11 +151,11 @@ export class FocusManager {
       }
     };
 
-    container.addEventListener('keydown', handleKeyDown);
+    container.addEventListener("keydown", handleKeyDown);
 
     // 返回清理函数
     return () => {
-      container.removeEventListener('keydown', handleKeyDown);
+      container.removeEventListener("keydown", handleKeyDown);
     };
   }
 
@@ -164,14 +164,14 @@ export class FocusManager {
    */
   private getFocusableSelector(): string {
     return [
-      'a[href]',
-      'button:not([disabled])',
-      'textarea:not([disabled])',
-      'input:not([disabled])',
-      'select:not([disabled])',
+      "a[href]",
+      "button:not([disabled])",
+      "textarea:not([disabled])",
+      "input:not([disabled])",
+      "select:not([disabled])",
       '[tabindex]:not([tabindex="-1"])',
       '[role="gridcell"][tabindex="0"]',
-    ].join(', ');
+    ].join(", ");
   }
 
   /**

@@ -1,8 +1,8 @@
-import { inRange } from 'lodash';
-import { useState, useRef, useEffect } from 'react';
-import type { IPosition, IScrollDirection } from '../../types/grid';
-import { DragRegionType } from '../../types/grid';
-import type { CoordinateManager } from '../../managers';
+import { inRange } from "lodash";
+import { useState, useRef, useEffect } from "react";
+import type { IPosition, IScrollDirection } from "../../types/grid";
+import { DragRegionType } from "../../types/grid";
+import type { CoordinateManager } from "../../managers";
 
 const threshold = 30;
 const maxPxPerMs = 2;
@@ -16,13 +16,17 @@ interface IUseAutoScroll {
 export const useAutoScroll = (props: IUseAutoScroll) => {
   const { coordInstance, scrollBy } = props;
   const speedScalar = useRef(0);
-  const { containerWidth, containerHeight, freezeRegionWidth, rowInitSize } = coordInstance;
+  const { containerWidth, containerHeight, freezeRegionWidth, rowInitSize } =
+    coordInstance;
   const [scrollDirection, setScrollDirection] = useState<
     [xDir: IScrollDirection, yDir: IScrollDirection]
   >([0, 0]);
   const [xDirection, yDirection] = scrollDirection || [0, 0];
 
-  const onAutoScroll = <T extends IPosition>(position: T, dragType?: DragRegionType) => {
+  const onAutoScroll = <T extends IPosition>(
+    position: T,
+    dragType?: DragRegionType,
+  ) => {
     const { x, y } = position;
     let xDir: IScrollDirection = 0;
     let yDir: IScrollDirection = 0;
@@ -60,7 +64,10 @@ export const useAutoScroll = (props: IUseAutoScroll) => {
     const processFrame = (curTime: number) => {
       if (lastTime !== 0) {
         const step = curTime - lastTime;
-        speedScalar.current = Math.min(1, speedScalar.current + step / msToFullSpeed);
+        speedScalar.current = Math.min(
+          1,
+          speedScalar.current + step / msToFullSpeed,
+        );
         const motion = Math.floor(speedScalar.current * step * maxPxPerMs);
         scrollBy(xDirection * motion, yDirection * motion);
       }

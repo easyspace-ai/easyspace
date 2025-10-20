@@ -1,4 +1,4 @@
-import type { IRectangle } from '../../interface';
+import type { IRectangle } from "../../interface";
 
 export interface IPoint {
   x: number;
@@ -59,9 +59,9 @@ export interface ITextBaseProps {
   text: string;
   fontSize?: number;
   fontFamily?: string;
-  fontWeight?: 'normal' | 'bold' | 'bolder' | 'lighter';
-  textAlign?: 'left' | 'right' | 'center' | 'start' | 'end';
-  verticalAlign?: 'top' | 'middle' | 'bottom';
+  fontWeight?: "normal" | "bold" | "bolder" | "lighter";
+  textAlign?: "left" | "right" | "center" | "start" | "end";
+  verticalAlign?: "top" | "middle" | "bottom";
   isUnderline?: boolean;
 }
 
@@ -112,7 +112,7 @@ export interface IChartLineProps extends IRectangle {
   displayValues?: string[];
 }
 
-export type IChartBarProps = Omit<IChartLineProps, 'hoverAmount'>;
+export type IChartBarProps = Omit<IChartLineProps, "hoverAmount">;
 
 export interface ITextInfo {
   text: string;

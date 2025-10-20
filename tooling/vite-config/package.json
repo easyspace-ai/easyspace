@@ -1,0 +1,46 @@
+{
+  "name": "@easyspace/vite-config",
+  "private": true,
+  "version": "0.1.0",
+  "main": "dist/vite.base.config.js",
+  "types": "dist/vite.base.config.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/vite.base.config.d.ts",
+      "import": "./dist/vite.base.config.js",
+      "require": "./dist/vite.base.config.js"
+    }
+  },
+  "files": [
+    "dist",
+    "vite.base.config.ts"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf .turbo node_modules dist",
+    "lint": "eslint .",
+    "format": "prettier --check '**/*.{ts,json}' ",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.11",
+    "@vitejs/plugin-react": "^5.0.4",
+    "vite": "^7.1.7"
+  },
+  "devDependencies": {
+    "@easyspace/eslint-config": "workspace:*",
+    "@easyspace/prettier-config": "workspace:*",
+    "@easyspace/typescript-config": "workspace:*",
+    "@types/node": "^24.2.0",
+    "eslint": "^9.30.1",
+    "prettier": "3.3.2",
+    "typescript": "^5.5.4"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@easyspace/eslint-config/base"
+    ]
+  },
+  "prettier": "@easyspace/prettier-config"
+}

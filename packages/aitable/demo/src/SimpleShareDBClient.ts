@@ -3,7 +3,7 @@
  * 专门用于演示，避免复杂的依赖和浏览器兼容性问题
  */
 
-import { WebSocketClient } from '@luckdb/sdk';
+import { WebSocketClient } from '@easyspace/sdk';
 
 // 简化的操作类型
 export interface SimpleOperation {

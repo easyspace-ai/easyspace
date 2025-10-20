@@ -3,7 +3,7 @@
  * 添加记录弹窗模块
  */
 
-export { AddRecordDialog } from './AddRecordDialog';
+export { AddRecordDialog } from "./AddRecordDialog";
 export type {
   AddRecordDialogProps,
   FieldConfig,
@@ -12,8 +12,8 @@ export type {
   FieldEditorProps,
   ValidationRule,
   ValidatorMap,
-} from './types';
-export { validateForm, validateField, hasErrors } from './validators';
+} from "./types";
+export { validateForm, validateField, hasErrors } from "./validators";
 export {
   getFieldEditor,
   isFieldEditable,
@@ -28,5 +28,4 @@ export {
   LinkEditor,
   EmailEditor,
   PhoneEditor,
-} from './field-editors';
-
+} from "./field-editors";

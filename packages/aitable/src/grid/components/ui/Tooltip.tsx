@@ -1,6 +1,6 @@
 /**
  * Tooltip - 现代化提示组件（重构版）
- * 
+ *
  * 设计原则：
  * 1. 使用 design tokens，无硬编码颜色
  * 2. 纯 Tailwind 实现
@@ -9,10 +9,10 @@
  * 5. 多种定位选项
  */
 
-import React, { useState, useEffect, type FC } from 'react';
-import { createPortal } from 'react-dom';
-import { cn, tokens, transitions, elevation } from '../../design-system';
-import { useGridTooltipStore } from './tooltip-store';
+import React, { useState, useEffect, type FC } from "react";
+import { createPortal } from "react-dom";
+import { cn, tokens, transitions, elevation } from "../../design-system";
+import { useGridTooltipStore } from "./tooltip-store";
 
 // Re-export the hook for convenience
 export { useGridTooltipStore };
@@ -31,7 +31,7 @@ interface TooltipProps {
   content: string;
   children: React.ReactElement;
   delay?: number;
-  position?: 'top' | 'bottom' | 'left' | 'right';
+  position?: "top" | "bottom" | "left" | "right";
   disabled?: boolean;
   className?: string;
 }
@@ -41,66 +41,66 @@ interface TooltipProps {
  */
 function calculatePosition(
   triggerRect: DOMRect,
-  position: 'top' | 'bottom' | 'left' | 'right',
-  offset: number = 8
+  position: "top" | "bottom" | "left" | "right",
+  offset: number = 8,
 ) {
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
   const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-  
+
   let x = triggerRect.left + scrollX;
   let y = triggerRect.top + scrollY;
-  
+
   switch (position) {
-    case 'top':
+    case "top":
       x += triggerRect.width / 2;
       y -= offset;
       break;
-    case 'bottom':
+    case "bottom":
       x += triggerRect.width / 2;
       y += triggerRect.height + offset;
       break;
-    case 'left':
+    case "left":
       x -= offset;
       y += triggerRect.height / 2;
       break;
-    case 'right':
+    case "right":
       x += triggerRect.width + offset;
       y += triggerRect.height / 2;
       break;
   }
-  
+
   return { x, y };
 }
 
 /**
  * 获取位置对应的 CSS 类
  */
-function getPositionClasses(position: 'top' | 'bottom' | 'left' | 'right') {
+function getPositionClasses(position: "top" | "bottom" | "left" | "right") {
   switch (position) {
-    case 'top':
-      return 'bottom-full left-1/2 transform -translate-x-1/2 mb-2';
-    case 'bottom':
-      return 'top-full left-1/2 transform -translate-x-1/2 mt-2';
-    case 'left':
-      return 'right-full top-1/2 transform -translate-y-1/2 mr-2';
-    case 'right':
-      return 'left-full top-1/2 transform -translate-y-1/2 ml-2';
+    case "top":
+      return "bottom-full left-1/2 transform -translate-x-1/2 mb-2";
+    case "bottom":
+      return "top-full left-1/2 transform -translate-x-1/2 mt-2";
+    case "left":
+      return "right-full top-1/2 transform -translate-y-1/2 mr-2";
+    case "right":
+      return "left-full top-1/2 transform -translate-y-1/2 ml-2";
   }
 }
 
 /**
  * 获取箭头位置
  */
-function getArrowClasses(position: 'top' | 'bottom' | 'left' | 'right') {
+function getArrowClasses(position: "top" | "bottom" | "left" | "right") {
   switch (position) {
-    case 'top':
-      return 'top-full left-1/2 transform -translate-x-1/2 border-t-gray-900';
-    case 'bottom':
-      return 'bottom-full left-1/2 transform -translate-x-1/2 border-b-gray-900';
-    case 'left':
-      return 'left-full top-1/2 transform -translate-y-1/2 border-l-gray-900';
-    case 'right':
-      return 'right-full top-1/2 transform -translate-y-1/2 border-r-gray-900';
+    case "top":
+      return "top-full left-1/2 transform -translate-x-1/2 border-t-gray-900";
+    case "bottom":
+      return "bottom-full left-1/2 transform -translate-x-1/2 border-b-gray-900";
+    case "left":
+      return "left-full top-1/2 transform -translate-y-1/2 border-l-gray-900";
+    case "right":
+      return "right-full top-1/2 transform -translate-y-1/2 border-r-gray-900";
   }
 }
 
@@ -114,8 +114,14 @@ export const GridTooltip: FC<IGridTooltipProps> = (props) => {
   const [isVisible, setIsVisible] = useState(false);
 
   const visible = Boolean(tooltipInfo) && tooltipInfo?.id === id;
-  const { text, position, triggerClassName, triggerStyle, contentClassName, contentStyle } =
-    tooltipInfo ?? {};
+  const {
+    text,
+    position,
+    triggerClassName,
+    triggerStyle,
+    contentClassName,
+    contentStyle,
+  } = tooltipInfo ?? {};
 
   // Calculate trigger position
   const triggerPositionStyle = position
@@ -143,11 +149,11 @@ export const GridTooltip: FC<IGridTooltipProps> = (props) => {
     <div className="grid-tooltip-container">
       {/* Trigger element - invisible but positioned */}
       <div
-        className={cn('grid-tooltip-trigger', triggerClassName)}
+        className={cn("grid-tooltip-trigger", triggerClassName)}
         style={{
-          position: 'absolute',
-          pointerEvents: 'none',
-          cursor: 'pointer',
+          position: "absolute",
+          pointerEvents: "none",
+          cursor: "pointer",
           ...triggerStyle,
           ...triggerPositionStyle,
         }}
@@ -157,16 +163,16 @@ export const GridTooltip: FC<IGridTooltipProps> = (props) => {
       {isVisible && (
         <div
           className={cn(
-            'grid-tooltip-content',
-            'absolute z-50 px-3 py-2 text-sm rounded-md shadow-lg',
-            'max-w-xs whitespace-pre-line break-words',
-            'pointer-events-none',
-            'animate-in fade-in-0 zoom-in-95 duration-200',
-            contentClassName
+            "grid-tooltip-content",
+            "absolute z-50 px-3 py-2 text-sm rounded-md shadow-lg",
+            "max-w-xs whitespace-pre-line break-words",
+            "pointer-events-none",
+            "animate-in fade-in-0 zoom-in-95 duration-200",
+            contentClassName,
           )}
           style={{
             left: position ? position.x : 0,
-            top: position ? (position.y + (position.height || 0) + 8) : 0,
+            top: position ? position.y + (position.height || 0) + 8 : 0,
             backgroundColor: tokens.colors.text.primary,
             color: tokens.colors.text.inverse,
             boxShadow: elevation.lg,
@@ -184,13 +190,13 @@ export const GridTooltip: FC<IGridTooltipProps> = (props) => {
  * Tooltip wrapper component
  * Provides simple tooltip functionality for children
  */
-export const Tooltip: FC<TooltipProps> = ({ 
-  content, 
-  children, 
-  delay = 500, 
-  position = 'bottom',
+export const Tooltip: FC<TooltipProps> = ({
+  content,
+  children,
+  delay = 500,
+  position = "bottom",
   disabled = false,
-  className 
+  className,
 }) => {
   const [show, setShow] = useState(false);
   const [coords, setCoords] = useState({ x: 0, y: 0 });
@@ -198,13 +204,13 @@ export const Tooltip: FC<TooltipProps> = ({
 
   const handleMouseEnter = (e: React.MouseEvent) => {
     if (disabled) return;
-    
+
     const rect = e.currentTarget.getBoundingClientRect();
     setTriggerRect(rect);
-    
+
     const { x, y } = calculatePosition(rect, position);
     setCoords({ x, y });
-    
+
     const timer = setTimeout(() => setShow(true), delay);
     return () => clearTimeout(timer);
   };
@@ -225,40 +231,42 @@ export const Tooltip: FC<TooltipProps> = ({
         onMouseEnter: handleMouseEnter,
         onMouseLeave: handleMouseLeave,
       })}
-      {show && createPortal(
-        <div
-          className={cn(
-            'fixed z-50 px-3 py-2 text-sm rounded-md shadow-lg',
-            'max-w-xs whitespace-pre-line break-words',
-            'pointer-events-none',
-            'animate-in fade-in-0 zoom-in-95 duration-200',
-            className
-          )}
-          style={{
-            left: coords.x,
-            top: coords.y,
-            backgroundColor: tokens.colors.text.primary,
-            color: tokens.colors.text.inverse,
-            boxShadow: elevation.lg,
-            transform: position === 'top' || position === 'bottom' 
-              ? 'translateX(-50%)' 
-              : position === 'left' || position === 'right'
-                ? 'translateY(-50%)'
-                : 'none',
-          }}
-        >
-          {content}
-          
-          {/* 箭头 */}
+      {show &&
+        createPortal(
           <div
             className={cn(
-              'absolute w-0 h-0 border-4 border-transparent',
-              getArrowClasses(position)
+              "fixed z-50 px-3 py-2 text-sm rounded-md shadow-lg",
+              "max-w-xs whitespace-pre-line break-words",
+              "pointer-events-none",
+              "animate-in fade-in-0 zoom-in-95 duration-200",
+              className,
             )}
-          />
-        </div>,
-        document.body
-      )}
+            style={{
+              left: coords.x,
+              top: coords.y,
+              backgroundColor: tokens.colors.text.primary,
+              color: tokens.colors.text.inverse,
+              boxShadow: elevation.lg,
+              transform:
+                position === "top" || position === "bottom"
+                  ? "translateX(-50%)"
+                  : position === "left" || position === "right"
+                    ? "translateY(-50%)"
+                    : "none",
+            }}
+          >
+            {content}
+
+            {/* 箭头 */}
+            <div
+              className={cn(
+                "absolute w-0 h-0 border-4 border-transparent",
+                getArrowClasses(position),
+              )}
+            />
+          </div>,
+          document.body,
+        )}
     </>
   );
 };
@@ -268,8 +276,11 @@ export const Tooltip: FC<TooltipProps> = ({
  */
 export function useTooltip() {
   const [isVisible, setIsVisible] = useState(false);
-  const [content, setContent] = useState('');
-  const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [content, setContent] = useState("");
+  const [position, setPosition] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
 
   const showTooltip = (text: string, x: number, y: number) => {
     setContent(text);

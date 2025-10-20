@@ -2,5 +2,4 @@
  * ViewContent exports
  */
 
-export * from './ViewContent';
-
+export * from "./ViewContent";

@@ -6,40 +6,40 @@
  * Cell Value Type - 数据值类型（用于 Formula/Rollup 等计算字段）
  */
 export enum CellValueType {
-  String = 'string',
-  Number = 'number',
-  Boolean = 'boolean',
-  DateTime = 'dateTime',
+  String = "string",
+  Number = "number",
+  Boolean = "boolean",
+  DateTime = "dateTime",
 }
 
 /**
  * Field Type Enum - 与参考项目对齐的字段类型定义
  */
 export enum FieldType {
-  Text = 'text',                    // 基础文本类型
-  SingleLineText = 'singleLineText',
-  LongText = 'longText',
-  User = 'user',
-  Attachment = 'attachment',
-  Checkbox = 'checkbox',
-  Select = 'select',                // 通用选择类型
-  MultipleSelect = 'multipleSelect',
-  SingleSelect = 'singleSelect',
-  Date = 'date',
-  Number = 'number',
-  Rating = 'rating',
-  Formula = 'formula',
-  Rollup = 'rollup',
-  Link = 'link',
-  CreatedTime = 'createdTime',
-  LastModifiedTime = 'lastModifiedTime',
-  CreatedBy = 'createdBy',
-  LastModifiedBy = 'lastModifiedBy',
-  AutoNumber = 'autoNumber',
-  Button = 'button',
-  Email = 'email',
-  Phone = 'phone',
-  URL = 'url',
+  Text = "text", // 基础文本类型
+  SingleLineText = "singleLineText",
+  LongText = "longText",
+  User = "user",
+  Attachment = "attachment",
+  Checkbox = "checkbox",
+  Select = "select", // 通用选择类型
+  MultipleSelect = "multipleSelect",
+  SingleSelect = "singleSelect",
+  Date = "date",
+  Number = "number",
+  Rating = "rating",
+  Formula = "formula",
+  Rollup = "rollup",
+  Link = "link",
+  CreatedTime = "createdTime",
+  LastModifiedTime = "lastModifiedTime",
+  CreatedBy = "createdBy",
+  LastModifiedBy = "lastModifiedBy",
+  AutoNumber = "autoNumber",
+  Button = "button",
+  Email = "email",
+  Phone = "phone",
+  URL = "url",
 }
 
 /**
@@ -63,7 +63,7 @@ export interface IButtonFieldCellValue {
 export interface IDateFieldOptions {
   formatting?: {
     date: string;
-    time: 'None' | 'HH:mm' | 'HH:mm:ss';
+    time: "None" | "HH:mm" | "HH:mm:ss";
     timeZone?: string;
   };
 }
@@ -74,7 +74,7 @@ export interface IDateFieldOptions {
 export interface INumberFieldOptions {
   precision?: number;
   showAs?: {
-    type: 'ring' | 'bar';
+    type: "ring" | "bar";
     color: string;
     maxValue: number;
     showValue: boolean;
@@ -105,7 +105,7 @@ export interface IUserFieldOptions {
  * Link field options
  */
 export interface ILinkFieldOptions {
-  relationship: 'oneOne' | 'oneMany' | 'manyOne' | 'manyMany';
+  relationship: "oneOne" | "oneMany" | "manyOne" | "manyMany";
   foreignTableId: string;
   lookupFieldId?: string;
   symmetricFieldId?: string;
@@ -115,14 +115,14 @@ export interface ILinkFieldOptions {
  * Rating Icon Types
  */
 export enum RatingIcon {
-  Star = 'star',
-  Moon = 'moon',
-  Sun = 'sun',
-  Zap = 'zap',
-  Flame = 'flame',
-  Heart = 'heart',
-  Apple = 'apple',
-  ThumbUp = 'thumb-up',
+  Star = "star",
+  Moon = "moon",
+  Sun = "sun",
+  Zap = "zap",
+  Flame = "flame",
+  Heart = "heart",
+  Apple = "apple",
+  ThumbUp = "thumb-up",
 }
 
 /**

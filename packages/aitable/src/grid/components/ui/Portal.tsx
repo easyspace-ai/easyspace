@@ -3,8 +3,8 @@
  * 用于将组件渲染到 document.body，避免定位问题
  */
 
-import { FC, ReactNode, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { FC, ReactNode, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 export interface IPortalProps {
   children: ReactNode;
@@ -19,11 +19,9 @@ export const Portal: FC<IPortalProps> = ({ children, container }) => {
     return () => setMounted(false);
   }, []);
 
-  if (!mounted) {return null;}
+  if (!mounted) {
+    return null;
+  }
 
-  return createPortal(
-    children,
-    container || document.body
-  );
+  return createPortal(children, container || document.body);
 };
-

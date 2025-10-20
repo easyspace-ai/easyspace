@@ -1,15 +1,21 @@
-import { useState } from 'react';
-import { DEFAULT_COLUMN_RESIZE_STATE, GRID_DEFAULT } from '../../configs';
-import type { IMouseState, IColumnResizeState, IScrollState } from '../../types/grid';
-import { RegionType } from '../../types/grid';
-import type { CoordinateManager } from '../../managers';
-import { inRange } from '../../utils/core';
+import { useState } from "react";
+import { DEFAULT_COLUMN_RESIZE_STATE, GRID_DEFAULT } from "../../configs";
+import type {
+  IMouseState,
+  IColumnResizeState,
+  IScrollState,
+} from "../../types/grid";
+import { RegionType } from "../../types/grid";
+import type { CoordinateManager } from "../../managers";
+import { inRange } from "../../utils/core";
 
-export const useColumnResize = (coordInstance: CoordinateManager, scrollState: IScrollState) => {
+export const useColumnResize = (
+  coordInstance: CoordinateManager,
+  scrollState: IScrollState,
+) => {
   const [hoveredColumnResizeIndex, setHoveredColumnResizeIndex] = useState(-1);
-  const [columnResizeState, setColumnResizeState] = useState<IColumnResizeState>(
-    DEFAULT_COLUMN_RESIZE_STATE
-  );
+  const [columnResizeState, setColumnResizeState] =
+    useState<IColumnResizeState>(DEFAULT_COLUMN_RESIZE_STATE);
 
   const onColumnResizeStart = (mouseState: IMouseState) => {
     const { scrollLeft } = scrollState;
@@ -17,8 +23,15 @@ export const useColumnResize = (coordInstance: CoordinateManager, scrollState: I
 
     if (type === RegionType.ColumnResizeHandler) {
       const { columnResizeHandlerWidth } = GRID_DEFAULT;
-      const startOffsetX = coordInstance.getColumnRelativeOffset(columnIndex, scrollLeft);
-      const realColumnIndex = inRange(x, startOffsetX, startOffsetX + columnResizeHandlerWidth / 2)
+      const startOffsetX = coordInstance.getColumnRelativeOffset(
+        columnIndex,
+        scrollLeft,
+      );
+      const realColumnIndex = inRange(
+        x,
+        startOffsetX,
+        startOffsetX + columnResizeHandlerWidth / 2,
+      )
         ? columnIndex - 1
         : columnIndex;
 
@@ -32,7 +45,7 @@ export const useColumnResize = (coordInstance: CoordinateManager, scrollState: I
 
   const onColumnResizeChange = (
     mouseState: IMouseState,
-    onResize?: (newSize: number, colIndex: number) => void
+    onResize?: (newSize: number, colIndex: number) => void,
   ) => {
     const { scrollLeft } = scrollState;
     const { type, x, columnIndex } = mouseState;
@@ -49,8 +62,15 @@ export const useColumnResize = (coordInstance: CoordinateManager, scrollState: I
     }
     if (type === RegionType.ColumnResizeHandler) {
       const { columnResizeHandlerWidth } = GRID_DEFAULT;
-      const startOffsetX = coordInstance.getColumnRelativeOffset(columnIndex, scrollLeft);
-      const realColumnIndex = inRange(x, startOffsetX, startOffsetX + columnResizeHandlerWidth / 2)
+      const startOffsetX = coordInstance.getColumnRelativeOffset(
+        columnIndex,
+        scrollLeft,
+      );
+      const realColumnIndex = inRange(
+        x,
+        startOffsetX,
+        startOffsetX + columnResizeHandlerWidth / 2,
+      )
         ? columnIndex - 1
         : columnIndex;
 

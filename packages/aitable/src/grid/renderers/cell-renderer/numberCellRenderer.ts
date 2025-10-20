@@ -1,28 +1,41 @@
-import { GRID_DEFAULT } from '../../configs';
-import { drawMultiLineText, drawProcessBar, drawRing } from '../base-renderer/baseRenderer';
-import { CellType, NumberDisplayType } from './interface';
+import { GRID_DEFAULT } from "../../configs";
+import {
+  drawMultiLineText,
+  drawProcessBar,
+  drawRing,
+} from "../base-renderer/baseRenderer";
+import { CellType, NumberDisplayType } from "./interface";
 import type {
   INumberCell,
   ICellRenderProps,
   ICellMeasureProps,
   IInternalCellRenderer,
-} from './interface';
+} from "./interface";
 
 const RING_RADIUS = 8.5;
 const RING_LINE_WIDTH = 5;
 const TEXT_GAP = 4;
 
-const { maxRowCount, cellVerticalPaddingMD, cellHorizontalPadding, cellTextLineHeight } =
-  GRID_DEFAULT;
+const {
+  maxRowCount,
+  cellVerticalPaddingMD,
+  cellHorizontalPadding,
+  cellTextLineHeight,
+} = GRID_DEFAULT;
 
 export const numberCellRenderer: IInternalCellRenderer<INumberCell> = {
   type: CellType.Number,
   measure: (cell: INumberCell, props: ICellMeasureProps) => {
     const { displayData, showAs } = cell;
     const { ctx, theme, width, height } = props;
-    if (!ctx || !theme) return { width: width ?? 0, height: height ?? 0, totalHeight: height ?? 0 };
+    if (!ctx || !theme)
+      return {
+        width: width ?? 0,
+        height: height ?? 0,
+        totalHeight: height ?? 0,
+      };
 
-    if (!displayData || typeof displayData === 'string' || showAs != null) {
+    if (!displayData || typeof displayData === "string" || showAs != null) {
       return { width, height, totalHeight: height };
     }
 
@@ -32,25 +45,32 @@ export const numberCellRenderer: IInternalCellRenderer<INumberCell> = {
 
     return {
       width,
-      height: Math.max(height, cellVerticalPaddingMD + displayRowCount * cellTextLineHeight),
+      height: Math.max(
+        height,
+        cellVerticalPaddingMD + displayRowCount * cellTextLineHeight,
+      ),
       totalHeight,
     };
   },
   // eslint-disable-next-line sonarjs/cognitive-complexity
   draw: (cell: INumberCell, props: ICellRenderProps) => {
-    const { data, displayData, showAs, contentAlign = 'right' } = cell;
+    const { data, displayData, showAs, contentAlign = "right" } = cell;
 
-    if (data == null || displayData == null || displayData === '') {return;}
+    if (data == null || displayData == null || displayData === "") {
+      return;
+    }
 
     const { ctx, rect, theme, isActive } = props;
     if (!ctx || !rect || !theme) return;
-    
+
     const { x, y, width } = rect;
     const { cellTextColor } = theme;
     const showText = showAs?.showValue ?? true;
-    const isAlignLeft = contentAlign === 'left';
+    const isAlignLeft = contentAlign === "left";
 
-    let textX = isAlignLeft ? x + cellHorizontalPadding : x + width - cellHorizontalPadding;
+    let textX = isAlignLeft
+      ? x + cellHorizontalPadding
+      : x + width - cellHorizontalPadding;
     let textMaxWidth = width - cellHorizontalPadding * 2;
 
     if (showAs != null) {
@@ -97,14 +117,16 @@ export const numberCellRenderer: IInternalCellRenderer<INumberCell> = {
       }
     }
 
-    if (!showText) {return;}
+    if (!showText) {
+      return;
+    }
 
-    const isDataString = typeof displayData === 'string';
+    const isDataString = typeof displayData === "string";
     if (isDataString || !isActive) {
       return drawMultiLineText(ctx, {
         x: textX,
         y: y + cellVerticalPaddingMD,
-        text: isDataString ? displayData : displayData.join(', '),
+        text: isDataString ? displayData : displayData.join(", "),
         maxLines: 1,
         maxWidth: textMaxWidth,
         fill: cellTextColor,

@@ -2,6 +2,4 @@
  * Sort Module Exports
  */
 
-export * from './SortManager';
-
-
+export * from "./SortManager";

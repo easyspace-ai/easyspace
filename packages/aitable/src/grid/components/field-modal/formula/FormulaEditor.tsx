@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
-import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from '../ui-shim';
+import React, { useState } from "react";
+import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from "../ui-shim";
 
 export interface IFormulaEditorProps {
   expression?: string;
   onConfirm?: (expression: string) => void;
 }
 
-export const FormulaEditor: React.FC<IFormulaEditorProps> = ({ expression = '', onConfirm }) => {
+export const FormulaEditor: React.FC<IFormulaEditorProps> = ({
+  expression = "",
+  onConfirm,
+}) => {
   const [value, setValue] = useState(expression);
   return (
     <div className="w-[700px]">
@@ -29,5 +32,3 @@ export const FormulaEditor: React.FC<IFormulaEditorProps> = ({ expression = '', 
 };
 
 export default FormulaEditor;
-
-

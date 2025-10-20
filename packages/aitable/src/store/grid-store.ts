@@ -1,30 +1,30 @@
 /**
  * Grid Store - 重构版本
- * 
+ *
  * 使用强类型的 Zustand Store
  * - 完整的类型安全
  * - 清晰的状态分片
  * - 精确的状态订阅
  */
 
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
-import { immer } from 'zustand/middleware/immer';
-import { enableMapSet } from 'immer';
-import type { ApiClient } from '../api/client';
-import type { 
-  GridStore, 
-  TypedRecord, 
-  Base, 
-  Table, 
-  View, 
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
+import { enableMapSet } from "immer";
+import type { ApiClient } from "../api/client";
+import type {
+  GridStore,
+  TypedRecord,
+  Base,
+  Table,
+  View,
   Permission,
   Collaborator,
   UserSelection,
   ContextMenuState,
-} from './types';
-import type { Field } from '../model/field/Field';
-import type { CellValue } from '../types/core/cell-values';
+} from "./types";
+import type { Field } from "../model/field/Field";
+import type { CellValue } from "../types/core/cell-values";
 
 // Enable Map/Set support in Immer
 enableMapSet();
@@ -48,7 +48,7 @@ export const useGridStore = create<GridStore>()(
   devtools(
     immer((set, get) => ({
       // ============= Data Slice =============
-      
+
       // 当前数据
       base: null,
       table: null,
@@ -113,7 +113,7 @@ export const useGridStore = create<GridStore>()(
       loadBase: async (baseId: string) => {
         const { api } = get();
         if (!api) {
-          throw new Error('API client not initialized');
+          throw new Error("API client not initialized");
         }
 
         set((state) => {
@@ -139,7 +139,7 @@ export const useGridStore = create<GridStore>()(
       loadTable: async (tableId: string) => {
         const { api } = get();
         if (!api) {
-          throw new Error('API client not initialized');
+          throw new Error("API client not initialized");
         }
 
         set((state) => {
@@ -165,7 +165,7 @@ export const useGridStore = create<GridStore>()(
       loadView: async (viewId: string) => {
         const { api } = get();
         if (!api) {
-          throw new Error('API client not initialized');
+          throw new Error("API client not initialized");
         }
 
         set((state) => {
@@ -191,7 +191,7 @@ export const useGridStore = create<GridStore>()(
       loadFields: async (tableId: string) => {
         const { api } = get();
         if (!api) {
-          throw new Error('API client not initialized');
+          throw new Error("API client not initialized");
         }
 
         set((state) => {
@@ -220,7 +220,7 @@ export const useGridStore = create<GridStore>()(
       loadRecords: async (tableId: string, viewId?: string) => {
         const { api } = get();
         if (!api) {
-          throw new Error('API client not initialized');
+          throw new Error("API client not initialized");
         }
 
         set((state) => {
@@ -247,14 +247,17 @@ export const useGridStore = create<GridStore>()(
       },
 
       // CRUD Operations
-      createRecord: async (tableId: string, fields: Record<string, CellValue>) => {
+      createRecord: async (
+        tableId: string,
+        fields: Record<string, CellValue>,
+      ) => {
         const { api } = get();
         if (!api) {
-          throw new Error('API client not initialized');
+          throw new Error("API client not initialized");
         }
 
         const newRecord = await api.createRecord(tableId, { fields });
-        
+
         set((state) => {
           state.records.set(newRecord.id, newRecord);
         });
@@ -262,14 +265,17 @@ export const useGridStore = create<GridStore>()(
         return newRecord;
       },
 
-      updateRecord: async (recordId: string, fields: Record<string, CellValue>) => {
+      updateRecord: async (
+        recordId: string,
+        fields: Record<string, CellValue>,
+      ) => {
         const { api } = get();
         if (!api) {
-          throw new Error('API client not initialized');
+          throw new Error("API client not initialized");
         }
 
         const updatedRecord = await api.updateRecord(recordId, { fields });
-        
+
         set((state) => {
           state.records.set(recordId, updatedRecord);
         });
@@ -280,11 +286,11 @@ export const useGridStore = create<GridStore>()(
       deleteRecord: async (recordId: string) => {
         const { api } = get();
         if (!api) {
-          throw new Error('API client not initialized');
+          throw new Error("API client not initialized");
         }
 
         await api.deleteRecord(recordId);
-        
+
         set((state) => {
           state.records.delete(recordId);
         });
@@ -293,11 +299,11 @@ export const useGridStore = create<GridStore>()(
       deleteRecords: async (recordIds: string[]) => {
         const { api } = get();
         if (!api) {
-          throw new Error('API client not initialized');
+          throw new Error("API client not initialized");
         }
 
         await api.deleteRecords(recordIds);
-        
+
         set((state) => {
           recordIds.forEach((id) => {
             state.records.delete(id);
@@ -306,7 +312,7 @@ export const useGridStore = create<GridStore>()(
       },
 
       // ============= UI Slice =============
-      
+
       selectedCells: new Set<string>(),
       selectedRows: new Set<number>(),
       selectedColumns: new Set<number>(),
@@ -373,13 +379,13 @@ export const useGridStore = create<GridStore>()(
             const [colIndex, rowIndex] = editingCell;
             const recordId = Array.from(records.keys())[rowIndex];
             const fieldId = Array.from(fields.keys())[colIndex];
-            
+
             if (recordId && fieldId) {
               get().updateRecord(recordId, { [fieldId]: editingValue });
             }
           }
         }
-        
+
         set((state) => {
           state.isEditing = false;
           state.editingCell = null;
@@ -405,20 +411,20 @@ export const useGridStore = create<GridStore>()(
         });
       },
 
-      showDialog: (dialog: keyof GridStore['dialogs']) => {
+      showDialog: (dialog: keyof GridStore["dialogs"]) => {
         set((state) => {
           state.dialogs[dialog] = true;
         });
       },
 
-      hideDialog: (dialog: keyof GridStore['dialogs']) => {
+      hideDialog: (dialog: keyof GridStore["dialogs"]) => {
         set((state) => {
           state.dialogs[dialog] = false;
         });
       },
 
       // ============= Collaboration Slice =============
-      
+
       collaborators: new Map<string, Collaborator>(),
       selections: new Map<string, UserSelection>(),
 
@@ -457,7 +463,7 @@ export const useGridStore = create<GridStore>()(
       },
 
       // ============= Permission Slice =============
-      
+
       permissions: DEFAULT_PERMISSIONS,
 
       setPermissions: (permissions: Permission) => {
@@ -472,19 +478,19 @@ export const useGridStore = create<GridStore>()(
       },
 
       // ============= History Slice =============
-      
+
       canUndo: false,
       canRedo: false,
       historyIndex: 0,
 
       undo: () => {
         // TODO: Implement undo logic
-        console.warn('Undo not implemented yet');
+        console.warn("Undo not implemented yet");
       },
 
       redo: () => {
         // TODO: Implement redo logic
-        console.warn('Redo not implemented yet');
+        console.warn("Redo not implemented yet");
       },
 
       clearHistory: () => {
@@ -496,7 +502,7 @@ export const useGridStore = create<GridStore>()(
       },
 
       // ============= Global =============
-      
+
       api: null,
 
       setApi: (api: any) => {
@@ -513,7 +519,7 @@ export const useGridStore = create<GridStore>()(
           state.view = null;
           state.fields.clear();
           state.records.clear();
-          
+
           // UI
           state.selectedCells.clear();
           state.selectedRows.clear();
@@ -523,14 +529,14 @@ export const useGridStore = create<GridStore>()(
           state.editingCell = null;
           state.editingValue = null;
           state.contextMenu = null;
-          
+
           // Collaboration
           state.collaborators.clear();
           state.selections.clear();
-          
+
           // Permissions
           state.permissions = DEFAULT_PERMISSIONS;
-          
+
           // History
           state.canUndo = false;
           state.canRedo = false;
@@ -538,8 +544,8 @@ export const useGridStore = create<GridStore>()(
         });
       },
     })),
-    { name: 'GridStore' }
-  )
+    { name: "GridStore" },
+  ),
 );
 
 // ============= Selectors =============
@@ -547,22 +553,26 @@ export const useGridStore = create<GridStore>()(
 /**
  * Get cell value by position
  */
-export const selectCellValue = (colIndex: number, rowIndex: number) => (state: GridStore): CellValue => {
-  const recordId = Array.from(state.records.keys())[rowIndex];
-  const fieldId = Array.from(state.fields.keys())[colIndex];
-  
-  if (!recordId || !fieldId) return null;
-  
-  const record = state.records.get(recordId);
-  return record?.fields[fieldId] ?? null;
-};
+export const selectCellValue =
+  (colIndex: number, rowIndex: number) =>
+  (state: GridStore): CellValue => {
+    const recordId = Array.from(state.records.keys())[rowIndex];
+    const fieldId = Array.from(state.fields.keys())[colIndex];
+
+    if (!recordId || !fieldId) return null;
+
+    const record = state.records.get(recordId);
+    return record?.fields[fieldId] ?? null;
+  };
 
 /**
  * Get field by ID
  */
-export const selectField = (fieldId: string) => (state: GridStore): Field | undefined => {
-  return state.fields.get(fieldId);
-};
+export const selectField =
+  (fieldId: string) =>
+  (state: GridStore): Field | undefined => {
+    return state.fields.get(fieldId);
+  };
 
 /**
  * Get all fields as array
@@ -607,22 +617,27 @@ export const selectError = (state: GridStore): Error | null => {
 /**
  * Check if cell is selected
  */
-export const selectIsCellSelected = (colIndex: number, rowIndex: number) => (state: GridStore): boolean => {
-  const key = `${colIndex},${rowIndex}`;
-  return state.selectedCells.has(key);
-};
+export const selectIsCellSelected =
+  (colIndex: number, rowIndex: number) =>
+  (state: GridStore): boolean => {
+    const key = `${colIndex},${rowIndex}`;
+    return state.selectedCells.has(key);
+  };
 
 /**
  * Check if row is selected
  */
-export const selectIsRowSelected = (rowIndex: number) => (state: GridStore): boolean => {
-  return state.selectedRows.has(rowIndex);
-};
+export const selectIsRowSelected =
+  (rowIndex: number) =>
+  (state: GridStore): boolean => {
+    return state.selectedRows.has(rowIndex);
+  };
 
 /**
  * Check if column is selected
  */
-export const selectIsColumnSelected = (colIndex: number) => (state: GridStore): boolean => {
-  return state.selectedColumns.has(colIndex);
-};
-
+export const selectIsColumnSelected =
+  (colIndex: number) =>
+  (state: GridStore): boolean => {
+    return state.selectedColumns.has(colIndex);
+  };

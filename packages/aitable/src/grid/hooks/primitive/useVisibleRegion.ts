@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
-import type { IScrollState } from '../../types/grid';
-import type { CoordinateManager } from '../../managers';
+import { useMemo } from "react";
+import type { IScrollState } from "../../types/grid";
+import type { CoordinateManager } from "../../managers";
 
 export interface IVisibleRegion {
   startRowIndex: number;
@@ -9,7 +9,10 @@ export interface IVisibleRegion {
   stopColumnIndex: number;
 }
 
-export const getVerticalRangeInfo = (coordInstance: CoordinateManager, scrollTop: number) => {
+export const getVerticalRangeInfo = (
+  coordInstance: CoordinateManager,
+  scrollTop: number,
+) => {
   const { rowCount } = coordInstance;
   const startIndex = coordInstance.getRowStartIndex(scrollTop);
   const stopIndex = coordInstance.getRowStopIndex(startIndex, scrollTop);
@@ -20,7 +23,10 @@ export const getVerticalRangeInfo = (coordInstance: CoordinateManager, scrollTop
   };
 };
 
-export const getHorizontalRangeInfo = (coordInstance: CoordinateManager, scrollLeft: number) => {
+export const getHorizontalRangeInfo = (
+  coordInstance: CoordinateManager,
+  scrollLeft: number,
+) => {
   const { columnCount } = coordInstance;
   const startIndex = coordInstance.getColumnStartIndex(scrollLeft);
   const stopIndex = coordInstance.getColumnStopIndex(startIndex, scrollLeft);
@@ -34,13 +40,19 @@ export const getHorizontalRangeInfo = (coordInstance: CoordinateManager, scrollL
 export const useVisibleRegion = (
   coordInstance: CoordinateManager,
   scrollState: IScrollState,
-  forceRenderFlag: string
+  forceRenderFlag: string,
 ) => {
   const { scrollTop, scrollLeft } = scrollState;
 
   return useMemo(() => {
-    const { startRowIndex, stopRowIndex } = getVerticalRangeInfo(coordInstance, scrollTop);
-    const { startColumnIndex, stopColumnIndex } = getHorizontalRangeInfo(coordInstance, scrollLeft);
+    const { startRowIndex, stopRowIndex } = getVerticalRangeInfo(
+      coordInstance,
+      scrollTop,
+    );
+    const { startColumnIndex, stopColumnIndex } = getHorizontalRangeInfo(
+      coordInstance,
+      scrollLeft,
+    );
 
     return {
       startRowIndex,

@@ -30,6 +30,30 @@ const external = [
   'react/jsx-dev-runtime',
   'react-dom/client',
   '@easyspace/sdk', // 外部依赖
+  // Node.js 内置模块
+  'fs',
+  'path',
+  'crypto',
+  'stream',
+  'util',
+  'events',
+  'buffer',
+  'url',
+  'querystring',
+  'os',
+  'child_process',
+  'cluster',
+  'dgram',
+  'dns',
+  'net',
+  'tls',
+  'http',
+  'https',
+  'zlib',
+  'readline',
+  'repl',
+  'vm',
+  'worker_threads',
 ];
 
 // 共享的插件配置

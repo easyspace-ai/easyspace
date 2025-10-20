@@ -3,7 +3,7 @@
  * 工厂函数用于创建 API 客户端
  */
 
-import { ApiClient, ApiClientConfig } from './client';
+import { ApiClient, ApiClientConfig } from "./client";
 
 /**
  * 创建 API 客户端（向后兼容）
@@ -13,4 +13,3 @@ import { ApiClient, ApiClientConfig } from './client';
 export function createApiClient(options: ApiClientConfig): ApiClient {
   return new ApiClient(options);
 }
-

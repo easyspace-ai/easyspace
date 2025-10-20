@@ -4,7 +4,7 @@
  */
 
 import { HttpClient } from '../core/http-client';
-import type { ShareDBClient } from '../core/sharedb-client.js';
+import type { YjsClient } from '../core/yjs-client.js';
 import type { DocumentManager } from '../core/document-manager.js';
 import type {
   Record,
@@ -24,18 +24,18 @@ import type {
 
 export class RecordClient {
   private httpClient: HttpClient;
-  private sharedbClient?: ShareDBClient;
-  private documentManager?: DocumentManager;
+  protected yjsClient?: YjsClient;
+  protected documentManager?: DocumentManager;
 
   constructor(httpClient: HttpClient) {
     this.httpClient = httpClient;
   }
 
   /**
-   * 设置 ShareDB 客户端和文档管理器
+   * 设置 YJS 客户端和文档管理器
    */
-  public setShareDBClient(sharedbClient: ShareDBClient, documentManager: DocumentManager): void {
-    this.sharedbClient = sharedbClient;
+  public setYjsClient(yjsClient: YjsClient, documentManager: DocumentManager): void {
+    this.yjsClient = yjsClient;
     this.documentManager = documentManager;
   }
 
@@ -56,7 +56,7 @@ export class RecordClient {
 
   /**
    * 获取记录列表（GET /api/v1/tables/:tableId/records）
-   * 后端返回格式：{ list: Record[], pagination?: {...} }
+   * 后端返回格式：{ data: Record[], pagination?: {...} }
    */
   public async list(
     params?: PaginationParams & {
@@ -67,7 +67,7 @@ export class RecordClient {
   ): Promise<PaginatedResponse<Record>> {
     if (params?.tableId) {
       const { tableId, ...restParams } = params;
-      // Records API 返回 { list: [...] } 格式
+      // HTTP客户端返回的是API响应的data字段，即 { list: [...], pagination?: {...} }
       const response = await this.httpClient.get<{ list: Record[]; pagination?: any }>(
         `/api/v1/tables/${tableId}/records`,
         restParams
@@ -82,8 +82,7 @@ export class RecordClient {
           data: records,
           total: response.pagination.total || records.length,
           limit: response.pagination.limit || records.length,
-          offset:
-            ((response.pagination.page || 1) - 1) * (response.pagination.limit || records.length),
+          offset: response.pagination.offset || 0,
         };
       }
 
@@ -96,19 +95,18 @@ export class RecordClient {
       };
     }
     // 全局记录列表（如果存在）
-    const response = await this.httpClient.get<{ list: Record[]; pagination?: any }>(
+    const response = await this.httpClient.get<{ data: Record[]; pagination?: any }>(
       '/api/v1/records',
       params
     );
-    const records = response?.list || [];
+    const records = response?.data || [];
 
     if (response?.pagination) {
       return {
         data: records,
         total: response.pagination.total || records.length,
         limit: response.pagination.limit || records.length,
-        offset:
-          ((response.pagination.page || 1) - 1) * (response.pagination.limit || records.length),
+        offset: response.pagination.offset || 0,
       };
     }
 
@@ -122,7 +120,7 @@ export class RecordClient {
 
   /**
    * 获取数据表的记录列表（GET /api/v1/tables/:tableId/records）
-   * 后端返回格式：{ list: Record[], pagination?: {...} }
+   * HTTP客户端返回的是API响应的data字段，即 { list: Record[], pagination?: {...} }
    */
   public async listTableRecords(
     tableId: string,
@@ -142,8 +140,7 @@ export class RecordClient {
         data: records,
         total: response.pagination.total || records.length,
         limit: response.pagination.limit || records.length,
-        offset:
-          ((response.pagination.page || 1) - 1) * (response.pagination.limit || records.length),
+        offset: response.pagination.offset || 0,
       };
     }
 
@@ -156,10 +153,11 @@ export class RecordClient {
   }
 
   /**
-   * 获取记录详情（GET /api/v1/records/:id）
+   * 获取记录详情（GET /api/v1/tables/:tableId/records/:recordId）
+   * ✅ 对齐新API：需要tableId参数
    */
-  public async get(recordId: string): Promise<Record> {
-    return this.httpClient.get<Record>(`/api/v1/records/${recordId}`);
+  public async get(tableId: string, recordId: string): Promise<Record> {
+    return this.httpClient.get<Record>(`/api/v1/tables/${tableId}/records/${recordId}`);
   }
 
   /**
@@ -624,7 +622,7 @@ export class RecordQueryBuilder {
   }
 }
 
-// ==================== ShareDB 实时协作功能 ====================
+// ==================== YJS 实时协作功能 ====================
 
 /**
  * 实时记录操作扩展
@@ -640,7 +638,7 @@ export class RealtimeRecordClient extends RecordClient {
     value: any
   ): Promise<void> {
     if (!this.documentManager) {
-      throw new Error('ShareDB client not initialized. Call setShareDBClient() first.');
+      throw new Error('YJS client not initialized. Call setYjsClient() first.');
     }
 
     await this.documentManager.updateRecordField(tableId, recordId, fieldId, value);
@@ -652,10 +650,10 @@ export class RealtimeRecordClient extends RecordClient {
   public async batchUpdateRecordFieldsRealtime(
     tableId: string,
     recordId: string,
-    fields: Record<string, any>
+    fields: { [key: string]: any }
   ): Promise<void> {
     if (!this.documentManager) {
-      throw new Error('ShareDB client not initialized. Call setShareDBClient() first.');
+      throw new Error('YJS client not initialized. Call setYjsClient() first.');
     }
 
     await this.documentManager.batchUpdateRecordFields(tableId, recordId, fields);
@@ -670,10 +668,11 @@ export class RealtimeRecordClient extends RecordClient {
     fieldId: string
   ): Promise<void> {
     if (!this.documentManager) {
-      throw new Error('ShareDB client not initialized. Call setShareDBClient() first.');
+      throw new Error('YJS client not initialized. Call setYjsClient() first.');
     }
 
-    await this.documentManager.deleteRecordField(tableId, recordId, fieldId);
+    // 简化实现，删除字段相当于设置为 null
+    await this.documentManager.updateRecordField(tableId, recordId, fieldId, null);
   }
 
   /**
@@ -685,7 +684,7 @@ export class RealtimeRecordClient extends RecordClient {
     callback: (updates: JsonObject) => void
   ) {
     if (!this.documentManager) {
-      throw new Error('ShareDB client not initialized. Call setShareDBClient() first.');
+      throw new Error('YJS client not initialized. Call setYjsClient() first.');
     }
 
     return this.documentManager.subscribeToRecord(tableId, recordId, callback);
@@ -696,7 +695,7 @@ export class RealtimeRecordClient extends RecordClient {
    */
   public async getRecordSnapshot(tableId: string, recordId: string) {
     if (!this.documentManager) {
-      throw new Error('ShareDB client not initialized. Call setShareDBClient() first.');
+      throw new Error('YJS client not initialized. Call setYjsClient() first.');
     }
 
     return this.documentManager.getRecordSnapshot(tableId, recordId);
@@ -707,26 +706,26 @@ export class RealtimeRecordClient extends RecordClient {
    */
   public async queryRecordsRealtime(tableId: string, query?: any, options?: any) {
     if (!this.documentManager) {
-      throw new Error('ShareDB client not initialized. Call setShareDBClient() first.');
+      throw new Error('YJS client not initialized. Call setYjsClient() first.');
     }
 
     return this.documentManager.queryRecords(tableId, query, options);
   }
 
   /**
-   * 检查 ShareDB 是否可用
+   * 检查 YJS 是否可用
    */
   public isRealtimeAvailable(): boolean {
-    return !!(this.sharedbClient && this.documentManager);
+    return !!(this.yjsClient && this.documentManager);
   }
 
   /**
-   * 获取 ShareDB 连接状态
+   * 获取 YJS 连接状态
    */
   public getRealtimeConnectionState(): 'connecting' | 'connected' | 'disconnected' {
-    if (!this.sharedbClient) {
+    if (!this.yjsClient) {
       return 'disconnected';
     }
-    return this.sharedbClient.getConnectionState();
+    return this.yjsClient.getConnectionState();
   }
 }

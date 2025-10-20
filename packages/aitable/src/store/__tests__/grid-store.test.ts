@@ -3,24 +3,24 @@
  * Comprehensive tests for store implementation
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { useGridStore } from '../grid-store';
-import { FIELD_TYPES } from '../../types/core/field-types';
-import { TextField } from '../../model/field/TextField';
-import type { TypedRecord, Base, Table, View } from '../types';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { useGridStore } from "../grid-store";
+import { FIELD_TYPES } from "../../types/core/field-types";
+import { TextField } from "../../model/field/TextField";
+import type { TypedRecord, Base, Table, View } from "../types";
 
-describe('GridStore', () => {
+describe("GridStore", () => {
   beforeEach(() => {
     // Reset store before each test
     useGridStore.getState().reset();
   });
 
-  describe('Data Slice', () => {
-    describe('setBase', () => {
-      it('should set base', () => {
+  describe("Data Slice", () => {
+    describe("setBase", () => {
+      it("should set base", () => {
         const base: Base = {
-          id: 'base1',
-          name: 'Test Base',
+          id: "base1",
+          name: "Test Base",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
@@ -28,13 +28,13 @@ describe('GridStore', () => {
         useGridStore.getState().setBase(base);
 
         expect(useGridStore.getState().base).toBe(base);
-        expect(useGridStore.getState().base?.name).toBe('Test Base');
+        expect(useGridStore.getState().base?.name).toBe("Test Base");
       });
 
-      it('should clear base', () => {
+      it("should clear base", () => {
         const base: Base = {
-          id: 'base1',
-          name: 'Test Base',
+          id: "base1",
+          name: "Test Base",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
@@ -47,12 +47,12 @@ describe('GridStore', () => {
       });
     });
 
-    describe('setTable', () => {
-      it('should set table', () => {
+    describe("setTable", () => {
+      it("should set table", () => {
         const table: Table = {
-          id: 'tbl1',
-          baseId: 'base1',
-          name: 'Test Table',
+          id: "tbl1",
+          baseId: "base1",
+          name: "Test Table",
           order: 0,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -61,27 +61,27 @@ describe('GridStore', () => {
         useGridStore.getState().setTable(table);
 
         expect(useGridStore.getState().table).toBe(table);
-        expect(useGridStore.getState().table?.name).toBe('Test Table');
+        expect(useGridStore.getState().table?.name).toBe("Test Table");
       });
     });
 
-    describe('setFields', () => {
-      it('should set fields as Map', () => {
+    describe("setFields", () => {
+      it("should set fields as Map", () => {
         const field1 = new TextField({
-          id: 'fld1',
-          name: 'Name',
+          id: "fld1",
+          name: "Name",
           type: FIELD_TYPES.SingleLineText,
-          tableId: 'tbl1',
+          tableId: "tbl1",
           options: { type: FIELD_TYPES.SingleLineText },
           isComputed: false,
           isPrimary: true,
         });
 
         const field2 = new TextField({
-          id: 'fld2',
-          name: 'Email',
+          id: "fld2",
+          name: "Email",
           type: FIELD_TYPES.SingleLineText,
-          tableId: 'tbl1',
+          tableId: "tbl1",
           options: { type: FIELD_TYPES.SingleLineText },
           isComputed: false,
           isPrimary: false,
@@ -91,16 +91,16 @@ describe('GridStore', () => {
 
         const fields = useGridStore.getState().fields;
         expect(fields.size).toBe(2);
-        expect(fields.get('fld1')).toBe(field1);
-        expect(fields.get('fld2')).toBe(field2);
+        expect(fields.get("fld1")).toBe(field1);
+        expect(fields.get("fld2")).toBe(field2);
       });
 
-      it('should clear existing fields', () => {
+      it("should clear existing fields", () => {
         const field1 = new TextField({
-          id: 'fld1',
-          name: 'Name',
+          id: "fld1",
+          name: "Name",
           type: FIELD_TYPES.SingleLineText,
-          tableId: 'tbl1',
+          tableId: "tbl1",
           options: { type: FIELD_TYPES.SingleLineText },
           isComputed: false,
           isPrimary: true,
@@ -114,20 +114,20 @@ describe('GridStore', () => {
       });
     });
 
-    describe('setRecords', () => {
-      it('should set records as Map', () => {
+    describe("setRecords", () => {
+      it("should set records as Map", () => {
         const record1: TypedRecord = {
-          id: 'rec1',
-          tableId: 'tbl1',
-          fields: { fld1: 'John', fld2: 'john@example.com' },
+          id: "rec1",
+          tableId: "tbl1",
+          fields: { fld1: "John", fld2: "john@example.com" },
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
 
         const record2: TypedRecord = {
-          id: 'rec2',
-          tableId: 'tbl1',
-          fields: { fld1: 'Jane', fld2: 'jane@example.com' },
+          id: "rec2",
+          tableId: "tbl1",
+          fields: { fld1: "Jane", fld2: "jane@example.com" },
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
@@ -136,16 +136,16 @@ describe('GridStore', () => {
 
         const records = useGridStore.getState().records;
         expect(records.size).toBe(2);
-        expect(records.get('rec1')).toBe(record1);
-        expect(records.get('rec2')).toBe(record2);
+        expect(records.get("rec1")).toBe(record1);
+        expect(records.get("rec2")).toBe(record2);
       });
     });
 
-    describe('loadBase', () => {
-      it('should load base via API', async () => {
+    describe("loadBase", () => {
+      it("should load base via API", async () => {
         const mockBase: Base = {
-          id: 'base1',
-          name: 'Test Base',
+          id: "base1",
+          name: "Test Base",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
@@ -156,51 +156,55 @@ describe('GridStore', () => {
 
         useGridStore.getState().setApi(mockApi);
 
-        await useGridStore.getState().loadBase('base1');
+        await useGridStore.getState().loadBase("base1");
 
-        expect(mockApi.getBase).toHaveBeenCalledWith('base1');
+        expect(mockApi.getBase).toHaveBeenCalledWith("base1");
         expect(useGridStore.getState().base).toEqual(mockBase);
         expect(useGridStore.getState().isLoadingBase).toBe(false);
       });
 
-      it('should handle load errors', async () => {
-        const mockError = new Error('Failed to load base');
+      it("should handle load errors", async () => {
+        const mockError = new Error("Failed to load base");
         const mockApi = {
           getBase: vi.fn().mockRejectedValue(mockError),
         };
 
         useGridStore.getState().setApi(mockApi);
 
-        await expect(useGridStore.getState().loadBase('base1')).rejects.toThrow('Failed to load base');
+        await expect(useGridStore.getState().loadBase("base1")).rejects.toThrow(
+          "Failed to load base",
+        );
 
         expect(useGridStore.getState().baseError).toBe(mockError);
         expect(useGridStore.getState().isLoadingBase).toBe(false);
       });
 
-      it('should throw if API not initialized', async () => {
-        await expect(useGridStore.getState().loadBase('base1')).rejects.toThrow();
+      it("should throw if API not initialized", async () => {
+        await expect(
+          useGridStore.getState().loadBase("base1"),
+        ).rejects.toThrow();
       });
     });
   });
 
-  describe('UI Slice', () => {
-    describe('selection', () => {
-      it('should set selected cells', () => {
-        const cells = new Set(['0,0', '0,1', '1,0']);
-        
+  describe("UI Slice", () => {
+    describe("selection", () => {
+      it("should set selected cells", () => {
+        const cells = new Set(["0,0", "0,1", "1,0"]);
+
         useGridStore.getState().setSelectedCells(cells);
 
         expect(useGridStore.getState().selectedCells).toEqual(cells);
       });
 
-      it('should set active cell', () => {
+      it("should set active cell", () => {
         useGridStore.getState().setActiveCell([5, 10]);
 
         expect(useGridStore.getState().activeCell).toEqual([5, 10]);
       });
 
-      it('should clear selection', () => {
-        useGridStore.getState().setSelectedCells(new Set(['0,0', '1,1']));
+      it("should clear selection", () => {
+        useGridStore.getState().setSelectedCells(new Set(["0,0", "1,1"]));
         useGridStore.getState().setSelectedRows(new Set([0, 1]));
         useGridStore.getState().setActiveCell([0, 0]);
 
@@ -212,24 +216,24 @@ describe('GridStore', () => {
       });
     });
 
-    describe('editing', () => {
-      it('should start editing', () => {
-        useGridStore.getState().startEditing([3, 5], 'initial value');
+    describe("editing", () => {
+      it("should start editing", () => {
+        useGridStore.getState().startEditing([3, 5], "initial value");
 
         expect(useGridStore.getState().isEditing).toBe(true);
         expect(useGridStore.getState().editingCell).toEqual([3, 5]);
-        expect(useGridStore.getState().editingValue).toBe('initial value');
+        expect(useGridStore.getState().editingValue).toBe("initial value");
       });
 
-      it('should update editing value', () => {
-        useGridStore.getState().startEditing([0, 0], 'initial');
-        useGridStore.getState().setEditingValue('updated');
+      it("should update editing value", () => {
+        useGridStore.getState().startEditing([0, 0], "initial");
+        useGridStore.getState().setEditingValue("updated");
 
-        expect(useGridStore.getState().editingValue).toBe('updated');
+        expect(useGridStore.getState().editingValue).toBe("updated");
       });
 
-      it('should stop editing without saving', () => {
-        useGridStore.getState().startEditing([0, 0], 'test');
+      it("should stop editing without saving", () => {
+        useGridStore.getState().startEditing([0, 0], "test");
         useGridStore.getState().stopEditing(false);
 
         expect(useGridStore.getState().isEditing).toBe(false);
@@ -238,13 +242,13 @@ describe('GridStore', () => {
       });
     });
 
-    describe('context menu', () => {
-      it('should show context menu', () => {
+    describe("context menu", () => {
+      it("should show context menu", () => {
         const menu = {
           visible: true,
           x: 100,
           y: 200,
-          type: 'cell' as const,
+          type: "cell" as const,
           target: { rowIndex: 0, colIndex: 0 },
         };
 
@@ -253,12 +257,12 @@ describe('GridStore', () => {
         expect(useGridStore.getState().contextMenu).toEqual(menu);
       });
 
-      it('should hide context menu', () => {
+      it("should hide context menu", () => {
         const menu = {
           visible: true,
           x: 100,
           y: 200,
-          type: 'cell' as const,
+          type: "cell" as const,
           target: { rowIndex: 0, colIndex: 0 },
         };
 
@@ -269,73 +273,75 @@ describe('GridStore', () => {
       });
     });
 
-    describe('dialogs', () => {
-      it('should show dialog', () => {
-        useGridStore.getState().showDialog('deleteConfirm');
+    describe("dialogs", () => {
+      it("should show dialog", () => {
+        useGridStore.getState().showDialog("deleteConfirm");
 
         expect(useGridStore.getState().dialogs.deleteConfirm).toBe(true);
       });
 
-      it('should hide dialog', () => {
-        useGridStore.getState().showDialog('deleteConfirm');
-        useGridStore.getState().hideDialog('deleteConfirm');
+      it("should hide dialog", () => {
+        useGridStore.getState().showDialog("deleteConfirm");
+        useGridStore.getState().hideDialog("deleteConfirm");
 
         expect(useGridStore.getState().dialogs.deleteConfirm).toBe(false);
       });
     });
   });
 
-  describe('Collaboration Slice', () => {
-    it('should add collaborator', () => {
+  describe("Collaboration Slice", () => {
+    it("should add collaborator", () => {
       const collaborator = {
-        id: 'user1',
-        name: 'John Doe',
-        email: 'john@example.com',
-        color: '#FF0000',
+        id: "user1",
+        name: "John Doe",
+        email: "john@example.com",
+        color: "#FF0000",
         isOnline: true,
         lastSeen: new Date().toISOString(),
       };
 
       useGridStore.getState().addCollaborator(collaborator);
 
-      expect(useGridStore.getState().collaborators.get('user1')).toEqual(collaborator);
+      expect(useGridStore.getState().collaborators.get("user1")).toEqual(
+        collaborator,
+      );
     });
 
-    it('should remove collaborator', () => {
+    it("should remove collaborator", () => {
       const collaborator = {
-        id: 'user1',
-        name: 'John Doe',
-        color: '#FF0000',
+        id: "user1",
+        name: "John Doe",
+        color: "#FF0000",
         isOnline: true,
         lastSeen: new Date().toISOString(),
       };
 
       useGridStore.getState().addCollaborator(collaborator);
-      useGridStore.getState().removeCollaborator('user1');
+      useGridStore.getState().removeCollaborator("user1");
 
-      expect(useGridStore.getState().collaborators.has('user1')).toBe(false);
+      expect(useGridStore.getState().collaborators.has("user1")).toBe(false);
     });
 
-    it('should update collaborator', () => {
+    it("should update collaborator", () => {
       const collaborator = {
-        id: 'user1',
-        name: 'John Doe',
-        color: '#FF0000',
+        id: "user1",
+        name: "John Doe",
+        color: "#FF0000",
         isOnline: true,
         lastSeen: new Date().toISOString(),
       };
 
       useGridStore.getState().addCollaborator(collaborator);
-      useGridStore.getState().updateCollaborator('user1', { isOnline: false });
+      useGridStore.getState().updateCollaborator("user1", { isOnline: false });
 
-      const updated = useGridStore.getState().collaborators.get('user1');
+      const updated = useGridStore.getState().collaborators.get("user1");
       expect(updated?.isOnline).toBe(false);
-      expect(updated?.name).toBe('John Doe'); // Other fields preserved
+      expect(updated?.name).toBe("John Doe"); // Other fields preserved
     });
   });
 
-  describe('Permission Slice', () => {
-    it('should set permissions', () => {
+  describe("Permission Slice", () => {
+    it("should set permissions", () => {
       const permissions = {
         canRead: true,
         canWrite: true,
@@ -350,7 +356,7 @@ describe('GridStore', () => {
       expect(useGridStore.getState().permissions).toEqual(permissions);
     });
 
-    it('should check permission', () => {
+    it("should check permission", () => {
       const permissions = {
         canRead: true,
         canWrite: false,
@@ -362,13 +368,13 @@ describe('GridStore', () => {
 
       useGridStore.getState().setPermissions(permissions);
 
-      expect(useGridStore.getState().checkPermission('canRead')).toBe(true);
-      expect(useGridStore.getState().checkPermission('canWrite')).toBe(false);
+      expect(useGridStore.getState().checkPermission("canRead")).toBe(true);
+      expect(useGridStore.getState().checkPermission("canWrite")).toBe(false);
     });
   });
 
-  describe('Global Actions', () => {
-    it('should set API client', () => {
+  describe("Global Actions", () => {
+    it("should set API client", () => {
       const mockApi = { getBase: vi.fn() };
 
       useGridStore.getState().setApi(mockApi);
@@ -376,18 +382,18 @@ describe('GridStore', () => {
       expect(useGridStore.getState().api).toBe(mockApi);
     });
 
-    it('should reset store', () => {
+    it("should reset store", () => {
       // Setup some data
       const base: Base = {
-        id: 'base1',
-        name: 'Test',
+        id: "base1",
+        name: "Test",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      
+
       useGridStore.getState().setBase(base);
       useGridStore.getState().setActiveCell([0, 0]);
-      useGridStore.getState().startEditing([0, 0], 'test');
+      useGridStore.getState().startEditing([0, 0], "test");
 
       // Reset
       useGridStore.getState().reset();
@@ -401,13 +407,13 @@ describe('GridStore', () => {
     });
   });
 
-  describe('Selectors', () => {
-    it('should select fields array', () => {
+  describe("Selectors", () => {
+    it("should select fields array", () => {
       const field1 = new TextField({
-        id: 'fld1',
-        name: 'Name',
+        id: "fld1",
+        name: "Name",
         type: FIELD_TYPES.SingleLineText,
-        tableId: 'tbl1',
+        tableId: "tbl1",
         options: { type: FIELD_TYPES.SingleLineText },
         isComputed: false,
         isPrimary: true,
@@ -420,11 +426,11 @@ describe('GridStore', () => {
       expect(fields[0]).toBe(field1);
     });
 
-    it('should select records array', () => {
+    it("should select records array", () => {
       const record: TypedRecord = {
-        id: 'rec1',
-        tableId: 'tbl1',
-        fields: { fld1: 'John' },
+        id: "rec1",
+        tableId: "tbl1",
+        fields: { fld1: "John" },
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -437,4 +443,3 @@ describe('GridStore', () => {
     });
   });
 });
-

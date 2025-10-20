@@ -2,10 +2,10 @@
  * 多选编辑器（Checkbox 列表 + Chips）
  */
 
-import React, { useState } from 'react';
-import { cn, tokens } from '../../../grid/design-system';
-import type { FieldEditorProps } from '../types';
-import { X } from 'lucide-react';
+import React, { useState } from "react";
+import { cn, tokens } from "../../../grid/design-system";
+import type { FieldEditorProps } from "../types";
+import { X } from "lucide-react";
 
 export function MultiSelectEditor({
   field,
@@ -48,8 +48,8 @@ export function MultiSelectEditor({
               key={choice.id}
               className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-700"
               style={{
-                backgroundColor: choice.color ? `${choice.color}20` : '#dbeafe',
-                color: choice.color || '#1e40af',
+                backgroundColor: choice.color ? `${choice.color}20` : "#dbeafe",
+                color: choice.color || "#1e40af",
               }}
             >
               {choice.name}
@@ -73,23 +73,27 @@ export function MultiSelectEditor({
           onClick={() => setIsOpen(!isOpen)}
           disabled={field.locked}
           className={cn(
-            'w-full h-9 px-3 rounded-md text-sm text-left',
-            'border transition-all',
-            'focus:outline-none focus:ring-2',
+            "w-full h-9 px-3 rounded-md text-sm text-left",
+            "border transition-all",
+            "focus:outline-none focus:ring-2",
             error
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-              : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200',
-            field.locked && 'bg-gray-50 cursor-not-allowed'
+              ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+              : "border-gray-300 focus:border-blue-500 focus:ring-blue-200",
+            field.locked && "bg-gray-50 cursor-not-allowed",
           )}
           style={{
-            backgroundColor: field.locked ? tokens.colors.surface.disabled : tokens.colors.surface.base,
-            borderColor: error ? '#fca5a5' : tokens.colors.border.default,
+            backgroundColor: field.locked
+              ? tokens.colors.surface.disabled
+              : tokens.colors.surface.base,
+            borderColor: error ? "#fca5a5" : tokens.colors.border.default,
           }}
         >
           {selectedChoices.length === 0 ? (
             <span className="text-gray-500">选择选项...</span>
           ) : (
-            <span className="text-gray-700">已选 {selectedChoices.length} 项</span>
+            <span className="text-gray-700">
+              已选 {selectedChoices.length} 项
+            </span>
           )}
         </button>
 
@@ -116,7 +120,7 @@ export function MultiSelectEditor({
                     key={choice.id}
                     className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
                     style={{
-                      backgroundColor: isSelected ? '#f0f9ff' : undefined,
+                      backgroundColor: isSelected ? "#f0f9ff" : undefined,
                     }}
                   >
                     <input
@@ -136,4 +140,3 @@ export function MultiSelectEditor({
     </div>
   );
 }
-

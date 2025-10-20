@@ -30,4 +30,3 @@ export interface UpdateBaseCommand {
   name?: string;
   icon?: string;
 }
-

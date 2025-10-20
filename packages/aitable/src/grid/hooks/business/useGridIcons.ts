@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
 /**
  * Icon configuration interface
@@ -12,31 +12,31 @@ export interface GridIconConfig {
  */
 export const DEFAULT_GRID_ICONS: GridIconConfig = {
   // Field type icons
-  text: '📝',
-  number: '🔢',
-  select: '📋',
-  date: '📅',
-  checkbox: '☑️',
-  user: '👤',
-  attachment: '📎',
-  link: '🔗',
-  rating: '⭐',
-  
+  text: "📝",
+  number: "🔢",
+  select: "📋",
+  date: "📅",
+  checkbox: "☑️",
+  user: "👤",
+  attachment: "📎",
+  link: "🔗",
+  rating: "⭐",
+
   // Action icons
-  add: '+',
-  delete: '🗑️',
-  edit: '✏️',
-  search: '🔍',
-  filter: '🔽',
-  sort: '↕️',
-  group: '📊',
-  expand: '▼',
-  collapse: '▶',
-  
+  add: "+",
+  delete: "🗑️",
+  edit: "✏️",
+  search: "🔍",
+  filter: "🔽",
+  sort: "↕️",
+  group: "📊",
+  expand: "▼",
+  collapse: "▶",
+
   // Row controls
-  drag: '☰',
-  checkbox_row: '☐',
-  checkbox_row_checked: '☑',
+  drag: "☰",
+  checkbox_row: "☐",
+  checkbox_row_checked: "☑",
 };
 
 /**
@@ -58,4 +58,3 @@ export const useGridIcons = (customIcons?: GridIconConfig) => {
     };
   }, [customIcons]);
 };
-

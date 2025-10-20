@@ -18,8 +18,8 @@ export type IIndicesMap = Record<number, number>;
 export type ICellMetaDataMap = Record<number, ICellMetaData>;
 
 export enum ItemType {
-  Row = 'Row',
-  Column = 'Column',
+  Row = "Row",
+  Column = "Column",
 }
 
 export type ICellMetaData = {

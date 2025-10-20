@@ -3,24 +3,55 @@
  * 所有字段过滤器的基类
  */
 
-import type { Field } from '../field/Field';
-import type { RecordModel } from '../record/Record';
+import type { Field } from "../field/Field";
+import type { RecordModel } from "../record/Record";
 
-export type FilterOperator = 
+export type FilterOperator =
   // 通用操作符
-  | 'is' | 'isNot' | 'isEmpty' | 'isNotEmpty'
+  | "is"
+  | "isNot"
+  | "isEmpty"
+  | "isNotEmpty"
   // 文本操作符
-  | 'contains' | 'doesNotContain' | 'startsWith' | 'endsWith'
+  | "contains"
+  | "doesNotContain"
+  | "startsWith"
+  | "endsWith"
   // 数字操作符
-  | 'equal' | 'notEqual' | 'greaterThan' | 'greaterThanOrEqual' | 'lessThan' | 'lessThanOrEqual'
+  | "equal"
+  | "notEqual"
+  | "greaterThan"
+  | "greaterThanOrEqual"
+  | "lessThan"
+  | "lessThanOrEqual"
   // 日期操作符
-  | 'isToday' | 'isTomorrow' | 'isYesterday' | 'isThisWeek' | 'isLastWeek' | 'isNextWeek'
-  | 'isThisMonth' | 'isLastMonth' | 'isNextMonth' | 'isThisYear' | 'isLastYear' | 'isNextYear'
-  | 'isBefore' | 'isAfter' | 'isOnOrBefore' | 'isOnOrAfter' | 'isBetween'
+  | "isToday"
+  | "isTomorrow"
+  | "isYesterday"
+  | "isThisWeek"
+  | "isLastWeek"
+  | "isNextWeek"
+  | "isThisMonth"
+  | "isLastMonth"
+  | "isNextMonth"
+  | "isThisYear"
+  | "isLastYear"
+  | "isNextYear"
+  | "isBefore"
+  | "isAfter"
+  | "isOnOrBefore"
+  | "isOnOrAfter"
+  | "isBetween"
   // 选择操作符
-  | 'isAnyOf' | 'isNoneOf' | 'hasAnyOf' | 'hasAllOf' | 'hasNoneOf' | 'isExactly'
+  | "isAnyOf"
+  | "isNoneOf"
+  | "hasAnyOf"
+  | "hasAllOf"
+  | "hasNoneOf"
+  | "isExactly"
   // 关系操作符
-  | 'hasRecord' | 'hasNoRecord';
+  | "hasRecord"
+  | "hasNoRecord";
 
 export interface IFilterConfig {
   operator: FilterOperator;
@@ -58,7 +89,7 @@ export abstract class BaseFilter {
    * 检查值是否为空
    */
   protected isEmpty(value: unknown): boolean {
-    return value === null || value === undefined || value === '';
+    return value === null || value === undefined || value === "";
   }
 
   /**
@@ -81,15 +112,13 @@ export abstract class BaseFilter {
    */
   validate(): boolean {
     const { operator, value } = this.config;
-    
+
     // isEmpty 和 isNotEmpty 不需要 value
-    if (operator === 'isEmpty' || operator === 'isNotEmpty') {
+    if (operator === "isEmpty" || operator === "isNotEmpty") {
       return true;
     }
-    
+
     // 其他操作符需要 value
     return value !== undefined && value !== null;
   }
 }
-
-

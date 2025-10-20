@@ -183,7 +183,51 @@ func NewYjsManager(logger *zap.Logger, businessEvents events.BusinessEventSubscr
 
 // HandleWebSocket 处理基于新YJS库的WebSocket连接
 func (ym *YjsManager) HandleWebSocket(c *gin.Context) {
-	// 升级到WebSocket
+	// 连接参数与鉴权校验（在升级到 WebSocket 之前进行）
+	documentID := c.Query("document")
+	userID := c.Query("user")
+	authz := c.Request.Header.Get("Authorization")
+
+	// 简单的ID校验：限制字符集与长度，避免非法或超长document/user
+	isValidID := func(s string) bool {
+		if len(s) == 0 || len(s) > 128 {
+			return false
+		}
+		for i := 0; i < len(s); i++ {
+			ch := s[i]
+			if (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9') || ch == '-' || ch == '_' || ch == ':' {
+				continue
+			}
+			return false
+		}
+		return true
+	}
+
+	if documentID == "" || userID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing required parameters: document and user"})
+		ym.logger.Error("Missing required parameters: document and user")
+		return
+	}
+	if !isValidID(documentID) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid document id"})
+		ym.logger.Warn("Invalid document id", zap.String("document_id", documentID))
+		return
+	}
+	if !isValidID(userID) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
+		ym.logger.Warn("Invalid user id", zap.String("user_id", userID))
+		return
+	}
+	// 如需强制鉴权，可要求 Bearer Token 存在（此处仅校验存在性与记录日志；具体校验可接入统一鉴权服务）
+	if authz == "" {
+		ym.logger.Warn("Missing Authorization header for YJS connection",
+			zap.String("document_id", documentID), zap.String("user_id", userID))
+		// 根据需要选择强制要求：可改为直接返回400/401
+		// c.JSON(http.StatusUnauthorized, gin.H{"error": "missing Authorization header"})
+		// return
+	}
+
+	// 通过校验后再升级到 WebSocket
 	conn, err := ym.wsUpgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		ym.logger.Error("Failed to upgrade Yjs WebSocket connection", zap.Error(err))
@@ -191,14 +235,9 @@ func (ym *YjsManager) HandleWebSocket(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	// 获取连接参数
-	documentID := c.Query("document")
-	userID := c.Query("user")
-
-	if documentID == "" || userID == "" {
-		ym.logger.Error("Missing required parameters: document and user")
-		return
-	}
+	ym.logger.Info("🔌 YJS WebSocket 连接建立",
+		zap.String("document_id", documentID),
+		zap.String("user_id", userID))
 
 	// 创建连接
 	connectionID := fmt.Sprintf("conn_%d", time.Now().UnixNano())
@@ -232,15 +271,8 @@ func (ym *YjsManager) HandleWebSocket(c *gin.Context) {
 	ym.registerSession(document, session)
 	defer ym.unregisterSession(document, session)
 
-	// 发送连接确认
-	ym.sendToConnection(connection, YjsMessage{
-		Type:     "connected",
-		Document: documentID,
-		UserID:   userID,
-	})
-
-	// 处理消息
-	ym.handleConnectionMessages(connection, session, document)
+	// 处理消息 - 兼容 y-websocket 协议
+	ym.handleYWebSocketMessages(connection, session, document)
 }
 
 // getOrCreateDocument 获取或创建文档
@@ -407,7 +439,190 @@ func (ym *YjsManager) unregisterSession(document *YjsDocument, session *YjsSessi
 		zap.String("user_id", session.UserID))
 }
 
-// handleConnectionMessages 处理连接消息
+// handleYWebSocketMessages 处理 y-websocket 协议消息
+func (ym *YjsManager) handleYWebSocketMessages(conn *YjsConnection, session *YjsSession, document *YjsDocument) {
+	defer func() {
+		if r := recover(); r != nil {
+			ym.logger.Error("Panic in YJS WebSocket message handler", zap.Any("panic", r))
+		}
+	}()
+
+	for {
+		// 读取消息类型
+		messageType, data, err := conn.Conn.ReadMessage()
+		if err != nil {
+			if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseNoStatusReceived) {
+				ym.logger.Info("YJS WebSocket connection closed normally",
+					zap.Error(err),
+					zap.String("connection_id", conn.ID))
+			} else if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure, websocket.CloseNoStatusReceived) {
+				ym.logger.Error("YJS WebSocket unexpected close",
+					zap.Error(err),
+					zap.String("connection_id", conn.ID))
+			} else {
+				ym.logger.Debug("YJS WebSocket connection closed",
+					zap.Error(err),
+					zap.String("connection_id", conn.ID))
+			}
+			break
+		}
+
+		conn.mu.Lock()
+		conn.LastSeen = time.Now()
+		conn.mu.Unlock()
+
+		// 处理不同类型的消息
+		switch messageType {
+		case websocket.BinaryMessage:
+			// 处理二进制消息（y-websocket 协议）
+			ym.handleYWebSocketBinaryMessage(session, document, data)
+		case websocket.TextMessage:
+			// 处理文本消息（JSON格式）
+			var msg YjsMessage
+			if err := json.Unmarshal(data, &msg); err != nil {
+				ym.logger.Error("Failed to parse YJS JSON message", zap.Error(err))
+				continue
+			}
+			ym.handleYjsMessage(session, document, msg)
+		default:
+			ym.logger.Warn("Unknown message type", zap.Int("type", messageType))
+		}
+	}
+}
+
+// handleYWebSocketBinaryMessage 处理 y-websocket 二进制消息
+func (ym *YjsManager) handleYWebSocketBinaryMessage(session *YjsSession, document *YjsDocument, data []byte) {
+	if len(data) == 0 {
+		return
+	}
+
+	// y-websocket 协议：第一个字节是消息类型
+	messageType := data[0]
+	payload := data[1:]
+
+	ym.logger.Debug("收到 y-websocket 二进制消息",
+		zap.Uint8("message_type", messageType),
+		zap.Int("payload_size", len(payload)),
+		zap.String("session_id", session.ID),
+		zap.String("document_id", document.ID))
+
+	switch messageType {
+	case 0: // sync step 1: 客户端发送状态向量
+		ym.handleSyncStep1(session, document, payload)
+	case 1: // sync step 2: 客户端发送更新
+		ym.handleSyncStep2(session, document, payload)
+	case 2: // update: 客户端发送更新
+		ym.handleUpdate(session, document, payload)
+	case 3: // awareness: 客户端发送感知信息
+		ym.handleAwareness(session, document, payload)
+	default:
+		ym.logger.Warn("Unknown y-websocket message type", zap.Uint8("type", messageType))
+	}
+}
+
+// handleSyncStep1 处理同步步骤1：客户端状态向量
+func (ym *YjsManager) handleSyncStep1(session *YjsSession, document *YjsDocument, clientStateVector []byte) {
+	ym.logger.Debug("处理同步步骤1",
+		zap.String("session_id", session.ID),
+		zap.String("document_id", document.ID),
+		zap.Int("client_state_size", len(clientStateVector)))
+
+	// 获取服务端状态向量并编码为字节数组（新版 API 需要传入 encoder）
+	serverStateVector := yjs.GetStateVector(document.Doc.Store)
+	encoder := yjs.NewUpdateEncoderV1()
+	encodedStateVector := yjs.EncodeStateVector(document.Doc, serverStateVector, encoder)
+
+	// 发送服务端状态向量给客户端
+	ym.sendYWebSocketMessage(session, 0, encodedStateVector)
+
+	// 计算并发送缺失的更新
+	if len(clientStateVector) > 0 {
+		// 这里应该计算缺失的更新，暂时发送完整更新
+		update := yjs.EncodeStateAsUpdate(document.Doc, clientStateVector)
+		if len(update) > 0 {
+			ym.sendYWebSocketMessage(session, 1, update)
+		}
+	}
+}
+
+// handleSyncStep2 处理同步步骤2：客户端更新
+func (ym *YjsManager) handleSyncStep2(session *YjsSession, document *YjsDocument, update []byte) {
+	ym.logger.Debug("处理同步步骤2",
+		zap.String("session_id", session.ID),
+		zap.String("document_id", document.ID),
+		zap.Int("update_size", len(update)))
+
+	// 应用更新到文档
+	document.mu.Lock()
+	yjs.ApplyUpdate(document.Doc, update, session.ID)
+	document.mu.Unlock()
+
+	// 广播更新到其他会话
+	ym.broadcastUpdateToOtherSessions(session, document, update)
+}
+
+// handleUpdate 处理更新消息
+func (ym *YjsManager) handleUpdate(session *YjsSession, document *YjsDocument, update []byte) {
+	ym.logger.Debug("处理更新消息",
+		zap.String("session_id", session.ID),
+		zap.String("document_id", document.ID),
+		zap.Int("update_size", len(update)))
+
+	// 应用更新到文档
+	document.mu.Lock()
+	yjs.ApplyUpdate(document.Doc, update, session.ID)
+	document.mu.Unlock()
+
+	// 广播更新到其他会话
+	ym.broadcastUpdateToOtherSessions(session, document, update)
+}
+
+// handleAwareness 处理感知信息
+func (ym *YjsManager) handleAwareness(session *YjsSession, document *YjsDocument, awareness []byte) {
+	ym.logger.Debug("处理感知信息",
+		zap.String("session_id", session.ID),
+		zap.String("document_id", document.ID),
+		zap.Int("awareness_size", len(awareness)))
+
+	// 广播感知信息到其他会话
+	ym.broadcastAwarenessToOtherSessions(session, document, awareness)
+}
+
+// sendYWebSocketMessage 发送 y-websocket 协议消息
+func (ym *YjsManager) sendYWebSocketMessage(session *YjsSession, messageType uint8, payload []byte) {
+	data := make([]byte, 1+len(payload))
+	data[0] = messageType
+	copy(data[1:], payload)
+
+	session.mu.Lock()
+	defer session.mu.Unlock()
+
+	if session.IsActive {
+		if err := session.Conn.WriteMessage(websocket.BinaryMessage, data); err != nil {
+			ym.logger.Error("Failed to send y-websocket message", zap.Error(err))
+		} else {
+			ym.logger.Debug("发送 y-websocket 消息",
+				zap.Uint8("message_type", messageType),
+				zap.Int("payload_size", len(payload)),
+				zap.String("session_id", session.ID))
+		}
+	}
+}
+
+// broadcastAwarenessToOtherSessions 广播感知信息到其他会话
+func (ym *YjsManager) broadcastAwarenessToOtherSessions(senderSession *YjsSession, document *YjsDocument, awareness []byte) {
+	document.mu.RLock()
+	defer document.mu.RUnlock()
+
+	// 广播到所有其他活跃会话
+	for sessionID, session := range document.Sessions {
+		if sessionID != senderSession.ID && session.IsActive {
+			ym.sendYWebSocketMessage(session, 3, awareness)
+		}
+	}
+}
+
+// handleConnectionMessages 处理连接消息（保留兼容性）
 func (ym *YjsManager) handleConnectionMessages(conn *YjsConnection, session *YjsSession, document *YjsDocument) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -543,46 +758,6 @@ func (ym *YjsManager) sendSyncStep1(session *YjsSession, document *YjsDocument) 
 	})
 }
 
-// handleSyncStep1 处理同步步骤1：客户端状态向量
-func (ym *YjsManager) handleSyncStep1(session *YjsSession, document *YjsDocument, clientStateVector []byte) {
-	// 使用文档级别的读锁保护并发访问
-	document.mu.RLock()
-	defer document.mu.RUnlock()
-
-	// 计算缺失的更新
-	missingUpdates, err := ym.persistence.GetMissingUpdates(document.ID, clientStateVector)
-	if err != nil {
-		ym.logger.Error("Failed to get missing updates", zap.Error(err))
-		return
-	}
-
-	// 发送缺失的更新
-	for _, update := range missingUpdates {
-		// 将字节数组转换为数组格式（YJS 标准格式）
-		updateArray := make([]int, len(update))
-		for i, b := range update {
-			updateArray[i] = int(b)
-		}
-
-		updateJSON, err := json.Marshal(updateArray)
-		if err != nil {
-			ym.logger.Error("Failed to marshal update", zap.Error(err))
-			continue
-		}
-		ym.sendToSession(session, YjsMessage{
-			Type:     "sync",
-			Document: document.ID,
-			Update:   json.RawMessage(updateJSON),
-		})
-	}
-
-	// 发送同步完成消息
-	ym.sendToSession(session, YjsMessage{
-		Type:     "sync_complete",
-		Document: document.ID,
-	})
-}
-
 // handleUpdateMessage 处理更新消息
 func (ym *YjsManager) handleUpdateMessage(session *YjsSession, document *YjsDocument, msg YjsMessage) {
 	// 将 JSON 数据转换为字节数组
@@ -643,33 +818,17 @@ func (ym *YjsManager) broadcastUpdateToOtherSessions(senderSession *YjsSession, 
 	document.mu.RLock()
 	defer document.mu.RUnlock()
 
-	// 将字节数组转换为数组格式（YJS 标准格式）
-	updateArray := make([]int, len(updateBytes))
-	for i, b := range updateBytes {
-		updateArray[i] = int(b)
-	}
-
-	updateJSON, err := json.Marshal(updateArray)
-	if err != nil {
-		ym.logger.Error("Failed to marshal update to JSON", zap.Error(err))
-		return
-	}
-
 	// 广播到所有其他活跃会话
 	for sessionID, session := range document.Sessions {
 		if sessionID != senderSession.ID && session.IsActive {
-			updateMsg := YjsMessage{
-				Type:     "update",
-				Document: document.ID,
-				Update:   json.RawMessage(updateJSON),
-			}
+			// 使用 y-websocket 协议发送更新
+			ym.sendYWebSocketMessage(session, 2, updateBytes)
 
-			ym.sendToSession(session, updateMsg)
-
-			ym.logger.Debug("Update broadcasted",
+			ym.logger.Info("✅ YJS更新已广播",
 				zap.String("from_session", senderSession.ID),
 				zap.String("to_session", sessionID),
-				zap.String("document_id", document.ID))
+				zap.String("document_id", document.ID),
+				zap.Int("update_size", len(updateBytes)))
 		}
 	}
 }
@@ -881,6 +1040,9 @@ func (ym *YjsManager) startBusinessEventSubscription() {
 		events.BusinessEventTypeRecordUpdate,
 		events.BusinessEventTypeRecordDelete,
 		events.BusinessEventTypeCalculationUpdate,
+		events.BusinessEventTypeViewCreate,
+		events.BusinessEventTypeViewUpdate,
+		events.BusinessEventTypeViewDelete,
 	}
 
 	eventChan, err := ym.businessEvents.Subscribe(ym.ctx, eventTypes)
@@ -909,6 +1071,11 @@ func (ym *YjsManager) startBusinessEventSubscription() {
 
 // handleBusinessEvent 处理业务事件
 func (ym *YjsManager) handleBusinessEvent(event *events.BusinessEvent) {
+	ym.logger.Info("🎯 收到业务事件，开始处理YJS广播",
+		zap.String("event_type", string(event.Type)),
+		zap.String("table_id", event.TableID),
+		zap.String("record_id", event.RecordID))
+
 	// 将业务事件转换为YJS更新
 	// 这里可以根据业务事件类型决定如何处理
 	switch event.Type {
@@ -916,8 +1083,9 @@ func (ym *YjsManager) handleBusinessEvent(event *events.BusinessEvent) {
 		events.BusinessEventTypeRecordUpdate,
 		events.BusinessEventTypeRecordDelete:
 		// 记录相关事件：更新对应的YJS文档
-		if event.TableID != "" && event.RecordID != "" {
-			documentID := fmt.Sprintf("table:%s:record:%s", event.TableID, event.RecordID)
+		if event.TableID != "" {
+			// 使用表ID作为文档ID，这样所有记录更新都会广播到同一个文档
+			documentID := event.TableID
 			ym.updateDocumentFromBusinessEvent(documentID, event)
 		}
 
@@ -926,7 +1094,7 @@ func (ym *YjsManager) handleBusinessEvent(event *events.BusinessEvent) {
 		events.BusinessEventTypeFieldDelete:
 		// 字段相关事件：更新表结构文档
 		if event.TableID != "" {
-			documentID := fmt.Sprintf("table:%s:schema", event.TableID)
+			documentID := event.TableID // 使用表ID作为文档ID
 			ym.updateDocumentFromBusinessEvent(documentID, event)
 		}
 
@@ -936,9 +1104,18 @@ func (ym *YjsManager) handleBusinessEvent(event *events.BusinessEvent) {
 		// 表相关事件：更新全局表列表文档
 		documentID := "global:tables"
 		ym.updateDocumentFromBusinessEvent(documentID, event)
+
+	case events.BusinessEventTypeViewCreate,
+		events.BusinessEventTypeViewUpdate,
+		events.BusinessEventTypeViewDelete:
+		// 视图相关事件：更新表文档（因为视图属于表）
+		if event.TableID != "" {
+			documentID := event.TableID // 使用表ID作为文档ID
+			ym.updateDocumentFromBusinessEvent(documentID, event)
+		}
 	}
 
-	ym.logger.Debug("业务事件已转换为YJS更新",
+	ym.logger.Info("✅ 业务事件已转换为YJS更新",
 		zap.String("event_type", string(event.Type)),
 		zap.String("table_id", event.TableID),
 		zap.String("record_id", event.RecordID))
@@ -1003,7 +1180,7 @@ func (ym *YjsManager) updateDocumentFromBusinessEvent(documentID string, event *
 	doc.mu.Unlock()
 
 	// 广播更新到所有连接的会话
-	for _, session := range doc.Sessions {
+	for sessionID, session := range doc.Sessions {
 		if session.IsActive {
 			// 将字节数组转换为数组格式（YJS 标准格式）
 			updateArray := make([]int, len(updateBytes))
@@ -1025,6 +1202,11 @@ func (ym *YjsManager) updateDocumentFromBusinessEvent(documentID string, event *
 			}
 
 			ym.sendToSession(session, updateMsg)
+
+			ym.logger.Info("✅ 业务事件已广播到YJS会话",
+				zap.String("session_id", sessionID),
+				zap.String("document_id", documentID),
+				zap.String("event_type", string(event.Type)))
 		}
 	}
 }

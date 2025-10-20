@@ -1,20 +1,30 @@
-import { useRef, useState } from 'react';
-import { useUnmount, useUpdateEffect } from 'react-use';
+import { useRef, useState } from "react";
+import { useUnmount, useUpdateEffect } from "react-use";
 
 export interface IGridProps {
   // 占位符接口
   [key: string]: any;
 }
-import type { ICellItem, ILinearRow, IMouseState, IPosition, IRange } from '../../types/grid';
-import { RegionType, SelectionRegionType, SelectableType } from '../../types/grid';
-import { CombinedSelection, type CoordinateManager } from '../../managers';
+import type {
+  ICellItem,
+  ILinearRow,
+  IMouseState,
+  IPosition,
+  IRange,
+} from "../../types/grid";
+import {
+  RegionType,
+  SelectionRegionType,
+  SelectableType,
+} from "../../types/grid";
+import { CombinedSelection, type CoordinateManager } from "../../managers";
 
 interface IUseSelectionProps {
   coordInstance: CoordinateManager;
   selectable?: SelectableType;
   isMultiSelectionEnable?: boolean;
   getLinearRow: (index: number) => ILinearRow;
-  onSelectionChanged: IGridProps['onSelectionChanged'];
+  onSelectionChanged: IGridProps["onSelectionChanged"];
   setActiveCell: React.Dispatch<React.SetStateAction<ICellItem | null>>;
 }
 
@@ -27,7 +37,9 @@ export const useSelection = (props: IUseSelectionProps) => {
     setActiveCell,
     onSelectionChanged,
   } = props;
-  const onSelectionChangedRef = useRef<IGridProps['onSelectionChanged'] | undefined>();
+  const onSelectionChangedRef = useRef<
+    IGridProps["onSelectionChanged"] | undefined
+  >();
   const prevSelectedRowIndex = useRef<number | null>(null);
   const [isSelecting, setSelecting] = useState(false);
   const [selection, setSelection] = useState(() => new CombinedSelection());
@@ -36,12 +48,18 @@ export const useSelection = (props: IUseSelectionProps) => {
 
   const onSelectionStart = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    mouseState: IMouseState
+    mouseState: IMouseState,
   ) => {
-    if (selectable !== SelectableType.All && selectable !== SelectableType.Cell) {return;}
+    if (
+      selectable !== SelectableType.All &&
+      selectable !== SelectableType.Cell
+    ) {
+      return;
+    }
 
     const { type, rowIndex, columnIndex } = mouseState;
-    const { isRowSelection: isPrevRowSelection, ranges: prevRanges } = selection;
+    const { isRowSelection: isPrevRowSelection, ranges: prevRanges } =
+      selection;
     const isShiftKey = event.shiftKey && !event.metaKey;
 
     switch (type) {
@@ -49,7 +67,8 @@ export const useSelection = (props: IUseSelectionProps) => {
       case RegionType.ActiveCell: {
         const { realIndex } = getLinearRow(rowIndex);
         const range = [columnIndex, realIndex] as IRange;
-        const isExpandSelection = isShiftKey && !isPrevRowSelection && prevRanges[0] != null;
+        const isExpandSelection =
+          isShiftKey && !isPrevRowSelection && prevRanges[0] != null;
         const ranges = [isExpandSelection ? prevRanges[0] : range, range];
         if (!isExpandSelection) {
           setActiveCell(range);
@@ -74,7 +93,9 @@ export const useSelection = (props: IUseSelectionProps) => {
     const { isCellSelection, ranges } = selection;
     const { rowIndex, columnIndex } = mouseState;
 
-    if (!isSelecting) {return;}
+    if (!isSelecting) {
+      return;
+    }
     const { realIndex } = getLinearRow(rowIndex);
     const newRange = [columnIndex, realIndex] as IRange;
     if (isCellSelection && !selection.equals([ranges[0], newRange])) {
@@ -88,7 +109,7 @@ export const useSelection = (props: IUseSelectionProps) => {
 
   const onSelectionClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    mouseState: IMouseState
+    mouseState: IMouseState,
     // eslint-disable-next-line sonarjs/cognitive-complexity
   ) => {
     const { shiftKey, metaKey } = event;
@@ -101,14 +122,18 @@ export const useSelection = (props: IUseSelectionProps) => {
       isRowSelection: isPrevRowSelection,
     } = selection;
 
-    const pureSelectColumnOrRow = (colOrRowIndex: number, type: SelectionRegionType) => {
+    const pureSelectColumnOrRow = (
+      colOrRowIndex: number,
+      type: SelectionRegionType,
+    ) => {
       const range = [colOrRowIndex, colOrRowIndex] as IRange;
       let newSelection;
 
       if (
         isPrevRowSelection &&
         (isMultiSelectionEnable ||
-          (!isMultiSelectionEnable && prevSelectionRanges[0][0] === colOrRowIndex))
+          (!isMultiSelectionEnable &&
+            prevSelectionRanges[0][0] === colOrRowIndex))
       ) {
         newSelection = selection.merge(range);
       } else {
@@ -123,13 +148,21 @@ export const useSelection = (props: IUseSelectionProps) => {
 
     switch (type) {
       case RegionType.ColumnHeader: {
-        if (selectable !== SelectableType.All && selectable !== SelectableType.Column) {return;}
+        if (
+          selectable !== SelectableType.All &&
+          selectable !== SelectableType.Column
+        ) {
+          return;
+        }
         const thresholdColIndex =
           isMultiSelectionEnable && isShiftKey && isPrevColumnSelection
             ? prevSelectionRanges[0][0]
             : columnIndex;
         const ranges = [
-          [Math.min(thresholdColIndex, columnIndex), Math.max(thresholdColIndex, columnIndex)],
+          [
+            Math.min(thresholdColIndex, columnIndex),
+            Math.max(thresholdColIndex, columnIndex),
+          ],
         ] as IRange[];
         let newSelection = selection.set(SelectionRegionType.Columns, ranges);
         if (isMultiSelectionEnable && isMetaKey && isPrevColumnSelection) {
@@ -137,13 +170,20 @@ export const useSelection = (props: IUseSelectionProps) => {
         }
         if (!isShiftKey || !isPrevColumnSelection) {
           const { isNoneSelection, ranges } = newSelection;
-          isNoneSelection ? setActiveCell(null) : setActiveCell([ranges[0][0], 0]);
+          isNoneSelection
+            ? setActiveCell(null)
+            : setActiveCell([ranges[0][0], 0]);
         }
         return setSelection(newSelection);
       }
       case RegionType.RowHeaderCheckbox: {
         const { realIndex: rowIndex } = getLinearRow(hoverRowIndex);
-        if (selectable !== SelectableType.All && selectable !== SelectableType.Row) {return;}
+        if (
+          selectable !== SelectableType.All &&
+          selectable !== SelectableType.Row
+        ) {
+          return;
+        }
         const range = [rowIndex, rowIndex] as IRange;
         if (
           isMultiSelectionEnable &&
@@ -151,9 +191,14 @@ export const useSelection = (props: IUseSelectionProps) => {
           isPrevRowSelection &&
           prevSelectedRowIndex.current != null
         ) {
-          if (selection.includes(range)) {return;}
+          if (selection.includes(range)) {
+            return;
+          }
           const prevIndex = prevSelectedRowIndex.current;
-          const newRange = [Math.min(rowIndex, prevIndex), Math.max(rowIndex, prevIndex)] as IRange;
+          const newRange = [
+            Math.min(rowIndex, prevIndex),
+            Math.max(rowIndex, prevIndex),
+          ] as IRange;
           const newSelection = selection.expand(newRange);
           prevSelectedRowIndex.current = rowIndex;
           setActiveCell(null);
@@ -167,12 +212,20 @@ export const useSelection = (props: IUseSelectionProps) => {
           return pureSelectColumnOrRow(rowIndex, SelectionRegionType.Rows);
         }
         if (selectable === SelectableType.Column) {
-          return pureSelectColumnOrRow(columnIndex, SelectionRegionType.Columns);
+          return pureSelectColumnOrRow(
+            columnIndex,
+            SelectionRegionType.Columns,
+          );
         }
         return;
       }
       case RegionType.AllCheckbox: {
-        if (selectable !== SelectableType.All && selectable !== SelectableType.Row) {return;}
+        if (
+          selectable !== SelectableType.All &&
+          selectable !== SelectableType.Row
+        ) {
+          return;
+        }
         const allRanges = [[0, pureRowCount - 1]] as IRange[];
         const isPrevAll = isPrevRowSelection && selection.equals(allRanges);
         const newSelection = isPrevAll
@@ -185,12 +238,19 @@ export const useSelection = (props: IUseSelectionProps) => {
 
   const onSelectionContextMenu = (
     mouseState: IMouseState,
-    callback: (selection: CombinedSelection, position: IPosition) => void
+    callback: (selection: CombinedSelection, position: IPosition) => void,
     // eslint-disable-next-line sonarjs/cognitive-complexity
   ) => {
     const { x, y, columnIndex, rowIndex: hoverRowIndex, type } = mouseState;
-    if ([RegionType.Blank, RegionType.ColumnStatistic, RegionType.GroupStatistic].includes(type))
-      {return;}
+    if (
+      [
+        RegionType.Blank,
+        RegionType.ColumnStatistic,
+        RegionType.GroupStatistic,
+      ].includes(type)
+    ) {
+      return;
+    }
     const {
       isCellSelection: isPrevCellSelection,
       isRowSelection: isPrevRowSelection,
@@ -217,7 +277,10 @@ export const useSelection = (props: IUseSelectionProps) => {
       }
       if (columnIndex > -1) {
         const range = [columnIndex, rowIndex] as IRange;
-        const newSelection = selection.set(SelectionRegionType.Cells, [range, range]);
+        const newSelection = selection.set(SelectionRegionType.Cells, [
+          range,
+          range,
+        ]);
         setActiveCell(range);
         setSelection(newSelection);
         return callback(newSelection, { x, y });
@@ -231,7 +294,9 @@ export const useSelection = (props: IUseSelectionProps) => {
       if (inPrevColumnRanges) {
         return callback(selection, { x, y });
       }
-      const newSelection = selection.set(SelectionRegionType.Columns, [[columnIndex, columnIndex]]);
+      const newSelection = selection.set(SelectionRegionType.Columns, [
+        [columnIndex, columnIndex],
+      ]);
       setActiveCell([columnIndex, 0]);
       setSelection(newSelection);
       callback(newSelection, { x, y });

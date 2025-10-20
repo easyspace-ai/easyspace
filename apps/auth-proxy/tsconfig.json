@@ -1,4 +1,0 @@
-{
-  "extends": "@easyspace/typescript-config/base.json",
-  "include": ["routes"]
-}

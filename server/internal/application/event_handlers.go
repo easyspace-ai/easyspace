@@ -125,84 +125,6 @@ func (h *CalculationEventHandler) Priority() int {
 	return h.priority
 }
 
-// WebSocketNotificationHandler WebSocket通知事件处理器
-type WebSocketNotificationHandler struct {
-	wsService *WebSocketService
-	priority  int
-}
-
-// NewWebSocketNotificationHandler 创建WebSocket通知事件处理器
-func NewWebSocketNotificationHandler(wsService *WebSocketService) *WebSocketNotificationHandler {
-	return &WebSocketNotificationHandler{
-		wsService: wsService,
-		priority:  3, // 低优先级
-	}
-}
-
-// Handle 处理WebSocket通知事件
-func (h *WebSocketNotificationHandler) Handle(ctx context.Context, event events.DomainEvent) error {
-	// 构建通知消息
-	_ = map[string]interface{}{
-		"event_type":     event.EventType(),
-		"aggregate_id":   event.AggregateID(),
-		"aggregate_type": event.AggregateType(),
-		"event_id":       event.EventID(),
-		"occurred_at":    event.OccurredAt(),
-		"data":           event.Data(),
-	}
-
-	// 根据聚合类型确定通知范围
-	switch event.AggregateType() {
-	case events.AggregateTypeRecord:
-		if tableID, ok := event.Data()["table_id"].(string); ok {
-			// 通知表格相关的用户
-			// TODO: 实现WebSocket广播功能
-			logger.Debug("WebSocket notification for record event",
-				logger.String("table_id", tableID))
-		}
-
-	case events.AggregateTypeField:
-		if tableID, ok := event.Data()["table_id"].(string); ok {
-			// 通知表格相关的用户
-			// TODO: 实现WebSocket广播功能
-			logger.Debug("WebSocket notification for field event",
-				logger.String("table_id", tableID))
-		}
-
-	case events.AggregateTypeTable:
-		if spaceID, ok := event.Data()["space_id"].(string); ok {
-			// 通知空间相关的用户
-			// TODO: 实现WebSocket广播功能
-			logger.Debug("WebSocket notification for table event",
-				logger.String("space_id", spaceID))
-		}
-
-	case events.AggregateTypeView:
-		if tableID, ok := event.Data()["table_id"].(string); ok {
-			// 通知表格相关的用户
-			// TODO: 实现WebSocket广播功能
-			logger.Debug("WebSocket notification for view event",
-				logger.String("table_id", tableID))
-		}
-
-	default:
-		logger.Debug("no WebSocket notification strategy for aggregate type",
-			logger.String("aggregate_type", event.AggregateType()))
-	}
-
-	return nil
-}
-
-// EventType 处理器支持的事件类型
-func (h *WebSocketNotificationHandler) EventType() string {
-	return "*" // 支持所有事件类型
-}
-
-// Priority 处理器优先级
-func (h *WebSocketNotificationHandler) Priority() int {
-	return h.priority
-}
-
 // AuditEventHandler 审计事件处理器
 type AuditEventHandler struct {
 	// 这里可以注入审计服务
@@ -278,7 +200,6 @@ func RegisterDefaultHandlers(
 	registry *EventHandlerRegistry,
 	cacheService *CacheService,
 	calculationOrchestrator *CalculationOrchestrator,
-	wsService *WebSocketService,
 ) {
 	// 注册缓存失效处理器
 	cacheHandler := NewCacheInvalidationHandler(cacheService)
@@ -287,10 +208,6 @@ func RegisterDefaultHandlers(
 	// 注册计算事件处理器
 	calcHandler := NewCalculationEventHandler(calculationOrchestrator)
 	registry.RegisterHandler("*", calcHandler)
-
-	// 注册WebSocket通知处理器
-	wsHandler := NewWebSocketNotificationHandler(wsService)
-	registry.RegisterHandler("*", wsHandler)
 
 	// 注册审计事件处理器
 	auditHandler := NewAuditEventHandler()

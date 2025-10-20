@@ -112,10 +112,135 @@ export class ViewClient {
   }
 
   /**
-   * 更新视图列元数据（PUT /api/v1/views/:id/column-meta）
+   * 更新视图列元数据（PATCH /api/v1/views/:id/column-meta）
+   * 
+   * @param viewId 视图ID
+   * @param columnMeta 列配置数组，每个元素包含 fieldId, width, visible, order 等属性
+   * @returns 更新后的视图对象
+   * 
+   * @example
+   * ```typescript
+   * // 更新列宽
+   * await sdk.views.updateColumnMeta('view_123', [
+   *   {
+   *     fieldId: 'fld_xxx',
+   *     width: 200,
+   *     visible: true,
+   *     order: 0
+   *   }
+   * ]);
+   * ```
    */
-  public async updateColumnMeta(viewId: string, columnMeta: any): Promise<View> {
+  public async updateColumnMeta(
+    viewId: string, 
+    columnMeta: Array<{
+      fieldId: string;
+      width?: number;
+      visible?: boolean;
+      order?: number;
+    }>
+  ): Promise<View> {
     return this.httpClient.patch<View>(`/api/v1/views/${viewId}/column-meta`, { columnMeta });
+  }
+
+  /**
+   * 便捷方法：设置列宽度
+   * 
+   * @param viewId 视图ID
+   * @param fieldId 字段ID
+   * @param width 列宽度（像素）
+   * @returns 更新后的视图对象
+   */
+  public async setColumnWidth(viewId: string, fieldId: string, width: number): Promise<View> {
+    // 先获取当前视图配置
+    const currentView = await this.get(viewId);
+    const currentColumnMeta = currentView.columnMeta || [];
+    
+    // 查找并更新指定列的宽度
+    const updatedColumnMeta = [...currentColumnMeta];
+    const existingIndex = updatedColumnMeta.findIndex((col: any) => col.fieldId === fieldId);
+    
+    if (existingIndex >= 0) {
+      updatedColumnMeta[existingIndex] = {
+        ...updatedColumnMeta[existingIndex],
+        width
+      };
+    } else {
+      updatedColumnMeta.push({
+        fieldId,
+        width,
+        visible: true,
+        order: updatedColumnMeta.length
+      });
+    }
+    
+    return this.updateColumnMeta(viewId, updatedColumnMeta);
+  }
+
+  /**
+   * 便捷方法：设置列可见性
+   * 
+   * @param viewId 视图ID
+   * @param fieldId 字段ID
+   * @param visible 是否可见
+   * @returns 更新后的视图对象
+   */
+  public async setColumnVisible(viewId: string, fieldId: string, visible: boolean): Promise<View> {
+    // 先获取当前视图配置
+    const currentView = await this.get(viewId);
+    const currentColumnMeta = currentView.columnMeta || [];
+    
+    // 查找并更新指定列的可见性
+    const updatedColumnMeta = [...currentColumnMeta];
+    const existingIndex = updatedColumnMeta.findIndex((col: any) => col.fieldId === fieldId);
+    
+    if (existingIndex >= 0) {
+      updatedColumnMeta[existingIndex] = {
+        ...updatedColumnMeta[existingIndex],
+        visible
+      };
+    } else {
+      updatedColumnMeta.push({
+        fieldId,
+        width: 150, // 默认宽度
+        visible,
+        order: updatedColumnMeta.length
+      });
+    }
+    
+    return this.updateColumnMeta(viewId, updatedColumnMeta);
+  }
+
+  /**
+   * 便捷方法：重新排序列
+   * 
+   * @param viewId 视图ID
+   * @param fieldIds 字段ID数组，按新的顺序排列
+   * @returns 更新后的视图对象
+   */
+  public async reorderColumns(viewId: string, fieldIds: string[]): Promise<View> {
+    // 先获取当前视图配置
+    const currentView = await this.get(viewId);
+    const currentColumnMeta = currentView.columnMeta || [];
+    
+    // 创建字段ID到配置的映射
+    const columnMap = new Map();
+    currentColumnMeta.forEach((col: any) => {
+      columnMap.set(col.fieldId, col);
+    });
+    
+    // 按新顺序重新排列
+    const updatedColumnMeta = fieldIds.map((fieldId, index) => {
+      const existingCol = columnMap.get(fieldId);
+      return {
+        fieldId,
+        width: existingCol?.width || 150,
+        visible: existingCol?.visible ?? true,
+        order: index
+      };
+    });
+    
+    return this.updateColumnMeta(viewId, updatedColumnMeta);
   }
 
   /**

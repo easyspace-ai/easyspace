@@ -3,10 +3,14 @@
  * Abstract base class for all field types with strict typing
  */
 
-import { FieldType } from '../../types/core/field-types';
-import { GetFieldOptions } from '../../types/core/field-options';
-import { GetCellValue, GetDisplayValue } from '../../types/core/cell-values';
-import { ValidationResult, FieldValidator, FieldValidationRules } from '../validation/field-validator';
+import { FieldType } from "../../types/core/field-types";
+import { GetFieldOptions } from "../../types/core/field-options";
+import { GetCellValue, GetDisplayValue } from "../../types/core/cell-values";
+import {
+  ValidationResult,
+  FieldValidator,
+  FieldValidationRules,
+} from "../validation/field-validator";
 
 /**
  * Strict field configuration interface
@@ -75,7 +79,7 @@ export abstract class Field<T extends FieldType = FieldType> {
    * Check if a value is empty
    */
   protected isEmpty(value: unknown): boolean {
-    return value === null || value === undefined || value === '';
+    return value === null || value === undefined || value === "";
   }
 
   /**
@@ -91,7 +95,12 @@ export abstract class Field<T extends FieldType = FieldType> {
    * Validate with detailed result (advanced validation)
    */
   validateDetailed(value: unknown): ValidationResult<GetCellValue<T>> {
-    return FieldValidator.validateValue(value, this.type, this.options, this.validationRules);
+    return FieldValidator.validateValue(
+      value,
+      this.type,
+      this.options,
+      this.validationRules,
+    );
   }
 
   /**
@@ -136,5 +145,3 @@ export abstract class Field<T extends FieldType = FieldType> {
     });
   }
 }
-
-

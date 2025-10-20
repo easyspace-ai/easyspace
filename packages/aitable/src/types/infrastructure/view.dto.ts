@@ -5,7 +5,13 @@
 /**
  * 视图类型
  */
-export type ViewType = 'grid' | 'kanban' | 'gallery' | 'gantt' | 'calendar' | 'form';
+export type ViewType =
+  | "grid"
+  | "kanban"
+  | "gallery"
+  | "gantt"
+  | "calendar"
+  | "form";
 
 /**
  * View DTO (从 API 返回)
@@ -44,4 +50,3 @@ export interface UpdateViewDTO {
   group?: any[];
   columnMeta?: Record<string, any>;
 }
-

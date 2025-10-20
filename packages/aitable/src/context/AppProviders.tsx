@@ -1,17 +1,17 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactNode } from 'react';
-import { SessionProvider } from './session/SessionContext';
-import { AppProvider } from './app/AppContext';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactNode } from "react";
+import { SessionProvider } from "./session/SessionContext";
+import { AppProvider } from "./app/AppContext";
 // import { ConnectionProvider } from './connection/ConnectionContext'; // 依赖已删除的 lib
 // import { HistoryProvider } from './history/HistoryContext'; // 依赖已删除的 lib
-import { BaseProvider } from './base/BaseContext';
-import { TableProvider } from './table/TableContext';
-import { FieldProvider } from './field/FieldContext';
-import { ViewProvider } from './view/ViewContext';
-import { PermissionProvider } from './permission/PermissionContext';
-import { ApiClient } from '../api/client';
-import { type ISDKAdapter, createAdapter } from '../api/sdk-adapter';
-import type { LuckDB } from '@easyspace/sdk';
+import { BaseProvider } from "./base/BaseContext";
+import { TableProvider } from "./table/TableContext";
+import { FieldProvider } from "./field/FieldContext";
+import { ViewProvider } from "./view/ViewContext";
+import { PermissionProvider } from "./permission/PermissionContext";
+import { ApiClient } from "../api/client";
+import { type ISDKAdapter, createAdapter } from "../api/sdk-adapter";
+import type { LuckDB } from "@easyspace/sdk";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,14 +52,16 @@ export function AppProviders({
   userId,
   apiClient,
   sdk,
-  children
+  children,
 }: AppProvidersProps) {
   // 创建适配器 - 自动识别是 SDK 还是 ApiClient
-  const adapter: ISDKAdapter = sdk 
-    ? createAdapter(sdk) 
-    : apiClient 
+  const adapter: ISDKAdapter = sdk
+    ? createAdapter(sdk)
+    : apiClient
       ? createAdapter(apiClient)
-      : (() => { throw new Error('Either apiClient or sdk must be provided'); })();
+      : (() => {
+          throw new Error("Either apiClient or sdk must be provided");
+        })();
   // 注意：这里仍然需要传递 apiClient，因为现有的 Provider 接受 ApiClient
   // TODO: 未来可以将所有 Provider 改为接受 ISDKAdapter
   const legacyApiClient = apiClient || (adapter as any);
@@ -69,27 +71,42 @@ export function AppProviders({
       <SessionProvider>
         <AppProvider>
           {/* <HistoryProvider> - 依赖已删除的 lib */}
-            {/* <ConnectionProvider wsUrl={wsUrl} autoConnect={!!wsUrl}> - 依赖已删除的 lib */}
-              {baseId ? (
-                <BaseProvider baseId={baseId} apiClient={legacyApiClient}>
-                  <PermissionProvider baseId={baseId} tableId={tableId} apiClient={legacyApiClient}>
-                    {tableId ? (
-                      <TableProvider baseId={baseId} tableId={tableId} apiClient={legacyApiClient}>
-                        <ViewProvider tableId={tableId} viewId={viewId} apiClient={legacyApiClient}>
-                          <FieldProvider tableId={tableId} apiClient={legacyApiClient}>
-                            {children}
-                          </FieldProvider>
-                        </ViewProvider>
-                      </TableProvider>
-                    ) : (
-                      children
-                    )}
-                  </PermissionProvider>
-                </BaseProvider>
-              ) : (
-                children
-              )}
-            {/* </ConnectionProvider> */}
+          {/* <ConnectionProvider wsUrl={wsUrl} autoConnect={!!wsUrl}> - 依赖已删除的 lib */}
+          {baseId ? (
+            <BaseProvider baseId={baseId} apiClient={legacyApiClient}>
+              <PermissionProvider
+                baseId={baseId}
+                tableId={tableId}
+                apiClient={legacyApiClient}
+              >
+                {tableId ? (
+                  <TableProvider
+                    baseId={baseId}
+                    tableId={tableId}
+                    apiClient={legacyApiClient}
+                  >
+                    <ViewProvider
+                      tableId={tableId}
+                      viewId={viewId}
+                      apiClient={legacyApiClient}
+                    >
+                      <FieldProvider
+                        tableId={tableId}
+                        apiClient={legacyApiClient}
+                      >
+                        {children}
+                      </FieldProvider>
+                    </ViewProvider>
+                  </TableProvider>
+                ) : (
+                  children
+                )}
+              </PermissionProvider>
+            </BaseProvider>
+          ) : (
+            children
+          )}
+          {/* </ConnectionProvider> */}
           {/* </HistoryProvider> */}
         </AppProvider>
       </SessionProvider>

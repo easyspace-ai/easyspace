@@ -2,8 +2,8 @@
  * Field helper utilities for dynamic cell type selection
  */
 
-import { CellType } from '../grid/renderers/cell-renderer';
-import { CellValueType, FieldType } from '../types/field';
+import { CellType } from "../grid/renderers/cell-renderer";
+import { CellValueType, FieldType } from "../types/field";
 
 /**
  * Get CellType for Formula/Rollup fields based on cellValueType
@@ -11,7 +11,7 @@ import { CellValueType, FieldType } from '../types/field';
  */
 export function getFormulaCellType(
   cellValueType: CellValueType,
-  isMultipleCellValue?: boolean
+  isMultipleCellValue?: boolean,
 ): CellType {
   switch (cellValueType) {
     case CellValueType.Boolean:
@@ -29,7 +29,7 @@ export function getFormulaCellType(
 }
 
 // isComputedField has been moved to field-mapping.ts to avoid duplicate exports
-import { isComputedField as isComputedFieldFromMapping } from './field-mapping';
+import { isComputedField as isComputedFieldFromMapping } from "./field-mapping";
 
 /**
  * Check if a field type is editable
@@ -46,7 +46,7 @@ export function isEditableFieldType(fieldType: FieldType): boolean {
     FieldType.CreatedBy,
     FieldType.LastModifiedBy,
   ]);
-  
+
   return !readonlyFieldTypes.has(fieldType);
 }
 
@@ -59,15 +59,16 @@ export { isComputedFieldFromMapping as isComputedField };
  */
 export function checkButtonClickable(
   fieldOptions: { maxCount?: number },
-  cellValue: { count?: number } | null | undefined
+  cellValue: { count?: number } | null | undefined,
 ): boolean {
   const maxCount = fieldOptions.maxCount ?? 0;
   const count = cellValue?.count ?? 0;
-  
+
   // 如果没有设置 maxCount (为 0)，则总是可点击
-  if (maxCount === 0) {return true;}
-  
+  if (maxCount === 0) {
+    return true;
+  }
+
   // 如果设置了 maxCount，则检查是否已达到上限
   return count < maxCount;
 }
-

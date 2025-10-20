@@ -2,40 +2,40 @@
  * Cell Renderer Interface Definitions
  */
 
-import type { IGridTheme } from '../../configs';
-import type { IRectangle, IPosition } from '../../types/grid';
+import type { IGridTheme } from "../../configs";
+import type { IRectangle, IPosition } from "../../types/grid";
 
 export enum CellType {
-  Text = 'text',
-  Number = 'number',
-  Boolean = 'boolean',
-  Link = 'link',
-  Image = 'image',
-  Chart = 'chart',
-  Date = 'date',
-  User = 'user',
-  Attachment = 'attachment',
-  Rating = 'rating',
-  Select = 'select',
-  MultiSelect = 'multiSelect',
-  Button = 'button',
-  Formula = 'formula',
-  Lookup = 'lookup',
-  Rollup = 'rollup',
-  Loading = 'loading',
+  Text = "text",
+  Number = "number",
+  Boolean = "boolean",
+  Link = "link",
+  Image = "image",
+  Chart = "chart",
+  Date = "date",
+  User = "user",
+  Attachment = "attachment",
+  Rating = "rating",
+  Select = "select",
+  MultiSelect = "multiSelect",
+  Button = "button",
+  Formula = "formula",
+  Lookup = "lookup",
+  Rollup = "rollup",
+  Loading = "loading",
 }
 
 export enum CellRegionType {
-  Cell = 'cell',
-  CellValue = 'cellValue',
-  ActiveCell = 'activeCell',
-  ColumnHeader = 'columnHeader',
-  RowHeader = 'rowHeader',
-  Update = 'update',
-  Blank = 'blank',
-  Preview = 'preview',
-  ToggleEditing = 'toggleEditing',
-  Hover = 'hover',
+  Cell = "cell",
+  CellValue = "cellValue",
+  ActiveCell = "activeCell",
+  ColumnHeader = "columnHeader",
+  RowHeader = "rowHeader",
+  Update = "update",
+  Blank = "blank",
+  Preview = "preview",
+  ToggleEditing = "toggleEditing",
+  Hover = "hover",
 }
 
 export interface ICell {
@@ -84,11 +84,11 @@ export interface INumberCell extends ICell {
     maxValue?: number;
     showValue?: boolean;
   };
-  contentAlign?: 'left' | 'center' | 'right';
+  contentAlign?: "left" | "center" | "right";
 }
 export interface IBooleanCell extends ICell {
   isMultiple?: boolean;
-  contentAlign?: 'left' | 'center' | 'right';
+  contentAlign?: "left" | "center" | "right";
   readonly?: boolean;
 }
 
@@ -100,7 +100,7 @@ export interface ISelectCell extends ICell {
   isEditingOnClick?: boolean;
   onPreview?: (id: string) => void;
   isMultiple?: boolean;
-  choiceSorted?: Array<{id: string; name: string; color?: string}>;
+  choiceSorted?: Array<{ id: string; name: string; color?: string }>;
 }
 
 export interface IMultiSelectCell extends ICell {
@@ -111,7 +111,7 @@ export interface IMultiSelectCell extends ICell {
   isEditingOnClick?: boolean;
   onPreview?: (id: string) => void;
   isMultiple?: boolean;
-  choiceSorted?: Array<{id: string; name: string; color?: string}>;
+  choiceSorted?: Array<{ id: string; name: string; color?: string }>;
 }
 
 export interface IButtonCell extends ICell {
@@ -163,18 +163,18 @@ export interface IImageData {
 }
 
 export enum ChartType {
-  Line = 'line',
-  Bar = 'bar',
-  Pie = 'pie',
-  Area = 'area',
+  Line = "line",
+  Bar = "bar",
+  Pie = "pie",
+  Area = "area",
 }
 
 export enum NumberDisplayType {
-  Number = 'number',
-  Percent = 'percent',
-  Currency = 'currency',
-  Ring = 'ring',
-  Bar = 'bar',
+  Number = "number",
+  Percent = "percent",
+  Currency = "currency",
+  Ring = "ring",
+  Bar = "bar",
 }
 
 export interface ICellRenderProps extends IRectangle {
@@ -216,12 +216,22 @@ export type ICellClickCallback = (props: ICellClickProps) => void;
 export interface IInternalCellRenderer<T extends ICell = ICell> {
   type?: string;
   draw?: (cell: T, props: ICellRenderProps) => void | any;
-  measure?: (cell: T, props: ICellMeasureProps) => { width: number; height: number; totalHeight?: number };
-  onClick?: (cell: T, props: ICellClickProps, callback?: ICellClickCallback) => void;
+  measure?: (
+    cell: T,
+    props: ICellMeasureProps,
+  ) => { width: number; height: number; totalHeight?: number };
+  onClick?: (
+    cell: T,
+    props: ICellClickProps,
+    callback?: ICellClickCallback,
+  ) => void;
   onDoubleClick?: ICellClickCallback;
   checkRegion?: (cell: T, props: ICellClickProps, isClick?: boolean) => any;
   getClickRegion?: (props: ICellClickProps & { cell: T }) => any;
-  onClickRegion?: (props: ICellClickProps & { cell: T }, callback?: (props: any) => void) => void;
+  onClickRegion?: (
+    props: ICellClickProps & { cell: T },
+    callback?: (props: any) => void,
+  ) => void;
   needsHover?: boolean;
   needsHoverPosition?: boolean;
   needsHoverPositionWhenActive?: boolean;
@@ -232,7 +242,10 @@ export interface IBaseCellRenderer<T extends ICell = ICell> {
   type?: string;
   draw?: (cell: T, props: ICellRenderProps) => void | any;
   render?: IInternalCellRenderer<T>;
-  measure?: (cell: T, props: ICellMeasureProps) => { width: number; height: number };
+  measure?: (
+    cell: T,
+    props: ICellMeasureProps,
+  ) => { width: number; height: number };
   needsHover?: boolean;
 }
 

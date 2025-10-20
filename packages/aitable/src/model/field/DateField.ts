@@ -3,11 +3,14 @@
  * Handles date and datetime fields with strict typing
  */
 
-import { Field, type StrictFieldConfig } from './Field';
-import { FIELD_TYPES } from '../../types/core/field-types';
-import type { DateFieldOptions } from '../../types/core/field-options';
-import type { GetCellValue, GetDisplayValue } from '../../types/core/cell-values';
-import { format as formatDate, parseISO, isValid } from 'date-fns';
+import { Field, type StrictFieldConfig } from "./Field";
+import { FIELD_TYPES } from "../../types/core/field-types";
+import type { DateFieldOptions } from "../../types/core/field-options";
+import type {
+  GetCellValue,
+  GetDisplayValue,
+} from "../../types/core/cell-values";
+import { format as formatDate, parseISO, isValid } from "date-fns";
 
 /**
  * Date field type
@@ -39,7 +42,7 @@ export class DateField extends Field<DateFieldType> {
       return true;
     }
 
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       const date = new Date(value);
       return isValid(date);
     }
@@ -53,18 +56,19 @@ export class DateField extends Field<DateFieldType> {
 
   format(value: GetCellValue<DateFieldType>): GetDisplayValue<DateFieldType> {
     if (value === null || value === undefined) {
-      return '';
+      return "";
     }
 
     try {
       const date = parseISO(value);
-      
+
       if (!isValid(date)) {
-        return '';
+        return "";
       }
 
-      const dateFormat = this.dateOptions.dateFormat ?? 'YYYY-MM-DD';
-      const timeFormat = this.dateOptions.timeFormat === '12' ? 'hh:mm a' : 'HH:mm';
+      const dateFormat = this.dateOptions.dateFormat ?? "YYYY-MM-DD";
+      const timeFormat =
+        this.dateOptions.timeFormat === "12" ? "hh:mm a" : "HH:mm";
 
       if (this.dateOptions.includeTime) {
         return formatDate(date, `${dateFormat} ${timeFormat}`);
@@ -72,7 +76,7 @@ export class DateField extends Field<DateFieldType> {
 
       return formatDate(date, dateFormat);
     } catch (error) {
-      return '';
+      return "";
     }
   }
 
@@ -83,8 +87,8 @@ export class DateField extends Field<DateFieldType> {
 
     try {
       let date: Date;
-      
-      if (typeof value === 'string') {
+
+      if (typeof value === "string") {
         date = new Date(value);
       } else if (value instanceof Date) {
         date = value;
@@ -104,7 +108,9 @@ export class DateField extends Field<DateFieldType> {
 
   fromCellValue(cellValue: GetCellValue<DateFieldType>): Date | null {
     if (cellValue === null || cellValue === undefined) {
-      return this.dateOptions.defaultValue ? new Date(this.dateOptions.defaultValue) : null;
+      return this.dateOptions.defaultValue
+        ? new Date(this.dateOptions.defaultValue)
+        : null;
     }
 
     try {
@@ -120,7 +126,6 @@ export class DateField extends Field<DateFieldType> {
   }
 
   protected isEmpty(value: unknown): boolean {
-    return value === null || value === undefined || value === '';
+    return value === null || value === undefined || value === "";
   }
 }
-

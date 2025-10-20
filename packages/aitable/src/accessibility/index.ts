@@ -2,20 +2,23 @@
  * 可访问性工具导出
  */
 
-export { KeyboardNavigationManager, NavigationKey } from './KeyboardNavigation';
-export type { CellPosition, NavigationOptions } from './KeyboardNavigation';
+export { KeyboardNavigationManager, NavigationKey } from "./KeyboardNavigation";
+export type { CellPosition, NavigationOptions } from "./KeyboardNavigation";
 
-export { AriaManager } from './AriaManager';
-export type { AriaLabels, AriaAnnouncement } from './AriaManager';
+export { AriaManager } from "./AriaManager";
+export type { AriaLabels, AriaAnnouncement } from "./AriaManager";
 
-export { FocusManager } from './FocusManager';
-export type { FocusOptions } from './FocusManager';
+export { FocusManager } from "./FocusManager";
+export type { FocusOptions } from "./FocusManager";
 
 // React Hook 封装
-import { useEffect, useRef, useCallback } from 'react';
-import { KeyboardNavigationManager, type CellPosition } from './KeyboardNavigation';
-import { AriaManager } from './AriaManager';
-import { FocusManager } from './FocusManager';
+import { useEffect, useRef, useCallback } from "react";
+import {
+  KeyboardNavigationManager,
+  type CellPosition,
+} from "./KeyboardNavigation";
+import { AriaManager } from "./AriaManager";
+import { FocusManager } from "./FocusManager";
 
 /**
  * 使用键盘导航
@@ -27,16 +30,22 @@ export function useKeyboardNavigation(options: {
   onEdit?: (position: CellPosition) => void;
   enabled?: boolean;
 }): {
-  handleKeyDown: (event: KeyboardEvent, currentPosition: CellPosition) => CellPosition | null;
+  handleKeyDown: (
+    event: KeyboardEvent,
+    currentPosition: CellPosition,
+  ) => CellPosition | null;
   navigationManager: React.MutableRefObject<KeyboardNavigationManager>;
 } {
   const navigationManagerRef = useRef(
-    new KeyboardNavigationManager(options.rowCount, options.columnCount)
+    new KeyboardNavigationManager(options.rowCount, options.columnCount),
   );
 
   // 更新尺寸
   useEffect(() => {
-    navigationManagerRef.current.updateDimensions(options.rowCount, options.columnCount);
+    navigationManagerRef.current.updateDimensions(
+      options.rowCount,
+      options.columnCount,
+    );
   }, [options.rowCount, options.columnCount]);
 
   // 设置回调
@@ -56,7 +65,7 @@ export function useKeyboardNavigation(options: {
       }
       return navigationManagerRef.current.handleKeyDown(event, currentPosition);
     },
-    [options.enabled]
+    [options.enabled],
   );
 
   return {
@@ -87,7 +96,9 @@ export function useAriaManager(): AriaManager {
 /**
  * 使用焦点管理
  */
-export function useFocusManager(gridRef: React.RefObject<HTMLElement>): FocusManager {
+export function useFocusManager(
+  gridRef: React.RefObject<HTMLElement>,
+): FocusManager {
   const focusManagerRef = useRef(new FocusManager());
 
   useEffect(() => {

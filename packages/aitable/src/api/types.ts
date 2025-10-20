@@ -66,26 +66,26 @@ export interface IUpdateTableRo {
 
 // Field
 export type FieldType =
-  | 'singleLineText'
-  | 'longText'
-  | 'number'
-  | 'singleSelect'
-  | 'multipleSelect'
-  | 'date'
-  | 'checkbox'
-  | 'rating'
-  | 'link'
-  | 'user'
-  | 'attachment'
-  | 'formula'
-  | 'rollup'
-  | 'count'
-  | 'createdTime'
-  | 'lastModifiedTime'
-  | 'createdBy'
-  | 'lastModifiedBy'
-  | 'autoNumber'
-  | 'button';
+  | "singleLineText"
+  | "longText"
+  | "number"
+  | "singleSelect"
+  | "multipleSelect"
+  | "date"
+  | "checkbox"
+  | "rating"
+  | "link"
+  | "user"
+  | "attachment"
+  | "formula"
+  | "rollup"
+  | "count"
+  | "createdTime"
+  | "lastModifiedTime"
+  | "createdBy"
+  | "lastModifiedBy"
+  | "autoNumber"
+  | "button";
 
 export interface IField {
   id: string;
@@ -131,7 +131,7 @@ export interface ICreateRecordRo {
   order?: {
     viewId: string;
     anchorId: string;
-    position: 'before' | 'after';
+    position: "before" | "after";
   };
 }
 
@@ -146,8 +146,8 @@ export interface IGetRecordsRo {
   filter?: IFilter;
   sort?: ISort[];
   groupBy?: string[];
-  fieldKeyType?: 'id' | 'name';
-  cellFormat?: 'text' | 'json';
+  fieldKeyType?: "id" | "name";
+  cellFormat?: "text" | "json";
   skip?: number;
   take?: number;
   page?: number;
@@ -155,7 +155,7 @@ export interface IGetRecordsRo {
 }
 
 // View
-export type ViewType = 'grid' | 'form' | 'kanban' | 'gallery' | 'calendar';
+export type ViewType = "grid" | "form" | "kanban" | "gallery" | "calendar";
 
 export interface IView {
   id: string;
@@ -190,7 +190,7 @@ export interface IUpdateViewRo {
 // Filter
 export interface IFilter {
   filterSet: IFilterSet[];
-  conjunction: 'and' | 'or';
+  conjunction: "and" | "or";
 }
 
 export interface IFilterSet {
@@ -202,13 +202,13 @@ export interface IFilterSet {
 // Sort
 export interface ISort {
   fieldId: string;
-  order: 'asc' | 'desc';
+  order: "asc" | "desc";
 }
 
 // Group
 export interface IGroup {
   fieldId: string;
-  order: 'asc' | 'desc';
+  order: "asc" | "desc";
 }
 
 // Column Meta
@@ -228,21 +228,21 @@ export interface IPermissions {
 }
 
 export interface ITablePermission {
-  'table|read': boolean;
-  'table|update': boolean;
-  'table|delete': boolean;
-  'record|create': boolean;
-  'record|read': boolean;
-  'record|update': boolean;
-  'record|delete': boolean;
-  'field|create': boolean;
-  'field|read': boolean;
-  'field|update': boolean;
-  'field|delete': boolean;
-  'view|create': boolean;
-  'view|read': boolean;
-  'view|update': boolean;
-  'view|delete': boolean;
+  "table|read": boolean;
+  "table|update": boolean;
+  "table|delete": boolean;
+  "record|create": boolean;
+  "record|read": boolean;
+  "record|update": boolean;
+  "record|delete": boolean;
+  "field|create": boolean;
+  "field|read": boolean;
+  "field|update": boolean;
+  "field|delete": boolean;
+  "view|create": boolean;
+  "view|read": boolean;
+  "view|update": boolean;
+  "view|delete": boolean;
 }
 
 // User
@@ -282,5 +282,3 @@ export interface ICreateCommentRo {
 export interface IUpdateCommentRo {
   content: any;
 }
-
-
