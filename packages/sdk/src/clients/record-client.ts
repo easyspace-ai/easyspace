@@ -56,7 +56,7 @@ export class RecordClient {
 
   /**
    * 获取记录列表（GET /api/v1/tables/:tableId/records）
-   * 后端返回格式：{ list: Record[], pagination?: {...} }
+   * 后端返回格式：{ data: Record[], pagination?: {...} }
    */
   public async list(
     params?: PaginationParams & {
@@ -67,7 +67,7 @@ export class RecordClient {
   ): Promise<PaginatedResponse<Record>> {
     if (params?.tableId) {
       const { tableId, ...restParams } = params;
-      // Records API 返回 { list: [...] } 格式
+      // HTTP客户端返回的是API响应的data字段，即 { list: [...], pagination?: {...} }
       const response = await this.httpClient.get<{ list: Record[]; pagination?: any }>(
         `/api/v1/tables/${tableId}/records`,
         restParams
@@ -82,8 +82,7 @@ export class RecordClient {
           data: records,
           total: response.pagination.total || records.length,
           limit: response.pagination.limit || records.length,
-          offset:
-            ((response.pagination.page || 1) - 1) * (response.pagination.limit || records.length),
+          offset: response.pagination.offset || 0,
         };
       }
 
@@ -96,19 +95,18 @@ export class RecordClient {
       };
     }
     // 全局记录列表（如果存在）
-    const response = await this.httpClient.get<{ list: Record[]; pagination?: any }>(
+    const response = await this.httpClient.get<{ data: Record[]; pagination?: any }>(
       '/api/v1/records',
       params
     );
-    const records = response?.list || [];
+    const records = response?.data || [];
 
     if (response?.pagination) {
       return {
         data: records,
         total: response.pagination.total || records.length,
         limit: response.pagination.limit || records.length,
-        offset:
-          ((response.pagination.page || 1) - 1) * (response.pagination.limit || records.length),
+        offset: response.pagination.offset || 0,
       };
     }
 
@@ -122,7 +120,7 @@ export class RecordClient {
 
   /**
    * 获取数据表的记录列表（GET /api/v1/tables/:tableId/records）
-   * 后端返回格式：{ list: Record[], pagination?: {...} }
+   * HTTP客户端返回的是API响应的data字段，即 { list: Record[], pagination?: {...} }
    */
   public async listTableRecords(
     tableId: string,
@@ -142,8 +140,7 @@ export class RecordClient {
         data: records,
         total: response.pagination.total || records.length,
         limit: response.pagination.limit || records.length,
-        offset:
-          ((response.pagination.page || 1) - 1) * (response.pagination.limit || records.length),
+        offset: response.pagination.offset || 0,
       };
     }
 
@@ -156,10 +153,11 @@ export class RecordClient {
   }
 
   /**
-   * 获取记录详情（GET /api/v1/records/:id）
+   * 获取记录详情（GET /api/v1/tables/:tableId/records/:recordId）
+   * ✅ 对齐新API：需要tableId参数
    */
-  public async get(recordId: string): Promise<Record> {
-    return this.httpClient.get<Record>(`/api/v1/records/${recordId}`);
+  public async get(tableId: string, recordId: string): Promise<Record> {
+    return this.httpClient.get<Record>(`/api/v1/tables/${tableId}/records/${recordId}`);
   }
 
   /**

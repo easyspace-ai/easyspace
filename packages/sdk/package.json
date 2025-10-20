@@ -70,7 +70,10 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "axios": "^1.12.2"
+    "axios": "^1.12.2",
+    "yjs": "^13.6.10",
+    "y-websocket": "^1.5.0",
+    "y-protocols": "^1.0.6"
   },
   "optionalDependencies": {
     "ws": "^8.18.3"

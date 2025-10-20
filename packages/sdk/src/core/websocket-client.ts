@@ -208,7 +208,7 @@ export class WebSocketClient extends EventEmitter {
           console.warn('[LuckDB WebSocket] Failed to parse user_id from token:', e);
         }
 
-        const url = `${wsUrl}/ws?token=${this.config.accessToken}&user_id=${userId}`;
+        const url = `${wsUrl}/realtime/ws?token=${this.config.accessToken}&user_id=${userId}`;
 
         if (this.options.debug) {
           console.log('[LuckDB WebSocket] Connecting to:', url);

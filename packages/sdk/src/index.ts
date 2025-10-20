@@ -6,6 +6,7 @@
 import { HttpClient } from './core/http-client.js';
 import { WebSocketClient } from './core/websocket-client.js';
 import { ShareDBClient } from './core/sharedb-client.js';
+import { YjsClient } from './core/yjs-client.js';
 import { DocumentManager } from './core/document-manager.js';
 import { AuthClient } from './clients/auth-client.js';
 import { SpaceClient } from './clients/space-client.js';
@@ -75,6 +76,7 @@ export class LuckDB {
   private httpClient: HttpClient;
   private wsClient?: WebSocketClient;
   private sharedbClient?: ShareDBClient;
+  private yjsClient?: YjsClient;
   private documentManager?: DocumentManager;
   private authClient: AuthClient;
   private spaceClient: SpaceClient;
@@ -119,6 +121,9 @@ export class LuckDB {
     // 初始化 ShareDB 客户端
     this.initializeShareDB(config);
 
+    // 初始化 YJS 客户端
+    this.initializeYJS(config);
+
     // ✅ 添加调试日志
     if (config.debug) {
       console.log('[LuckDB SDK] WebSocket client initialized with options:', wsOptions);
@@ -143,6 +148,21 @@ export class LuckDB {
       if (config.debug) {
         console.log('[LuckDB SDK] ShareDB client initialized');
       }
+    }
+  }
+
+  private initializeYJS(config: LuckDBConfig): void {
+    const yjsConfig = {
+      debug: config.debug || false,
+      reconnectInterval: 5000,
+      maxReconnectAttempts: 10,
+      heartbeatInterval: 30000,
+    };
+
+    this.yjsClient = new YjsClient(config, yjsConfig);
+
+    if (config.debug) {
+      console.log('[LuckDB SDK] YJS client initialized');
     }
   }
 
@@ -412,8 +432,8 @@ export class LuckDB {
   /**
    * 获取记录详情
    */
-  public async getRecord(recordId: string): Promise<Record> {
-    return this.recordClient.get(recordId);
+  public async getRecord(tableId: string, recordId: string): Promise<Record> {
+    return this.recordClient.get(tableId, recordId);
   }
 
   /**
@@ -771,6 +791,44 @@ export class LuckDB {
    */
   public getDocumentManager(): DocumentManager | undefined {
     return this.documentManager;
+  }
+
+  // ==================== YJS 实时协作方法 ====================
+
+  /**
+   * 获取 YJS 客户端
+   */
+  public getYjsClient(): YjsClient | undefined {
+    return this.yjsClient;
+  }
+
+  /**
+   * 连接 YJS WebSocket
+   */
+  public async connectYJS(): Promise<void> {
+    if (this.yjsClient) {
+      return this.yjsClient.connect();
+    }
+    throw new Error('YJS client not initialized');
+  }
+
+  /**
+   * 断开 YJS WebSocket
+   */
+  public disconnectYJS(): void {
+    if (this.yjsClient) {
+      this.yjsClient.disconnect();
+    }
+  }
+
+  /**
+   * 获取 YJS 文档
+   */
+  public getYjsDocument(documentId: string) {
+    if (this.yjsClient) {
+      return this.yjsClient.getDocument(documentId);
+    }
+    throw new Error('YJS client not initialized');
   }
 
   /**

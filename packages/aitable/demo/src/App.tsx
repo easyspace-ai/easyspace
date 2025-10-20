@@ -28,6 +28,7 @@ import { StyleTest } from './StyleTest';
 import AddRecordTest from './AddRecordTest';
 import { RealtimeDemo } from './RealtimeDemo';
 import { useRealtimeSync } from './hooks/useRealtimeSync';
+import { useYjsRealtimeSync } from './hooks/useYjsRealtimeSync';
 
 // ==================== SDK Context ====================
 
@@ -328,9 +329,9 @@ function TableView() {
   const { sdk, logout } = useSDK();
   const [currentView, setCurrentView] = useState<'table' | 'test' | 'realtime'>('table');
 
-  // 🚀 使用实时同步 Hook
-  const { fields, records, isLoading, error, lastSyncTime, connectionStatus, refresh } =
-    useRealtimeSync({
+  // 🚀 使用YJS实时同步 Hook
+  const { fields, records, isLoading, error, lastSyncTime, connectionStatus, yjsConnectionStatus, refresh } =
+    useYjsRealtimeSync({
       tableId: config.testBase.tableId,
       baseId: config.testBase.baseId,
       sdk,
@@ -545,6 +546,24 @@ function TableView() {
             <span
               style={{
                 color:
+                  yjsConnectionStatus === 'connected'
+                    ? '#10b981'
+                    : yjsConnectionStatus === 'connecting'
+                      ? '#f59e0b'
+                      : '#ef4444',
+                fontWeight: 'bold',
+              }}
+            >
+              YJS: {yjsConnectionStatus === 'connected'
+                ? '已连接'
+                : yjsConnectionStatus === 'connecting'
+                  ? '连接中'
+                  : '已断开'}
+            </span>
+            <span style={{ margin: '0 8px', color: '#6b7280' }}>|</span>
+            <span
+              style={{
+                color:
                   connectionStatus === 'connected'
                     ? '#10b981'
                     : connectionStatus === 'connecting'
@@ -553,7 +572,7 @@ function TableView() {
                 fontWeight: 'bold',
               }}
             >
-              {connectionStatus === 'connected'
+              WS: {connectionStatus === 'connected'
                 ? '已连接'
                 : connectionStatus === 'connecting'
                   ? '连接中'
